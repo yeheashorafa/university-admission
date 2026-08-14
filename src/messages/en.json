@@ -1,0 +1,2825 @@
+{
+  "common": {
+    "account": "Account",
+    "createStudentAccount": "Create Student Account",
+    "invalidCredentials": "Invalid email or password",
+    "loading": "Loading...",
+    "loadingData": "Loading data...",
+    "language": "Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "dark": "Dark",
+    "light": "Light",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "home": "Home",
+    "programs": "Programs",
+    "faculties": "Faculties",
+    "dashboard": "Dashboard",
+    "application": "Application",
+    "documents": "Documents",
+    "status": "Status",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "payment": "Payment",
+    "socialResearch": "Social Research",
+    "settings": "Settings",
+    "reports": "Reports",
+    "users": "Users",
+    "search": "Search",
+    "filter": "Filter",
+    "save": "Save",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "approve": "Approve",
+    "reject": "Reject",
+    "loading": "Loading...",
+    "checkingAccess": "Checking access...",
+    "pleaseWaitPermissions": "Please wait while we verify your account permissions.",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not Found",
+    "universityAdmissionBrand": "University Admission",
+    "admissionPortalBrand": "Admission Portal",
+    "accessibility": {
+      "closeSidebar": "Close sidebar"
+    }
+  },
+  "application": {
+    "steps": {
+      "1": "Qualification Data",
+      "2": "Admission Type",
+      "3": "Tawjihi Details",
+      "4": "Personal Data",
+      "5": "Guardian Data",
+      "6": "Contact Data",
+      "7": "Preferences",
+      "8": "Student Photo",
+      "9": "Documents",
+      "10": "Review",
+      "11": "Final Confirmation"
+    },
+    "qualificationData": "Qualification Data",
+    "qualificationType": "Qualification Type (Last Degree Obtained)",
+    "desiredStudyLevel": "Desired Study Program Level",
+    "qualificationYear": "Study / Tawjihi Year",
+    "verificationMethod": "Verification Method",
+    "seatNumber": "Seat Number",
+    "nationalId": "National ID",
+    "resultCheckMethod": "Result Check Method",
+    "tawjihiPercentage": "Tawjihi Percentage",
+    "tawjihiTotalScore": "Tawjihi Total Score",
+    "confirm": "Confirm",
+    "reset": "Reset",
+    "pendingEducationVerification": "These details will be verified later through the Ministry/Education integration when available.",
+    "highSchool": "General High School (Tawjihi)",
+    "intermediateDiploma": "Intermediate Diploma",
+    "specializedVocationalDiploma": "Specialized Vocational Diploma",
+    "bachelor": "Bachelor's Degree",
+    "highDiploma": "Higher Diploma",
+    "master": "Master's Degree",
+    "transfer": "Transfer",
+    "doctorate": "Doctorate / PhD",
+    "educationalDiploma": "Educational Diploma",
+    "percentage": "Tawjihi Percentage",
+    "totalScore": "Tawjihi Total Score",
+    "requiredField": "This field is required",
+    "invalidPercentage": "Percentage must be between 0 and 100",
+    "invalidTotalScore": "Total score must be a positive number"
+  },
+  "navigation": {
+    "accountMenu": "Account menu",
+    "dashboard": "Dashboard",
+    "myApplications": "My Applications",
+    "profile": "Profile",
+    "logout": "Logout",
+    "account": "Account",
+    "login": "Login",
+    "createStudentAccount": "Create Student Account",
+    "studentMenu": "Student Menu",
+    "adminPortal": "Admin Portal",
+    "adminPortal": "Admin Portal",
+    "overview": "Overview",
+    "applications": "Applications",
+    "management": "Management",
+    "system": "System",
+    "manualReview": "Manual Review",
+    "documentVerification": "Document Verification",
+    "admissionCycles": "Admission Cycles",
+    "legalPolicies": "Legal Policies",
+    "signOut": "Sign Out",
+    "myApplication": "My Application",
+    "trackStatus": "Track Status",
+    "studentPagesTitle": "Student Pages",
+    "studentPagesSubtitle": "Admission process",
+    "accountSubtitle": "Login or create account",
+    "adminPanel": "Admin Panel"
+  },
+  "auth": {
+    "loginVisualTitle": "Manage your admission journey in one place",
+    "loginVisualDescription": "Access your application, documents, notifications, and admission status from a single secure portal.",
+    "welcomeBack": "Welcome back",
+    "loginTitle": "Login",
+    "loginDescription": "Sign in to continue tracking your university admission application.",
+    "loginShortDescription": "Sign in to access your admission account.",
+    "loginVisualShortDescription": "Use your account to track applications, documents, and admission updates.",
+    "statusTracking": "Status tracking",
+    "easyApplication": "Easy application",
+    "documentUpload": "Document upload",
+    "emailAddress": "Email address",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "dontHaveAccount": "Don’t have an account?",
+    "createAccount": "Create Student Account",
+    "signingIn": "Signing in",
+    "UniversityName": "Islamic University of Gaza",
+    "universityAdmissionPortal": "University Admission Portal",
+    "TrackYourApplication": "Track Your Application",
+    "Knowexactly": "Know exactly where your application stands at every stage.",
+    "SecureVerifiedAccount": "Secure Verified Account",
+    "Yourpersonal": "Your personal and academic data are handled in a secure environment.",
+    "YourAdmission": "Your Admission Gateway",
+    "YourAdmissionDescription": "Start, complete, and manage your bachelor admission journey in one place.",
+    "registerVisualTitle": "Start your university admission journey",
+    "registerVisualDescription": "Create your account, submit your application, upload documents, and follow every step until admission.",
+    "registerShortDescription": "Create a student account to start your admission application.",
+    "registerVisualShortDescription": "Complete your admission steps online through one secure student portal.",
+    "otpTitle": "Verify OTP",
+    "otpDescription": "Enter the verification code sent to your email.",
+    "verifyCode": "Verify Code",
+    "verifying": "Verifying...",
+    "didntReceiveCode": "Didn't receive the code?",
+    "resendCode": "Resend Code",
+    "otpRequired": "Please enter the verification code.",
+    "otpVerified": "OTP verified successfully.",
+    "otpVerifiedDescription": "Your account has been created and your identity verified. You are being redirected to your control panel...",
+    "forgotPasswordTitle": "Forgot Password",
+    "forgotPasswordDescription": "Enter your email address and we will send you a password reset link.",
+    "secureAccess": "Secure access",
+    "studentPortal": "Student portal",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending...",
+    "resetLinkSent": "Password reset link sent successfully.",
+    "backToLogin": "Back to Login",
+    "emailPasswordRequired": "Please enter both email and password.",
+    "loggedInSuccessfully": "Logged in successfully.",
+    "saveNewPassword": "Save New Password",
+    "rememberPassword": "Remember your password?",
+    "login": "Login",
+    "passwordUpdated": "Password Updated",
+    "passwordUpdatedDescription": "Your password has been updated successfully.",
+    "signInNow": "Sign In Now",
+    "registerTitle": "Create Student Account",
+    "registerDescription": "Fill in your details to create your admission account.",
+    "studentRegisterNote": "This page is only for new students. Employee accounts are created by the department head.",
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "passwordHint": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "reEnterPassword": "Re-enter password",
+    "creatingAccount": "Creating account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "requiredFields": "Please fill in all required fields.",
+    "checkHighlightedFields": "Please check the highlighted fields.",
+    "nameRequired": "The name field is required.",
+    "emailRequired": "The email field is required.",
+    "phoneRequired": "The phone field is required.",
+    "passwordRequired": "The password field is required.",
+    "passwordConfirmationRequired": "The password confirmation field is required.",
+    "passwordMin": "Password must be at least 8 characters.",
+    "passwordsDoNotMatch": "Passwords do not match.",
+    "registerFailed": "Could not create the account. Please check the form.",
+    "accountCreatedSuccessfully": "Account created successfully.",
+    "startJourney": "Start your university admission journey",
+    "verificationSuccessful": "Verification Successful",
+    "verificationSuccessDescription": "Your account has been verified successfully. You can now continue to your dashboard.",
+    "goToDashboard": "Go to Dashboard",
+    "verifyYourCode": "Verify Your Code",
+    "enterCodeSentTo": "Enter the 6-digit code sent to",
+    "backToEditPhone": "Back to edit phone number",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password",
+    "togglePasswordVisibility": "Toggle password visibility",
+    "closeOtpModal": "Close OTP modal",
+    "close": "Close",
+    "resetPasswordTitle": "Reset Password",
+    "resetPasswordDescription": "Create a new password for your account.",
+    "newPassword": "New Password"
+  },
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "programs": "Programs",
+      "application": "My Application",
+      "documents": "Documents",
+      "status": "Track Status",
+      "notifications": "Notifications",
+      "help": "Help"
+    },
+    "hero": {
+      "badge": "Smart Admission Portal",
+      "title": "Islamic University of Gaza Electronic Admission Portal",
+      "description": "A digital platform that helps new students submit admission applications, upload documents, and track their application status, with AI-assisted document verification.",
+      "primaryAction": "Create Student Account",
+      "secondaryAction": "Explore Academic Programs",
+      "visualTitle": "AI-powered admission journey",
+      "visualDescription": "From document upload to university number issuance."
+    },
+    "features": {
+      "title": "Electronic Admission Services",
+      "description": "The portal brings the main admission steps into one place, from submitting the application to receiving the university number.",
+      "items": {
+        "application": {
+          "title": "Submit Admission Application",
+          "description": "Create an electronic admission application and enter personal and academic information easily."
+        },
+        "documents": {
+          "title": "Upload Required Documents",
+          "description": "Upload certificates and required documents and track their verification status."
+        },
+        "ai": {
+          "title": "AI Document Verification",
+          "description": "AI helps read documents and compare them with application data to speed up the verification process."
+        },
+        "tracking": {
+          "title": "Track Application Status",
+          "description": "Follow the application journey step by step, from review to payment and university number issuance."
+        }
+      },
+      "workflow": {
+        "title": "Organized review workflow",
+        "description": "Applications move from AI verification to employee review, department head approval, payment, and university number issuance.",
+        "progress": "AI → Employee → Department Head → Payment"
+      }
+    },
+    "journey": {
+      "title": "Admission Journey at IUG",
+      "description": "The admission process follows organized stages to ensure accurate data and valid documents.",
+      "steps": {
+        "register": {
+          "title": "Create Student Account",
+          "description": "The applicant creates a student account to start the admission process."
+        },
+        "submit": {
+          "title": "Fill Admission Application",
+          "description": "The student enters personal, academic, and program preference information."
+        },
+        "upload": {
+          "title": "Upload Required Documents",
+          "description": "The student uploads certificates, identity documents, and required attachments."
+        },
+        "aiReview": {
+          "title": "AI Document Verification",
+          "description": "AI reviews documents and compares extracted information with submitted data."
+        },
+        "employeeReview": {
+          "title": "Manual Review When Needed",
+          "description": "Cases that need confirmation are assigned to an admission employee for manual review."
+        },
+        "departmentApproval": {
+          "title": "Department Head Approval",
+          "description": "The department head reviews the employee decision before final approval."
+        },
+        "payment": {
+          "title": "Electronic Payment",
+          "description": "Accepted students complete the payment step through the portal."
+        },
+        "universityNumber": {
+          "title": "University Number Issuance",
+          "description": "After successful payment, the student receives a university number and completes the social research form."
+        }
+      }
+    },
+    "scholarships": {
+      "badge": "Scholarships",
+      "title": "Scholarships and Student Support",
+      "description": "The university provides several support paths for eligible applicants according to academic and social criteria.",
+      "apply": "Create Student Account",
+      "available": "Available for applicants",
+      "items": {
+        "academic": {
+          "title": "Academic Excellence Scholarship",
+          "description": "Awarded to students with outstanding high school academic results.",
+          "value": "Up to 70%"
+        },
+        "financial": {
+          "title": "Financial Need Scholarship",
+          "description": "Supports eligible students based on financial and social assessment.",
+          "value": "Up to 50%"
+        },
+        "special": {
+          "title": "Special Support Grant",
+          "description": "Dedicated support for eligible students according to university regulations.",
+          "value": "Special grant"
+        }
+      }
+    },
+    "announcements": {
+      "badge": "Announcements",
+      "title": "Admission Announcements",
+      "description": "Follow the latest updates related to admission, document upload, and initial results.",
+      "items": {
+        "admissionOpen": {
+          "badge": "Admission",
+          "date": "August 15, 2026",
+          "title": "Admission is now open for the next semester",
+          "description": "The university is now accepting applications for available academic programs."
+        },
+        "documentsDeadline": {
+          "badge": "Notice",
+          "date": "August 30, 2026",
+          "title": "Final deadline for document upload",
+          "description": "Applicants should upload all required documents before the application period ends."
+        },
+        "initialResults": {
+          "badge": "Results",
+          "date": "September 10, 2026",
+          "title": "Initial admission results announcement",
+          "description": "Initial admission results will be announced through the student portal."
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2026 Islamic University of Gaza - Admission and Registration Deanship. All Rights Reserved.",
+      "links": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "support": "Contact Support"
+      }
+    }
+  },
+  "programsPage": {
+    "badge": "Academic Programs",
+    "title": "Explore Faculties and Programs at the Islamic University of Gaza",
+    "description": "Choose a faculty to view its academic programs, admission requirements, eligible branches, and minimum average for each program.",
+    "facultiesTitle": "Faculties",
+    "facultiesDescription": "Select a faculty to view its programs.",
+    "selectedFaculty": "Selected Faculty",
+    "searchPlaceholder": "Search within faculty programs...",
+    "degree": "Degree",
+    "duration": "Duration",
+    "minAverage": "Minimum Average",
+    "branchesTitle": "Branches",
+    "details": "Details",
+    "viewDetails": "View Details",
+    "applyNow": "Apply for this program",
+    "closed": "Closed",
+    "emptyTitle": "No matching programs",
+    "emptyDescription": "Try another keyword or select a different faculty.",
+    "years": "{count} years",
+    "degrees": {
+      "bachelor": "Bachelor",
+      "diploma": "Diploma"
+    },
+    "branches": {
+      "scientific": "Scientific",
+      "literary": "Literary",
+      "industrial": "Industrial"
+    },
+    "availability": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "facultySearchPlaceholder": "Search for a faculty...",
+    "noFacultiesFound": "No faculties match your search.",
+    "faculties": {
+      "informationTechnology": {
+        "title": "Faculty of Information Technology",
+        "description": "Technical programs focused on programming, software engineering, computer science, and multimedia."
+      },
+      "engineering": {
+        "title": "Faculty of Engineering",
+        "description": "Engineering programs that prepare students to serve society and contribute to development."
+      },
+      "medicine": {
+        "title": "Faculty of Medicine",
+        "description": "Medical programs that prepare qualified healthcare professionals according to high academic and professional standards."
+      },
+      "healthSciences": {
+        "title": "Faculty of Health Sciences",
+        "description": "Applied health programs in nursing, medical laboratory sciences, and supporting health fields."
+      },
+      "science": {
+        "title": "Faculty of Science",
+        "description": "Scientific programs in mathematics, biology, and basic sciences."
+      },
+      "education": {
+        "title": "Faculty of Education",
+        "description": "Educational programs that prepare teachers and specialists for educational institutions."
+      },
+      "shariaLaw": {
+        "title": "Faculty of Sharia and Law",
+        "description": "Programs in Sharia and Law combining Islamic foundations with legal knowledge."
+      },
+      "business": {
+        "title": "Faculty of Economics and Administrative Sciences",
+        "description": "Administrative and financial programs that prepare students for work in economic and management institutions."
+      }
+    },
+    "programs": {
+      "softwareEngineering": {
+        "title": "Software Engineering",
+        "description": "A program focused on analyzing, designing, and building software systems and high-quality technical solutions."
+      },
+      "computerScience": {
+        "title": "Computer Science",
+        "description": "A program covering computing fundamentals, algorithms, databases, and artificial intelligence."
+      },
+      "multimediaTechnology": {
+        "title": "Multimedia Technology",
+        "description": "A program combining technology and design to produce interactive digital media and applications."
+      },
+      "civilEngineering": {
+        "title": "Civil Engineering",
+        "description": "A program that prepares students to design, implement, and manage infrastructure and construction projects."
+      },
+      "computerEngineering": {
+        "title": "Computer Engineering",
+        "description": "A program combining electronics engineering and computer science to develop smart and embedded systems."
+      },
+      "architectureEngineering": {
+        "title": "Architecture Engineering",
+        "description": "A program focused on architectural design, urban planning, and connecting beauty with function."
+      },
+      "medicine": {
+        "title": "Human Medicine",
+        "description": "A medical program that prepares doctors to provide healthcare and serve the community."
+      },
+      "nursing": {
+        "title": "Nursing",
+        "description": "A program that prepares professional nursing staff to provide safe and effective healthcare."
+      },
+      "medicalLaboratory": {
+        "title": "Medical Laboratory Sciences",
+        "description": "A program focused on medical laboratory testing and supporting clinical diagnosis."
+      },
+      "biology": {
+        "title": "Biology",
+        "description": "A scientific program focused on living organisms and biological applications."
+      },
+      "mathematics": {
+        "title": "Mathematics",
+        "description": "A program focused on mathematical thinking, analysis, and solving scientific and applied problems."
+      },
+      "englishEducation": {
+        "title": "English Language Education",
+        "description": "An educational program that prepares students to teach English in educational institutions."
+      },
+      "arabicEducation": {
+        "title": "Arabic Language Education",
+        "description": "An educational program that prepares students to teach Arabic and develop language skills."
+      },
+      "sharia": {
+        "title": "Islamic Sharia",
+        "description": "A program focused on Islamic sciences, jurisprudence, and foundations of religion through a balanced academic approach."
+      },
+      "law": {
+        "title": "Law",
+        "description": "A program that prepares legal professionals to deal with cases, regulations, and legislation."
+      },
+      "accounting": {
+        "title": "Accounting",
+        "description": "A program focused on financial accounting, management accounting, auditing, and financial data analysis."
+      },
+      "businessAdministration": {
+        "title": "Business Administration",
+        "description": "A program that prepares students in management, planning, marketing, and entrepreneurship."
+      }
+    }
+  },
+  "programsDetails": {
+    "branches": "Branches",
+    "acceptedBranches": "Accepted branches",
+    "minimumAverage": "Minimum average",
+    "department": "Department",
+    "description": "Description",
+    "status": "Status",
+    "available": "Available",
+    "notAvailable": "Not available",
+    "years": "years",
+    "admissionSummary": "Admission Summary",
+    "youAreEligible": "You are eligible",
+    "youAreEligibleDescription": "Your current academic information meets the minimum requirements for this program.",
+    "requirementsNotMetDescription": "This program requires a minimum rate of {rate}%. Your current rate is {studentRate}%.",
+    "programOverview": "Program Overview",
+    "learningOutcomes": "Learning Outcomes",
+    "careerOpportunities": "Career Opportunities",
+    "studyPlanOverview": "Study Plan Overview",
+    "program": "Program",
+    "language": "Language",
+    "tuition": "Tuition",
+    "duration": "Duration",
+    "degree": "Degree",
+    "faculty": "Faculty",
+    "minimumRate": "Minimum Rate",
+    "startApplication": "Start Application",
+    "requirementsNotMet": "Requirements Not Met",
+    "backToPrograms": "Back to Programs",
+    "admissionRequirements": "Admission Requirements",
+    "items": {
+      "software-engineering": {
+        "title": "Software Engineering",
+        "faculty": "Faculty of Engineering",
+        "description": "A program focused on designing, developing, testing, and maintaining software systems using modern engineering practices.",
+        "duration": "4 years",
+        "degree": "Bachelor",
+        "language": "Arabic / English",
+        "tuition": "To be announced",
+        "overview": "The Software Engineering program prepares students to build reliable, scalable, and secure software solutions. Students learn programming, databases, software architecture, project management, quality assurance, and modern development workflows.",
+        "requirements": [
+          "High school certificate from an eligible branch.",
+          "Minimum admission rate of 80%.",
+          "Valid personal ID or passport.",
+          "Certified high school transcript.",
+          "Completion of the electronic admission application."
+        ],
+        "outcomes": [
+          "Analyze user needs and translate them into software requirements.",
+          "Design and implement software systems using modern technologies.",
+          "Apply testing, quality assurance, and documentation practices.",
+          "Work effectively within software teams and agile environments.",
+          "Understand ethical and professional responsibilities in software development."
+        ],
+        "careerPaths": [
+          "Software Engineer",
+          "Frontend Developer",
+          "Backend Developer",
+          "Quality Assurance Engineer",
+          "Systems Analyst",
+          "Product Engineer"
+        ],
+        "studyPlan": [
+          {
+            "year": "Year 1",
+            "courses": [
+              "Programming Fundamentals",
+              "Calculus",
+              "Computer Skills",
+              "Discrete Mathematics"
+            ]
+          },
+          {
+            "year": "Year 2",
+            "courses": [
+              "Data Structures",
+              "Object-Oriented Programming",
+              "Database Systems",
+              "Computer Networks"
+            ]
+          },
+          {
+            "year": "Year 3",
+            "courses": [
+              "Software Engineering",
+              "Web Development",
+              "Operating Systems",
+              "Software Testing"
+            ]
+          },
+          {
+            "year": "Year 4",
+            "courses": [
+              "Software Architecture",
+              "Project Management",
+              "Graduation Project",
+              "Professional Training"
+            ]
+          }
+        ]
+      },
+      "medicine": {
+        "title": "Medicine and Surgery",
+        "faculty": "Faculty of Medicine",
+        "description": "A distinguished program that prepares competent doctors with modern medical knowledge and clinical skills.",
+        "duration": "6 years",
+        "degree": "Bachelor",
+        "language": "Arabic / English",
+        "tuition": "To be announced",
+        "overview": "The Medicine and Surgery program prepares students with the scientific knowledge, clinical skills, and ethical foundations required to practice medicine and serve the community.",
+        "requirements": [
+          "Scientific high school branch.",
+          "Minimum admission rate of 95%.",
+          "Valid personal ID or passport.",
+          "Certified high school transcript.",
+          "Additional admission requirements may apply."
+        ],
+        "outcomes": [
+          "Understand human anatomy, physiology, and pathology.",
+          "Apply clinical reasoning in diagnosis and treatment.",
+          "Communicate effectively with patients and healthcare teams.",
+          "Follow medical ethics and professional standards."
+        ],
+        "careerPaths": [
+          "Physician",
+          "Medical Resident",
+          "Clinical Researcher",
+          "Public Health Specialist"
+        ],
+        "studyPlan": [
+          {
+            "year": "Years 1-2",
+            "courses": [
+              "Basic Medical Sciences",
+              "Anatomy",
+              "Physiology",
+              "Biochemistry"
+            ]
+          },
+          {
+            "year": "Years 3-4",
+            "courses": [
+              "Pathology",
+              "Pharmacology",
+              "Microbiology",
+              "Clinical Skills"
+            ]
+          },
+          {
+            "year": "Years 5-6",
+            "courses": [
+              "Clinical Rotations",
+              "Internal Medicine",
+              "Surgery",
+              "Pediatrics"
+            ]
+          }
+        ]
+      },
+      "data-ai": {
+        "title": "Data Science and Artificial Intelligence",
+        "faculty": "Faculty of Information Technology",
+        "description": "A modern program that combines statistics, computer science, and intelligent systems to extract knowledge from data.",
+        "duration": "4 years",
+        "degree": "Bachelor",
+        "language": "Arabic / English",
+        "tuition": "To be announced",
+        "overview": "This program focuses on data analysis, machine learning, artificial intelligence, statistics, and intelligent applications. Students learn how to collect, process, analyze, and model data to support decision-making.",
+        "requirements": [
+          "Scientific high school branch.",
+          "Minimum admission rate of 85%.",
+          "Strong background in mathematics is recommended.",
+          "Certified high school transcript."
+        ],
+        "outcomes": [
+          "Analyze and visualize complex datasets.",
+          "Build machine learning and AI models.",
+          "Use statistical methods for data-driven decisions.",
+          "Develop intelligent applications and data pipelines."
+        ],
+        "careerPaths": [
+          "Data Analyst",
+          "Data Scientist",
+          "Machine Learning Engineer",
+          "AI Developer",
+          "Business Intelligence Specialist"
+        ],
+        "studyPlan": [
+          {
+            "year": "Year 1",
+            "courses": [
+              "Programming Fundamentals",
+              "Calculus",
+              "Statistics",
+              "Computer Skills"
+            ]
+          },
+          {
+            "year": "Year 2",
+            "courses": [
+              "Data Structures",
+              "Database Systems",
+              "Probability",
+              "Python for Data"
+            ]
+          },
+          {
+            "year": "Year 3",
+            "courses": [
+              "Machine Learning",
+              "Data Mining",
+              "AI Principles",
+              "Big Data"
+            ]
+          },
+          {
+            "year": "Year 4",
+            "courses": [
+              "Deep Learning",
+              "Natural Language Processing",
+              "Graduation Project",
+              "Professional Training"
+            ]
+          }
+        ]
+      },
+      "accounting": {
+        "title": "Accounting",
+        "faculty": "Faculty of Commerce",
+        "description": "A program that develops accounting, auditing, and financial reporting skills for business and institutional environments.",
+        "duration": "4 years",
+        "degree": "Bachelor",
+        "language": "Arabic / English",
+        "tuition": "To be announced",
+        "overview": "The Accounting program prepares students with the knowledge and practical skills needed in accounting, auditing, taxation, financial analysis, and financial reporting. Students learn how to record, analyze, and present financial information to support business decisions.",
+        "requirements": [
+          "High school certificate from an eligible branch.",
+          "Minimum admission rate of 70%.",
+          "Valid personal ID or passport.",
+          "Certified high school transcript.",
+          "Completion of the electronic admission application."
+        ],
+        "outcomes": [
+          "Prepare and analyze financial statements.",
+          "Apply accounting principles in business and institutional settings.",
+          "Understand auditing procedures and internal control systems.",
+          "Use financial information to support decision-making.",
+          "Apply ethical and professional standards in accounting practice."
+        ],
+        "careerPaths": [
+          "Accountant",
+          "Auditor",
+          "Financial Analyst",
+          "Tax Officer",
+          "Internal Controller",
+          "Accounting Manager"
+        ],
+        "studyPlan": [
+          {
+            "year": "Year 1",
+            "courses": [
+              "Principles of Accounting",
+              "Principles of Management",
+              "Business Mathematics",
+              "Computer Skills"
+            ]
+          },
+          {
+            "year": "Year 2",
+            "courses": [
+              "Intermediate Accounting",
+              "Cost Accounting",
+              "Business Law",
+              "Statistics"
+            ]
+          },
+          {
+            "year": "Year 3",
+            "courses": [
+              "Auditing",
+              "Tax Accounting",
+              "Financial Management",
+              "Accounting Information Systems"
+            ]
+          },
+          {
+            "year": "Year 4",
+            "courses": [
+              "Advanced Accounting",
+              "Financial Analysis",
+              "Graduation Project",
+              "Professional Training"
+            ]
+          }
+        ]
+      },
+      "english": {
+        "title": "English Language and Literature",
+        "faculty": "Faculty of Arts",
+        "description": "A program that strengthens language, literature, translation, and communication skills for academic and professional careers.",
+        "duration": "4 years",
+        "degree": "Bachelor",
+        "language": "English / Arabic",
+        "tuition": "To be announced",
+        "overview": "The English Language and Literature program develops students' skills in English communication, literary analysis, translation, linguistics, and academic writing. The program prepares graduates for careers in education, translation, media, content writing, and related professional fields.",
+        "requirements": [
+          "High school certificate from an eligible branch.",
+          "Minimum admission rate of 65%.",
+          "Valid personal ID or passport.",
+          "Certified high school transcript.",
+          "Completion of the electronic admission application."
+        ],
+        "outcomes": [
+          "Communicate effectively in English in academic and professional contexts.",
+          "Analyze literary texts using critical and cultural approaches.",
+          "Apply translation skills between Arabic and English.",
+          "Use linguistic concepts to understand language structure and usage.",
+          "Produce clear academic and professional written work."
+        ],
+        "careerPaths": [
+          "English Teacher",
+          "Translator",
+          "Content Writer",
+          "Editor",
+          "Media Specialist",
+          "Academic Research Assistant"
+        ],
+        "studyPlan": [
+          {
+            "year": "Year 1",
+            "courses": [
+              "English Grammar",
+              "Reading Skills",
+              "Writing Skills",
+              "Introduction to Literature"
+            ]
+          },
+          {
+            "year": "Year 2",
+            "courses": [
+              "Phonetics and Phonology",
+              "Translation Principles",
+              "British Literature",
+              "Academic Writing"
+            ]
+          },
+          {
+            "year": "Year 3",
+            "courses": [
+              "Linguistics",
+              "American Literature",
+              "Advanced Translation",
+              "Research Methods"
+            ]
+          },
+          {
+            "year": "Year 4",
+            "courses": [
+              "Comparative Literature",
+              "Discourse Analysis",
+              "Graduation Project",
+              "Professional Training"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Student Dashboard",
+    "description": "Track your admission progress and complete the required steps.",
+    "welcomeBack": "Welcome back",
+    "applicationProgress": "Application Progress",
+    "requiredDocuments": "Required Documents",
+    "latestNotifications": "Latest Notifications",
+    "quickActions": "Quick Actions",
+    "applicationStatus": "Application Status",
+    "currentStep": "Current Step",
+    "completionRate": "Completion Rate",
+    "submittedApplication": "Submitted Application",
+    "uploadedDocuments": "Uploaded Documents",
+    "pendingActions": "Pending Actions",
+    "paymentStatus": "Payment Status",
+    "completeApplication": "Complete Application",
+    "uploadDocuments": "Upload Documents",
+    "trackStatus": "Track Status",
+    "viewNotifications": "View Notifications",
+    "continuePayment": "Continue Payment",
+    "viewProfile": "View Profile",
+    "underReview": "Under Review",
+    "pending": "Pending",
+    "completed": "Completed",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "noNotifications": "No new notifications",
+    "viewAll": "View All",
+    "lastUpdated": "Last updated",
+    "nextStep": "Next Step",
+    "reviewApplication": "Review your application and complete any missing information.",
+    "documentsHint": "Upload the required documents to continue the admission process.",
+    "statusHint": "Follow the latest updates about your admission application.",
+    "paymentHint": "Complete the payment step when your application becomes eligible.",
+    "admissionJourney": "Admission Journey",
+    "notifications": "Notifications",
+    "profileCompletion": "Profile Completion",
+    "profileCompletionDescription": "Please complete your personal profile and upload the required documents to speed up the admission review process.",
+    "completeProfile": "Complete Profile",
+    "startNewApplication": "Start New Application",
+    "studentRole": "Applicant Student",
+    "currentApplicationTitle": "Bachelor Admission Application",
+    "applicationId": "Application ID",
+    "submittedOn": "Submitted on",
+    "viewDetails": "View Details",
+    "viewApplication": "View application",
+    "timeline": [
+      {
+        "title": "Account Created",
+        "description": "Your applicant account has been created successfully."
+      },
+      {
+        "title": "Application Submitted",
+        "description": "Your bachelor admission application has been submitted."
+      },
+      {
+        "title": "Documents Review",
+        "description": "Your uploaded documents are being reviewed by the admissions team."
+      },
+      {
+        "title": "Final Decision",
+        "description": "The final admission decision will appear here once available."
+      }
+    ],
+    "notificationsList": [
+      {
+        "title": "Your application is currently under review.",
+        "time": "2 hours ago"
+      },
+      {
+        "title": "Please make sure all required documents are uploaded clearly.",
+        "time": "Yesterday"
+      },
+      {
+        "title": "Your profile information was saved successfully.",
+        "time": "3 days ago"
+      }
+    ]
+  },
+  "application": {
+    "applicationHeader": "Bachelor Admission",
+    "applicationTitle": "Admission Application",
+    "description": "Complete your personal, academic, and program selection information.",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "academicInfo": "Academic Information",
+    "programSelection": "Program Selection",
+    "reviewSubmit": "Review & Submit",
+    "saveDraft": "Save Draft",
+    "submitApplication": "Submit Application",
+    "submittedTitle": "Application Submitted",
+    "submittedDescription": "Your application has been submitted successfully and is now under review.",
+    "universityName": "Islamic University of Gaza",
+    "savedJustNow": "Saved just now",
+    "closeApplication": "Close application",
+    "highSchoolInformation": "High School Information",
+    "highSchoolBranch": "High School Branch",
+    "scientific": "Scientific",
+    "literary": "Literary",
+    "industrial": "Industrial",
+    "generalAverage": "General Average",
+    "coreSubjectMarks": "Core Subject Marks",
+    "mathematics": "Mathematics",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "english": "English",
+    "footerCopyright": "© 2026 Islamic University of Gaza - Admission and Registration",
+    "privacyPolicy": "Privacy Policy",
+    "termsAndConditions": "Terms and Conditions",
+    "steps": {
+      "1": "Admission Type",
+      "2": "Main / Tawjihi Data",
+      "3": "Basic Personal Data",
+      "4": "Guardian Data",
+      "5": "Address & Contact Data",
+      "6": "Student Preferences",
+      "7": "Student Photo",
+      "8": "Application Documents",
+      "9": "Full Application Review",
+      "10": "Final Confirmation"
+    },
+    "selectPrograms": "Select Programs",
+    "searchProgramPlaceholder": "Search for a program...",
+    "minimumRate": "Minimum rate",
+    "eligible": "Eligible",
+    "notEligible": "Not Eligible",
+    "addProgram": "Add {program}",
+    "back": "Back",
+    "selectedPreferences": "Selected Preferences",
+    "selectedPreferencesDescription": "You can select and arrange up to 3 preferences. Use the arrows to change the priority order.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeProgram": "Remove {program}",
+    "emptyPreferenceSlot": "Empty preference slot",
+    "programOptions": {
+      "computer-engineering": {
+        "title": "Computer Engineering",
+        "faculty": "Faculty of Engineering"
+      },
+      "medicine": {
+        "title": "Medicine and Surgery",
+        "faculty": "Faculty of Medicine"
+      },
+      "software-engineering": {
+        "title": "Software Engineering",
+        "faculty": "Faculty of Engineering"
+      },
+      "data-ai": {
+        "title": "Data Science and Artificial Intelligence",
+        "faculty": "Faculty of Information Technology"
+      },
+      "accounting": {
+        "title": "Accounting",
+        "faculty": "Faculty of Commerce"
+      },
+      "english": {
+        "title": "English Language and Literature",
+        "faculty": "Faculty of Arts"
+      },
+      "architecture": {
+        "title": "Architecture",
+        "faculty": "Faculty of Engineering"
+      },
+      "business-administration": {
+        "title": "Business Administration",
+        "faculty": "Faculty of Commerce"
+      }
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "description": "Upload and manage the required admission documents.",
+    "uploadDocument": "Upload Document",
+    "verified": "Verified",
+    "pending": "Pending",
+    "rejected": "Rejected",
+    "needsReupload": "Needs Re-upload",
+    "subtitle": "Application Attachments",
+    "headerTitle": "Upload Required Documents",
+    "headerDescription": "Please upload clear and colored copies of the required documents to complete your registration. Documents may be checked automatically to ensure quality and authenticity.",
+    "saveAndContinue": "Save and Continue",
+    "submitHint": "Make sure all required documents are uploaded correctly before continuing.",
+    "uploadingFile": "Uploading file...",
+    "uploadedSuccessfully": "Uploaded successfully",
+    "pendingReview": "Your document is now pending review.",
+    "dragDropFile": "Drag and drop the file here",
+    "clickToChoose": "Or click to choose a file from your device",
+    "browseFiles": "Browse Files",
+    "supportedFormats": "Supported formats: JPG, PNG, PDF. Maximum size: 5MB.",
+    "guidelinesTitle": "Guidelines for Clear Uploads",
+    "guidelines": [
+      "Make sure the lighting is good and avoid reflections on the document.",
+      "All four corners of the document should be visible in the image.",
+      "Text and numbers must be clearly readable.",
+      "Use a scanner or a mobile scanning app for the best result."
+    ],
+    "required": "Required",
+    "checking": "Checking with AI",
+    "needsReuploadFull": "Needs replacement - image is unclear",
+    "uploadedFile": "Uploaded file",
+    "reupload": "Re-upload",
+    "items": {
+      "identity": {
+        "title": "Personal ID",
+        "description": "A clear image of your ID card or passport. Upload both sides if required."
+      },
+      "personal-photo": {
+        "title": "Personal Photo",
+        "description": "A recent personal photo with a white or blue background."
+      },
+      "tawjihi-certificate": {
+        "title": "High School Certificate",
+        "description": "The original certified transcript issued by the Ministry of Education."
+      }
+    }
+  },
+
+  "studentStatusWorkflow": {
+    "badge": "Admission Application Tracking",
+    "title": "Your Application Status",
+    "description": "Follow the stages of your admission application from submission to university number issuance and social research completion.",
+    "currentStatus": "Current Status",
+    "program": "Program",
+    "faculty": "Faculty",
+    "average": "Average",
+    "universityNumber": "University Number",
+    "notIssuedYet": "Not issued yet",
+    "progressTitle": "Application Stages",
+    "progressDescription": "This path shows where your application stands and what steps remain.",
+    "timelineTitle": "Application Log",
+    "timelineDescription": "This log shows all actions taken on your application.",
+    "payNow": "Pay Now",
+    "paymentRequiredTitle": "Payment Required",
+    "paymentRequiredDescription": "Your application has been approved. Please complete payment to proceed to university number issuance.",
+    "socialResearchRequiredTitle": "Social Research Required",
+    "socialResearchRequiredDescription": "Your university number has been issued. Please complete the social research form to finalize your admission file.",
+    "completeSocialResearch": "Complete Social Research",
+    "completedTitle": "Admission Completed",
+    "completedDescription": "All application stages have been completed successfully.",
+    "rejectedTitle": "Application Rejected",
+    "rejectedDescription": "Your application has been rejected. Please review the notes or contact Admission and Registration.",
+    "noActionTitle": "No Action Required Now",
+    "noActionDescription": "Your application is currently being processed. The next step will appear once available.",
+    "steps": {
+      "draft": {
+        "title": "Draft",
+        "description": "Application draft is being prepared."
+      },
+      "submitted": {
+        "title": "Submitted",
+        "description": "Application and documents have been submitted."
+      },
+      "under_review": {
+        "title": "Under Review",
+        "description": "Application is being reviewed by the admission staff."
+      },
+      "returned_for_revision": {
+        "title": "Returned for Revision",
+        "description": "Application returned for document or data revision."
+      },
+      "forwarded_to_department_head": {
+        "title": "Forwarded to Department Head",
+        "description": "Application forwarded to the academic department head."
+      },
+      "returned_to_employee": {
+        "title": "Returned to Admission Employee",
+        "description": "Application returned to admission employee for further review."
+      },
+      "accepted": {
+        "title": "Accepted",
+        "description": "Application accepted into the academic program."
+      },
+      "rejected": {
+        "title": "Rejected",
+        "description": "Application rejected."
+      },
+      "cancelled": {
+        "title": "Cancelled",
+        "description": "Application cancelled."
+      },
+      "aiVerification": {
+        "title": "AI Verification",
+        "description": "The AI system checks your documents and submitted data."
+      },
+      "employeeReview": {
+        "title": "Employee Review",
+        "description": "The application is sent to an employee if manual review is needed."
+      },
+      "headReview": {
+        "title": "Department Head Approval",
+        "description": "The department head reviews the final decision."
+      },
+      "payment": {
+        "title": "Payment",
+        "description": "After approval, you proceed to admission fee payment."
+      },
+      "universityNumber": {
+        "title": "University Number",
+        "description": "The system issues the university number after payment is completed."
+      },
+      "socialResearch": {
+        "title": "Social Research",
+        "description": "The student completes the social research form after receiving the university number."
+      },
+      "completed": {
+        "title": "Admission Completed",
+        "description": "All application stages have been completed successfully."
+      }
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your personal information and account security.",
+    "personalInformation": "Personal Information",
+    "contactInformation": "Contact Information",
+    "academicSummary": "Academic Summary",
+    "accountSecurity": "Account Security",
+    "changePassword": "Change Password",
+    "studentProfile": "Student Profile",
+    "mockFullName": "Ahmed Mohammad Hassan",
+    "applicantStudent": "Applicant Student",
+    "profileCompletionBadge": "Profile {percent}% Complete",
+    "profileCompletion": "Profile Completion",
+    "progress": "Progress",
+    "academicInformation": "Academic Information",
+    "documentsUploaded": "Documents Uploaded",
+    "personalInformationDescription": "Keep your official personal details accurate and up to date.",
+    "firstName": "First Name",
+    "fatherName": "Father Name",
+    "familyName": "Family Name",
+    "nationalId": "National ID",
+    "birthDate": "Birth Date",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "nationality": "Nationality",
+    "mockNationality": "Palestinian",
+    "savePersonalInfo": "Save Personal Info",
+    "contactInformationDescription": "These details will be used for admission notifications and account verification.",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "alternativePhone": "Alternative Phone",
+    "city": "City",
+    "address": "Address",
+    "mockCity": "Gaza",
+    "mockAddress": "Al-Rimal, Gaza City",
+    "saveContactInfo": "Save Contact Info",
+    "emailVerified": "Email Verified",
+    "phoneVerified": "Phone Verified",
+    "lastLogin": "Last Login",
+    "accountCreated": "Account Created",
+    "mockLastLogin": "Today, 09:45 AM",
+    "mockAccountCreated": "October 12, 2026",
+    "highSchoolAverage": "High School Average",
+    "academicBranch": "Academic Branch",
+    "scientific": "Scientific",
+    "graduationYear": "Graduation Year",
+    "school": "School",
+    "mockSchool": "Al-Karmel Secondary School"
+  },
+  "payment": {
+    "title": "Payment",
+    "description": "Review your invoice and complete the admission payment.",
+    "invoice": "Invoice",
+    "amount": "Amount",
+    "paymentMethod": "Payment Method",
+    "payNow": "Pay Now",
+    "successTitle": "Payment Successful",
+    "successDescription": "Your payment has been completed successfully.",
+    "failedTitle": "Payment Failed",
+    "failedDescription": "Your payment could not be completed. Please try again.",
+    "subtitle": "Admission Payment",
+    "completePayment": "Complete Payment",
+    "headerDescription": "Pay the admission application fee to continue your university admission process.",
+    "applicationNumber": "Application #{number}",
+    "invoiceNo": "Invoice No.",
+    "issueDate": "Issue Date",
+    "dueDate": "Due Date",
+    "status": "Status",
+    "pending": "Pending",
+    "downloadInvoice": "Download Invoice",
+    "mockIssueDate": "October 18, 2026",
+    "mockDueDate": "October 25, 2026",
+    "paymentPending": "Payment Pending",
+    "paymentPendingDescription": "Your admission payment has not been completed yet. Please choose a payment method below.",
+    "paymentCompleted": "Payment Completed",
+    "paymentCompletedDescription": "Your payment has been received successfully. Your application can continue to the final admission stage.",
+    "paymentFailed": "Payment Failed",
+    "paymentFailedDescription": "The last payment attempt failed. Please try again or use another payment method.",
+    "paymentSummary": "Payment Summary",
+    "student": "Student",
+    "application": "Application",
+    "program": "Program",
+    "faculty": "Faculty",
+    "total": "Total",
+    "transactionNumber": "Transaction Number",
+    "paidAt": "Paid At",
+    "failureReason": "Failure Reason",
+    "mockStudentName": "Ahmed Mohammad Hassan",
+    "mockProgram": "Software Engineering",
+    "mockFaculty": "Faculty of Information Technology",
+    "items": {
+      "admission-fee": {
+        "title": "Admission Application Fee",
+        "description": "Required fee to complete the admission process."
+      },
+      "service-fee": {
+        "title": "Online Payment Service Fee",
+        "description": "Processing fee for digital payment methods."
+      }
+    },
+    "paymentMethodDescription": "Choose how you want to pay the admission application fee.",
+    "simulateFailed": "Simulate Failed",
+    "continuePayment": "Continue Payment",
+    "methods": {
+      "card": {
+        "title": "Credit / Debit Card",
+        "description": "Pay securely using Visa or MasterCard."
+      },
+      "bank_transfer": {
+        "title": "Bank Transfer",
+        "description": "Transfer the fee and upload the transfer receipt."
+      },
+      "cash_office": {
+        "title": "University Finance Office",
+        "description": "Pay directly at the university finance office."
+      }
+    },
+    "cardDetails": "Card Details",
+    "cardholderName": "Cardholder Name",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "bankTransferDetails": "Bank Transfer Details",
+    "bankAccount": "Bank Account",
+    "bankAccountName": "Islamic University of Gaza - Admission Account",
+    "uploadTransferReceipt": "Upload Transfer Receipt",
+    "financeOfficePayment": "Finance Office Payment",
+    "financeOfficeDescription": "Visit the university finance office during official working hours and provide your application number to complete payment.",
+    "applicationNumberLabel": "Application Number",
+    "paymentResult": {
+      "completed": "Payment Completed",
+      "failed": "Payment Failed",
+      "completedDescription": "Your payment was completed successfully",
+      "failedDescription": "We could not complete your payment",
+      "completedLongDescription": "Your admission payment has been received. Your application can now continue to the final admission stage.",
+      "failedLongDescription": "The payment attempt was not successful. Please try again or choose another payment method.",
+      "nextStepsSuccess": "What Happens Next?",
+      "nextStepsFailed": "How to Continue?",
+      "stepFinalReview": "Final Review",
+      "stepAdmissionDecision": "Admission Decision",
+      "stepUniversityNumber": "University Number",
+      "stepTryPaymentAgain": "Try Payment Again",
+      "stepCheckPaymentDetails": "Check Payment Details",
+      "stepContactAdmissions": "Contact Admissions Office"
+    },
+    "successBadge": "Payment Completed",
+    "failedBadge": "Payment Failed",
+    "summaryTitle": "Transaction Summary",
+    "applicationNo": "Application No.",
+    "paymentReference": "Payment Reference",
+    "universityNumber": "University Number",
+    "notAvailable": "Not available",
+    "notIssuedYet": "Not issued yet",
+    "successNextTitle": "Next Step: Social Research",
+    "successNextDescription": "Please complete the social research form to finalize your admission file.",
+    "failedNextTitle": "Try Payment Again",
+    "failedNextDescription": "You can return to the payment page and try again.",
+    "completeSocialResearch": "Complete Social Research",
+    "tryPaymentAgain": "Try Payment Again"
+  },
+  "notifications": {
+    "subtitle": "Student Center",
+    "title": "Notifications",
+    "description": "Stay updated with important admission messages, document requests, payment reminders, and application status changes.",
+    "recentNotifications": "Recent Notifications",
+    "recentNotificationsDescription": "Important messages related to your admission application.",
+    "new": "New",
+    "typeDocument": "Document",
+    "typeStatus": "Status",
+    "typePayment": "Payment",
+    "typeAdmission": "Admission",
+    "typeGeneral": "General",
+    "searchNotifications": "Search Notifications",
+    "searchPlaceholder": "Search by title or message...",
+    "type": "Type",
+    "allTypes": "All Types",
+    "documents": "Documents",
+    "statusUpdates": "Status Updates",
+    "payment": "Payment",
+    "admission": "Admission",
+    "general": "General",
+    "status": "Status",
+    "all": "All",
+    "unread": "Unread",
+    "read": "Read",
+    "apply": "Apply",
+    "stats": {
+      "allNotifications": "All Notifications",
+      "unread": "Unread",
+      "documentRequests": "Document Requests",
+      "admissionUpdates": "Admission Updates"
+    },
+    "items": {
+      "1": {
+        "title": "Application Submitted Successfully",
+        "message": "Your admission application (APP-2026-8001) has been received and queued for processing.",
+        "time": "Today, 08:30 AM",
+        "actionLabel": "Track Status"
+      },
+      "2": {
+        "title": "AI Verification Needs Manual Review",
+        "message": "Automated AI verification for high school transcript scan was below threshold. Application moved to employee manual review.",
+        "time": "Today, 09:15 AM",
+        "actionLabel": "View Details"
+      },
+      "3": {
+        "title": "Document Re-upload Requested",
+        "message": "Your personal ID image scan was unclear. Please upload a clearer copy to finalize verification.",
+        "time": "Today, 10:20 AM",
+        "actionLabel": "Upload Document"
+      },
+      "4": {
+        "title": "Payment Step Required",
+        "message": "Your application has been approved by the department head. Please complete the admission fee payment.",
+        "time": "Yesterday, 02:45 PM",
+        "actionLabel": "Pay Now"
+      },
+      "5": {
+        "title": "Social Research Form Required",
+        "message": "Your payment was verified and university number issued. Please fill out the social research form.",
+        "time": "Yesterday, 04:10 PM",
+        "actionLabel": "Fill Form"
+      },
+      "6": {
+        "title": "Admission Application Completed",
+        "message": "Congratulations! Your application is fully completed and your university number is active.",
+        "time": "Oct 15, 2026",
+        "actionLabel": "View Profile"
+      }
+    }
+  },
+  "admin": {
+    "dashboardTitle": "Admin Dashboard",
+    "dashboardDescription": "Monitor admission activity and manage university admission operations.",
+    "applicationsTitle": "Applications",
+    "applicationsDescription": "Review and manage submitted student applications.",
+    "manualReviewTitle": "Manual Review",
+    "documentVerificationTitle": "Document Verification",
+    "notificationsTitle": "Notifications",
+    "usersTitle": "Users Management",
+    "programsTitle": "Programs Management",
+    "admissionCyclesTitle": "Admission Cycles",
+    "reportsTitle": "Reports",
+    "settingsTitle": "Settings",
+    "legalPoliciesTitle": "Legal Policies",
+    "aiPanel": {
+      "title": "Document Verification AI",
+      "overallConfidence": "Overall Confidence",
+      "documentPreviewPlaceholder": "Document preview placeholder",
+      "currentDocumentAnalysis": "Current Document Analysis",
+      "tabs": {
+        "highSchoolTranscript": "High School Transcript",
+        "nationalId": "National ID"
+      }
+    },
+    "totalApplications": "Total Applications",
+    "underReview": "Under Review",
+    "rejected": "Rejected",
+    "missingDocuments": "Missing Documents",
+    "admissionOverview": "Admission Overview",
+    "admissionOverviewDescription": "Welcome back. Here is a quick summary of today's admission system performance.",
+    "exportReport": "Export Report",
+    "kpi": {
+      "total": "Total Applications",
+      "review": "Under Review",
+      "missing": "Missing Documents",
+      "ai-alerts": "AI Alerts",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "reports": {
+      "analyticsCenter": "Analytics Center",
+      "adminReports": "Admin Reports",
+      "description": "Monitor admission performance, application trends, faculty capacity, AI alerts, and export reports for administrative review.",
+      "exportFullReport": "Export Full Report",
+      "admissionCycle": "Admission Cycle",
+      "fall2026": "Fall 2026 Admission",
+      "spring2027": "Spring 2027 Admission",
+      "fall2025": "Fall 2025 Admission",
+      "faculty": "Faculty",
+      "allFaculties": "All Faculties",
+      "from": "From",
+      "to": "To",
+      "allCycles": "All cycles",
+      "applyFilters": "Apply Filters",
+      "stats": {
+        "totalApplications": "Total Applications",
+        "acceptedStudents": "Accepted Students",
+        "rejectedApplications": "Rejected Applications",
+        "aiRiskAlerts": "AI Risk Alerts"
+      },
+      "statusBreakdown": "Application Status Breakdown",
+      "statusBreakdownDescription": "Overview of applications grouped by their current admission status.",
+      "applicationsCount": "{count} applications",
+      "status": {
+        "submitted": "Submitted",
+        "underReview": "Under Review",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "missingDocuments": "Missing Documents"
+      },
+      "facultyPerformance": "Faculty Performance",
+      "facultyPerformanceDescription": "Applications, accepted students, and capacity usage by faculty.",
+      "applications": "Applications",
+      "accepted": "Accepted",
+      "capacity": "Capacity",
+      "usage": "Usage",
+      "faculties": {
+        "informationTechnology": "Faculty of Information Technology",
+        "medicine": "Faculty of Medicine",
+        "engineering": "Faculty of Engineering",
+        "commerce": "Faculty of Commerce",
+        "arts": "Faculty of Arts"
+      },
+      "aiAlerts": "AI Alerts",
+      "aiAlertsDescription": "Summary of AI-detected risks during document and application review.",
+      "detectedCases": "Detected cases",
+      "severity": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "alerts": {
+        "documentMismatch": "Document mismatch",
+        "lowImageQuality": "Low image quality",
+        "suspiciousCertificate": "Suspicious certificate",
+        "missingMetadata": "Missing metadata"
+      },
+      "recentExports": "Recent Exports",
+      "by": "By",
+      "downloadReport": "Download report",
+      "exports": {
+        "1": {
+          "name": "Applications Summary Report",
+          "generatedAt": "Today, 09:30 AM",
+          "generatedBy": "Ahmed Mahmoud"
+        },
+        "2": {
+          "name": "Faculty Admission Statistics",
+          "generatedAt": "Yesterday, 04:15 PM",
+          "generatedBy": "Admissions Office"
+        },
+        "3": {
+          "name": "AI Alerts Review Report",
+          "generatedAt": "Oct 17, 2026",
+          "generatedBy": "Mona Saleh"
+        }
+      },
+      "percentage": "Percentage"
+    },
+    "roles": {
+      "student": "Student",
+      "admission_dean": "Admission and Registration Dean",
+      "department_head": "Department Head",
+      "admission_employee": "Admission Employee"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "reports": "Statistics & Reports",
+      "applications": "Applications",
+      "manualReview": "Manual Review",
+      "documentVerification": "Document Verification",
+      "users": "Users",
+      "notifications": "Notifications",
+      "settings": "Settings"
+    },
+    "profileAlert": {
+      "title": "Complete your profile",
+      "description": "Your employee account has been created by the department head. Please complete your profile before starting document review tasks.",
+      "action": "Complete Profile"
+    },
+    "applications": {
+      "adminPanel": "Admin Panel",
+      "managementTitle": "Applications Management",
+      "managementDescription": "Review, filter, and manage university admission applications.",
+      "exportData": "Export Data",
+      "newApplication": "New Application",
+      "searchStudent": "Search Student",
+      "searchPlaceholder": "Name, ID number, application number...",
+      "applicationStatus": "Application Status",
+      "academicBranch": "Academic Branch",
+      "aiIndicators": "AI Indicators",
+      "all": "All",
+      "apply": "Apply",
+      "status": "Status",
+      "branches": {
+        "scientific": "Scientific",
+        "literary": "Literary",
+        "industrial": "Industrial"
+      },
+      "ai": {
+        "safe": "Safe",
+        "warning": "High Alert",
+        "manual_review": "Manual review required"
+      },
+      "selectAll": "Select All",
+      "oneApplicationSelected": "1 application selected",
+      "applicationsSelected": "{count} applications selected",
+      "preAccept": "Pre-accept",
+      "reject": "Reject",
+      "sendNotification": "Send notification",
+      "table": {
+        "student": "Student",
+        "idNumber": "ID Number",
+        "program": "Program",
+        "rate": "Rate",
+        "status": "Status",
+        "ai": "AI",
+        "actions": "Actions"
+      },
+      "applicationNo": "Application #{number}",
+      "viewDetails": "View details",
+      "edit": "Edit",
+      "paginationInfo": "Showing {from} to {to} of {total} applications",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "rows": {
+        "1": {
+          "studentName": "Mohammad Ali Al-Rantisi",
+          "program": "Software Engineering",
+          "faculty": "Faculty of Information Technology"
+        },
+        "2": {
+          "studentName": "Sara Ahmad Al-Masri",
+          "program": "Medicine and Surgery",
+          "faculty": "Faculty of Medicine"
+        },
+        "3": {
+          "studentName": "Omar Khaled Al-Najjar",
+          "program": "Business Administration",
+          "faculty": "Faculty of Commerce"
+        }
+      },
+      "reset": "Reset",
+      "noResultsTitle": "No applications found",
+      "noResultsDescription": "Try changing the search keyword or selected filters.",
+      "confirmActionTitle": "Confirm action",
+      "confirmActionDescription": "Are you sure you want to apply this action to the selected applications?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "successTitle": "Success",
+      "statusUpdatedSuccessfully": "Application status has been updated successfully.",
+      "sendNotificationConfirm": "Send a notification to the selected applicants?",
+      "send": "Send",
+      "notificationSentSuccessfully": "Notification sent successfully.",
+      "editStatus": "Edit application status",
+      "save": "Save",
+      "badge": "Admission Workflow",
+      "title": "Applications Workflow",
+      "description": "Track, review, and manage the workflow of submitted student applications across all stages of admission.",
+      "totalApplications": "Total Applications",
+      "pendingHeadReview": "Pending Head Review",
+      "paymentPending": "Payment Pending",
+      "rejectedApplications": "Rejected Applications",
+      "tableTitle": "Applications List",
+      "tableDescription": "A list of all applications currently in the admission workflow. Click view to see detailed history and perform actions.",
+      "application": "Application",
+      "student": "Student",
+      "program": "Program",
+      "average": "Average",
+      "aiConfidence": "AI Confidence",
+      "actions": "Actions",
+      "view": "View Details",
+      "viewAiResult": "View AI Result",
+      "emptyDescription": "No applications found matching your criteria."
+    },
+    "applicationWorkflow": {
+      "timelineTitle": "Application Review Workflow",
+      "timelineDescription": "This timeline shows all application stages from submission to final admission.",
+      "currentStatus": "Current Status",
+      "actionsTitle": "Review Actions",
+      "employeeActionsDescription": "Review the documents manually after AI verification fails, then choose the proper decision.",
+      "headActionsDescription": "Review the employee decision and verify the documents before sending the student to payment.",
+      "notePlaceholder": "Write a note explaining the decision...",
+      "confirmTitle": "Confirm Action",
+      "confirmDescription": "Are you sure you want to apply this decision to the application?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "successTitle": "Success",
+      "successDescription": "Application status updated successfully.",
+      "employeeApprove": "Employee Initial Approval",
+      "employeeReject": "Employee Reject",
+      "headApprove": "Department Head Approval",
+      "headReject": "Department Head Reject",
+      "requestMissingDocuments": "Request Missing Documents",
+      "statuses": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "under_review": "Under Review",
+        "returned_for_revision": "Returned for Revision",
+        "forwarded_to_department_head": "Forwarded to Department Head",
+        "returned_to_employee": "Returned to Admission Employee",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled",
+        "ai_review": "AI Verification in Progress",
+        "ai_approved": "AI Approved",
+        "ai_rejected": "AI Rejected",
+        "ai_failed": "AI Verification Failed",
+        "employee_review": "Employee Review",
+        "employee_approved": "Employee Initial Approval",
+        "employee_rejected": "Employee Rejected",
+        "missing_documents": "Missing Documents Required",
+        "head_review": "Department Head Review",
+        "head_approved": "Department Head Approved",
+        "head_rejected": "Department Head Rejected",
+        "payment_pending": "Payment Pending",
+        "payment_completed": "Payment Completed",
+        "payment_failed": "Payment Failed",
+        "university_number_issued": "University Number Issued",
+        "social_research_required": "Social Research Required",
+        "social_research_submitted": "Social Research Submitted",
+        "completed": "Completed"
+      },
+      "actors": {
+        "student": "Student",
+        "ai": "Artificial Intelligence",
+        "admission_employee": "Admission Employee",
+        "department_head": "Department Head",
+        "payment_system": "Payment System",
+        "system": "System"
+      },
+      "decisions": {
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "needs_review": "Needs Review",
+        "missing_documents": "Missing Documents",
+        "payment_completed": "Payment Completed",
+        "payment_failed": "Payment Failed",
+        "issued": "Issued",
+        "submitted": "Submitted"
+      }
+    },
+    "applicationDetails": {
+      "reviewHeader": {
+        "badge": "Application Review",
+        "title": "Review Application #{number}",
+        "printReport": "Print Report"
+      },
+      "status": {
+        "underReview": "Under Review"
+      },
+      "submittedSince": {
+        "submitted3DaysAgo": "Submitted 3 days ago"
+      },
+      "student": {
+        "nationalId": "National ID",
+        "birthDate": "Birth Date",
+        "emailAddress": "Email Address",
+        "phoneNumber": "Phone Number"
+      },
+      "academic": {
+        "title": "Academic Information",
+        "average": "High School Average",
+        "branch": "Academic Branch",
+        "graduationYear": "Graduation Year",
+        "school": "School"
+      },
+      "branches": {
+        "scientific": "Scientific"
+      },
+      "preferences": {
+        "title": "Program Preferences"
+      },
+      "programs": {
+        "softwareEngineering": "Software Engineering",
+        "computerScience": "Computer Science",
+        "civilEngineering": "Civil Engineering"
+      },
+      "faculties": {
+        "informationTechnology": "Faculty of Information Technology",
+        "engineering": "Faculty of Engineering"
+      },
+      "documents": {
+        "highSchoolTranscript": "High School Transcript",
+        "nationalId": "National ID"
+      },
+      "history": {
+        "title": "Application History and Internal Comments",
+        "commentPlaceholder": "Add an internal comment. The student will not see this note...",
+        "addComment": "Add Comment",
+        "internalComment": "Internal Comment",
+        "admin": "Admin",
+        "actors": {
+          "system": "System",
+          "aiChecker": "AI Checker"
+        },
+        "times": {
+          "october12At0930": "October 12, 2026, 09:30 AM",
+          "october12At0935": "October 12, 2026, 09:35 AM"
+        },
+        "items": {
+          "applicationSubmitted": {
+            "title": "Application submitted and documents uploaded"
+          },
+          "transcriptVerificationCompleted": {
+            "title": "Automated transcript verification completed"
+          }
+        },
+        "notes": {
+          "transcriptVerificationNote": "98% match with national records. No critical issues detected."
+        }
+      },
+      "decision": {
+        "title": "Decision Actions",
+        "acceptApplication": "Accept Application",
+        "requestReupload": "Request Document Re-upload",
+        "sendToManualReview": "Send to Manual Review",
+        "rejectApplication": "Reject Application",
+        "confirmButton": "Confirm",
+        "cancelButton": "Cancel",
+        "okButton": "OK",
+        "successTitle": "Success",
+        "confirm": {
+          "accept": {
+            "title": "Accept application?",
+            "description": "This application will be marked as accepted."
+          },
+          "reupload": {
+            "title": "Request document re-upload?",
+            "description": "The student will be asked to upload clearer documents."
+          },
+          "manual": {
+            "title": "Send to manual review?",
+            "description": "This application will be moved to the manual review queue."
+          },
+          "reject": {
+            "title": "Reject application?",
+            "description": "This action will mark the application as rejected."
+          }
+        },
+        "success": {
+          "accept": "Application accepted successfully.",
+          "reupload": "Document re-upload request sent successfully.",
+          "manual": "Application sent to manual review successfully.",
+          "reject": "Application rejected successfully."
+        }
+      },
+      "aiPanel": {
+        "title": "AI Document Analysis",
+        "overallConfidence": "Overall Confidence",
+        "documentPreviewPlaceholder": "Document preview placeholder",
+        "currentDocumentAnalysis": "Current Document Analysis",
+        "tabs": {
+          "highSchoolTranscript": "High School Transcript",
+          "nationalId": "National ID"
+        },
+        "confidenceLabels": {
+          "high": "High"
+        },
+        "findings": {
+          "nameMatch": {
+            "title": "Name match",
+            "description": "The student name in the transcript matches the entered identity information."
+          },
+          "officialSealDetected": {
+            "title": "Official seal detected",
+            "description": "The Ministry of Education seal was detected successfully."
+          },
+          "minorScanQualityIssue": {
+            "title": "Minor scan quality issue",
+            "description": "The lower-left corner has reduced scan quality, but the main data is readable."
+          }
+        }
+      }
+    },
+    "manualReview": {
+      "supervisorReview": "Supervisor Review",
+      "title": "Manual Review",
+      "description": "Review applications that need human decision-making because of inconsistencies, AI alerts, or exceptional admission cases.",
+      "aiSupportNote": "AI supports the review. Final decisions belong to supervisors.",
+      "reviewQueue": "Review Queue",
+      "reviewQueueDescription": "Cases awaiting supervisor review",
+      "priority": {
+        "high": "High Priority",
+        "medium": "Medium Priority",
+        "low": "Low Priority"
+      },
+      "cases": {
+        "1": {
+          "studentName": "Khaled Ibrahim Khalil",
+          "program": "Software Engineering",
+          "reason": "Grade mismatch detected between submitted data and transcript.",
+          "submittedAt": "October 12, 2026"
+        },
+        "2": {
+          "studentName": "Sara Ahmad Al-Masri",
+          "program": "Medicine and Surgery",
+          "reason": "Identity document image is partially unclear.",
+          "submittedAt": "October 13, 2026"
+        },
+        "3": {
+          "studentName": "Omar Khaled Al-Najjar",
+          "program": "Business Administration",
+          "reason": "Minor inconsistency in graduation year.",
+          "submittedAt": "October 14, 2026"
+        }
+      },
+      "selected": {
+        "studentName": "Khaled Ibrahim Khalil",
+        "program": "Software Engineering",
+        "faculty": "Faculty of Information Technology",
+        "reason": "The AI engine detected a mismatch between the average entered by the student and the value extracted from the uploaded high school certificate."
+      },
+      "requiresManualReview": "Requires Manual Review",
+      "nationalId": "National ID",
+      "email": "Email",
+      "phone": "Phone",
+      "branch": "Branch",
+      "scientific": "Scientific",
+      "reviewReason": "Review Reason",
+      "aiReviewSummary": "AI Review Summary",
+      "riskScore": "Risk Score",
+      "aiSummary": [
+        "Student name matches the uploaded certificate.",
+        "Official seal was detected successfully.",
+        "Average value appears inconsistent and requires supervisor confirmation."
+      ],
+      "submittedAverage": "Submitted Average",
+      "extractedAverage": "Extracted Average",
+      "reviewChecklist": "Review Checklist",
+      "checklist": {
+        "identity": {
+          "label": "Identity information verified",
+          "description": "Student identity matches the uploaded ID document."
+        },
+        "academic": {
+          "label": "Academic information reviewed",
+          "description": "High school branch, graduation year, and average were checked."
+        },
+        "documents": {
+          "label": "Required documents reviewed",
+          "description": "All required attachments are present and readable."
+        },
+        "program": {
+          "label": "Program eligibility confirmed",
+          "description": "Student meets the minimum requirements for selected programs."
+        }
+      },
+      "supervisorDecision": "Supervisor Decision",
+      "internalReviewNote": "Internal review note",
+      "notePlaceholder": "Write the reasoning behind your decision. This note is for internal use unless sent to the student...",
+      "approve": "Approve",
+      "requestFix": "Request Fix",
+      "sendNote": "Send Note",
+      "reject": "Reject",
+      "searchPlaceholder": "Search by student, application no., program, or reason",
+      "noResultsDescription": "No manual review cases match your search.",
+      "confirmActionTitle": "Confirm decision",
+      "confirmApprove": "Approve this application after manual review?",
+      "confirmReject": "Reject this application after manual review?",
+      "confirmRequestFix": "Request the applicant to fix the submitted information?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "successTitle": "Success",
+      "approvedSuccessfully": "Application approved successfully.",
+      "rejectedSuccessfully": "Application rejected successfully.",
+      "fixRequestedSuccessfully": "Fix request sent successfully.",
+      "noteSentSuccessfully": "Review note saved successfully.",
+      "noteRequiredTitle": "Note is required",
+      "noteRequiredDescription": "Please write a note before sending it.",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "fix_requested": "Fix requested"
+      },
+      "aiSummary": {
+        "nameMatch": "Student name matches the uploaded documents.",
+        "sealDetected": "Official seal was detected successfully.",
+        "highRisk": "AI detected a high-risk inconsistency that requires supervisor confirmation.",
+        "lowRisk": "No critical inconsistency was detected by AI."
+      },
+      "employeeBadge": "Employee Review Queue",
+      "employeeTitle": "Applications with Failed AI Verification",
+      "employeeDescription": "This page shows applications that AI could not approve automatically and require manual review by an admission employee.",
+      "headBadge": "Department Head Approval",
+      "headTitle": "Applications Waiting for Department Head Approval",
+      "headDescription": "This page shows applications reviewed and initially approved by the employee and waiting for department head approval.",
+      "pendingCases": "Pending Cases",
+      "queueTitle": "Review Queue",
+      "queueDescription": "Search pending cases and open an application to review details and make the proper decision.",
+      "emptyTitle": "No matching cases",
+      "emptyDescription": "There are no applications requiring review for your current role.",
+      "average": "Average",
+      "aiConfidence": "AI Confidence",
+      "createdAt": "Created At",
+      "currentStatus": "Current Status",
+      "aiReason": "Reason for Manual Review",
+      "reviewApplication": "Review Application"
+    },
+    "documentVerification": {
+      "subtitle": "Document Verification",
+      "title": "Manual Document Review",
+      "description": "Review documents that require human verification due to unclear scans, possible inconsistencies, or AI-detected mismatches.",
+      "aiNote": "AI is an assistant. The final decision is yours.",
+      "currentQueue": "Current Queue",
+      "documentsCount": "{count} documents",
+      "applicationNo": "Application #{number}",
+      "comparisonTitle": "Comparison: High School Certificate - Mohammad Abdullah",
+      "comparisonDescription": "Data was extracted automatically. Please verify it against the uploaded document.",
+      "zoom": "Zoom",
+      "uploadedDocument": "Uploaded Document",
+      "suspicious": "Suspicious",
+      "extractedDataTitle": "Extracted Data Compared with Requirements",
+      "extractedFromImage": "Extracted from image",
+      "submittedInApplication": "Submitted in application",
+      "correctValuePlaceholder": "Enter the correct value",
+      "sendNoteToStudent": "Send Note to Student",
+      "rejectDocument": "Reject Document",
+      "approveAndUpdate": "Approve and Update",
+      "queue": {
+        "1": {
+          "documentTitle": "High School Certificate",
+          "studentName": "Mohammad Abdullah"
+        },
+        "2": {
+          "documentTitle": "National ID Image",
+          "studentName": "Sara Ahmad"
+        },
+        "3": {
+          "documentTitle": "University Transcript",
+          "studentName": "Khaled Mahmoud"
+        }
+      },
+      "searchPlaceholder": "Search document, student, or application no.",
+      "noResultsDescription": "No documents match your search.",
+      "noPendingDocuments": "No documents currently pending verification.",
+      "clearSearch": "Clear search filter",
+      "noDocumentSelected": "No document selected.",
+      "requestReupload": "Request re-upload",
+      "confirmActionTitle": "Confirm action",
+      "confirmApprove": "Approve this document and update the application data?",
+      "confirmReject": "Reject this document?",
+      "confirmReupload": "Request the student to re-upload this document?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "send": "Send",
+      "successTitle": "Success",
+      "approvedSuccessfully": "Document approved successfully.",
+      "rejectedSuccessfully": "Document rejected successfully.",
+      "reuploadRequestedSuccessfully": "Re-upload request sent successfully.",
+      "notePlaceholder": "Write a note for the student...",
+      "noteSentSuccessfully": "Note sent to the student successfully.",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "reupload_requested": "Re-upload requested"
+      },
+      "issues": {
+        "grade_mismatch": "Grade mismatch",
+        "unclear_image": "Unclear image",
+        "missing_signature": "Missing signature"
+      },
+      "documents": {
+        "highSchoolCertificate": "High School Certificate",
+        "nationalIdImage": "National ID Image",
+        "universityTranscript": "University Transcript"
+      },
+      "students": {
+        "mohammadAbdullah": "Mohammad Abdullah",
+        "saraAhmad": "Sara Ahmad",
+        "khaledMahmoud": "Khaled Mahmoud"
+      },
+      "issueLabels": {
+        "gradeMismatch": "Grade mismatch",
+        "unclearImage": "Unclear image",
+        "missingSignature": "Missing signature"
+      },
+      "fields": {
+        "student-name": "Student Name",
+        "average": "Cumulative Average",
+        "graduation-year": "Graduation Year"
+      },
+      "aiSummaryTitle": "AI Verification Summary",
+      "aiSummaryDescription": "AI analysis result for the selected document, including confidence, evidence quality, and data matching.",
+      "aiConfidence": "AI Confidence",
+      "evidenceQuality": "Evidence Quality",
+      "dataMatching": "Data Matching",
+      "uploadedAt": "Uploaded at: {date}",
+      "missingSignature": "Missing signature",
+      "risk": {
+        "low": "Low risk",
+        "medium": "Medium risk",
+        "high": "High risk"
+      },
+      "recommendations": {
+        "auto_approved": {
+          "title": "Auto approval possible",
+          "description": "The document has high confidence and no blocking issues."
+        },
+        "manual_review": {
+          "title": "Manual review required",
+          "description": "AI detected issues that require an admission employee review before making a decision."
+        },
+        "auto_rejected": {
+          "title": "Auto rejection suggested",
+          "description": "The document has low confidence or a critical mismatch."
+        }
+      }
+    },
+    "programs": {
+      "academicStructure": "Academic Structure",
+      "managementTitle": "Programs Management",
+      "managementDescription": "Manage academic programs, admission rates, eligible branches, capacity, and availability for the current admission cycle.",
+      "exportPrograms": "Export Programs",
+      "addProgram": "Add Program",
+      "searchProgram": "Search Program",
+      "searchPlaceholder": "Search by program or faculty...",
+      "faculty": "Faculty",
+      "allFaculties": "All Faculties",
+      "status": "Status",
+      "branch": "Branch",
+      "allStatuses": "All Statuses",
+      "allBranches": "All Branches",
+      "apply": "Apply",
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "closed": "Closed"
+      },
+      "branches": {
+        "scientific": "Scientific",
+        "literary": "Literary",
+        "industrial": "Industrial"
+      },
+      "stats": {
+        "totalPrograms": "Total Programs",
+        "activePrograms": "Active Programs",
+        "closedPrograms": "Closed Programs",
+        "totalCapacity": "Total Capacity"
+      },
+      "academicPrograms": "Academic Programs",
+      "academicProgramsDescription": "Review and manage available programs for applicants.",
+      "degreeBachelor": "Bachelor",
+      "table": {
+        "program": "Program",
+        "branches": "Branches",
+        "minimumRate": "Minimum Rate",
+        "capacity": "Capacity",
+        "applications": "Applications",
+        "accepted": "Accepted",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "viewProgram": "View program",
+      "editProgram": "Edit program",
+      "disableProgram": "Disable program",
+      "enableProgram": "Enable program",
+      "moreActions": "More actions",
+      "paginationInfo": "Showing {from} to {to} of {total} programs",
+      "previous": "Previous",
+      "next": "Next",
+      "faculties": {
+        "informationTechnology": "Faculty of Information Technology",
+        "medicine": "Faculty of Medicine",
+        "engineering": "Faculty of Engineering",
+        "commerce": "Faculty of Commerce",
+        "arts": "Faculty of Arts",
+        "education": "Faculty of Education",
+        "nursing": "Faculty of Nursing"
+      },
+      "rows": {
+        "software-engineering": {
+          "title": "Software Engineering",
+          "faculty": "Faculty of Information Technology",
+          "duration": "4 years"
+        },
+        "medicine": {
+          "title": "Medicine and Surgery",
+          "faculty": "Faculty of Medicine",
+          "duration": "6 years"
+        },
+        "data-ai": {
+          "title": "Data Science and Artificial Intelligence",
+          "faculty": "Faculty of Information Technology",
+          "duration": "4 years"
+        },
+        "accounting": {
+          "title": "Accounting",
+          "faculty": "Faculty of Commerce",
+          "duration": "4 years"
+        },
+        "english": {
+          "title": "English Language and Literature",
+          "faculty": "Faculty of Arts",
+          "duration": "4 years"
+        }
+      },
+      "reset": "Reset",
+      "createProgram": "Create Program",
+      "updateProgram": "Update Program",
+      "programFormDescription": "Fill in the program information and admission settings.",
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "successTitle": "Success",
+      "createdSuccessfully": "Program created successfully.",
+      "updatedSuccessfully": "Program updated successfully.",
+      "deletedSuccessfully": "Program deleted successfully.",
+      "statusChangedSuccessfully": "Program status changed successfully.",
+      "deleteConfirmTitle": "Delete program?",
+      "deleteConfirmDescription": "This action will remove the program from the current list.",
+      "delete": "Delete",
+      "deleteProgram": "Delete program",
+      "noResultsTitle": "No programs found",
+      "noResultsDescription": "Try changing the search keyword or selected filters.",
+      "form": {
+        "title": "Program title",
+        "faculty": "Faculty",
+        "duration": "Duration",
+        "status": "Status",
+        "minimumRate": "Minimum rate",
+        "capacity": "Capacity",
+        "branches": "Eligible branches"
+      }
+    },
+    "admissionCycles": {
+      "admissionCalendar": "Admission Calendar",
+      "title": "Admission Cycles",
+      "description": "Create, configure, open, close, and monitor university admission cycles across semesters and academic years.",
+      "newCycle": "New Cycle",
+      "stats": {
+        "activeCycle": "Active Cycle",
+        "upcomingCycles": "Upcoming Cycles",
+        "totalApplications": "Total Applications",
+        "currentCapacity": "Current Capacity"
+      },
+      "cyclesList": "Cycles List",
+      "cyclesListDescription": "Select a cycle to view or edit its admission configuration.",
+      "searchPlaceholder": "Search cycles...",
+      "status": {
+        "open": "Open",
+        "upcoming": "Upcoming",
+        "closed": "Closed",
+        "archived": "Archived"
+      },
+      "semesters": {
+        "Fall": "Fall",
+        "Spring": "Spring",
+        "Summer": "Summer"
+      },
+      "apps": "Apps",
+      "capacity": "Capacity",
+      "cycleConfiguration": "Cycle Configuration",
+      "cycleConfigurationDescription": "Configure dates, capacity, and operational status for this cycle.",
+      "openCycle": "Open Cycle",
+      "closeCycle": "Close Cycle",
+      "archive": "Archive",
+      "cycleName": "Cycle Name",
+      "academicYear": "Academic Year",
+      "semester": "Semester",
+      "totalCapacity": "Total Capacity",
+      "applicationsOpenDate": "Applications Open Date",
+      "applicationsCloseDate": "Applications Close Date",
+      "paymentDeadline": "Payment Deadline",
+      "internalNotes": "Internal Notes",
+      "applications": "Applications",
+      "accepted": "Accepted",
+      "remainingSeats": "Remaining Seats",
+      "cycleRule": "Cycle Rule",
+      "cycleRuleDescription": "Applicants can submit new applications only while the cycle is open and before the application close date.",
+      "savingWarning": "Saving changes may affect all applicants in this admission cycle.",
+      "saveCycle": "Save Cycle",
+      "cycles": {
+        "fall-2026": {
+          "name": "Fall 2026 Admission",
+          "notes": "Main admission cycle for new undergraduate applicants."
+        },
+        "spring-2027": {
+          "name": "Spring 2027 Admission",
+          "notes": "Limited program availability depending on remaining seats."
+        },
+        "fall-2025": {
+          "name": "Fall 2025 Admission",
+          "notes": "Closed cycle. Reports are available for review."
+        },
+        "spring-2025": {
+          "name": "Spring 2025 Admission",
+          "notes": "Archived cycle kept for historical reporting."
+        }
+      },
+      "successTitle": "Success",
+      "ok": "OK",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "createdSuccessfully": "Admission cycle created successfully.",
+      "savedSuccessfully": "Admission cycle saved successfully.",
+      "openedSuccessfully": "Admission cycle opened successfully.",
+      "closedSuccessfully": "Admission cycle closed successfully.",
+      "archivedSuccessfully": "Admission cycle archived successfully.",
+      "deletedSuccessfully": "Admission cycle deleted successfully.",
+      "statusChangedSuccessfully": "Admission cycle status changed successfully.",
+      "deleteConfirmTitle": "Delete admission cycle?",
+      "deleteConfirmDescription": "This action will remove the cycle from the current list.",
+      "noResultsDescription": "No admission cycles match your search."
+    },
+    "users": {
+      "accessControl": "Access Control",
+      "managementTitle": "Users Management",
+      "managementDescription": "Manage system users, roles, permissions, and account access for the admission portal.",
+      "addNewUser": "Add New User",
+      "searchUser": "Search User",
+      "searchPlaceholder": "Search by name or email...",
+      "role": "Role",
+      "status": "Status",
+      "allRoles": "All Roles",
+      "allStatuses": "All Statuses",
+      "applyFilters": "Apply Filters",
+      "roles": {
+
+        "student": "Student"
+      },
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "pending": "Pending"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "activeStaff": "Active Staff",
+        "studentAccounts": "Student Accounts",
+        "pendingAccounts": "Pending Accounts"
+      },
+      "systemUsers": "System Users",
+      "systemUsersDescription": "Review and manage all user accounts in the admission system.",
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "lastLogin": "Last Login",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "activateUser": "Activate user",
+      "deactivateUser": "Deactivate user",
+      "editUser": "Edit user",
+      "moreActions": "More actions",
+      "paginationInfo": "Showing {from} to {to} of {total} users",
+      "previous": "Previous",
+      "next": "Next",
+      "rows": {
+        "1": {
+          "name": "Ahmed Mahmoud",
+          "lastLogin": "Today, 09:40 AM",
+          "createdAt": "Jan 12, 2026"
+        },
+        "2": {
+          "name": "Mona Saleh",
+          "lastLogin": "Yesterday, 03:15 PM",
+          "createdAt": "Feb 03, 2026"
+        },
+        "3": {
+          "name": "Khaled Ibrahim",
+          "lastLogin": "Never",
+          "createdAt": "Oct 12, 2026"
+        },
+        "4": {
+          "name": "Sara Naser",
+          "lastLogin": "Sep 28, 2026",
+          "createdAt": "Mar 18, 2026"
+        }
+      },
+      "reset": "Reset",
+      "createUser": "Create User",
+      "updateUser": "Update User",
+      "userFormDescription": "Fill in the user account information and access settings.",
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "successTitle": "Success",
+      "createdSuccessfully": "User created successfully.",
+      "updatedSuccessfully": "User updated successfully.",
+      "deletedSuccessfully": "User deleted successfully.",
+      "statusChangedSuccessfully": "User status changed successfully.",
+      "deleteConfirmTitle": "Delete user?",
+      "deleteConfirmDescription": "This action will remove the user from the current list.",
+      "delete": "Delete",
+      "deleteUser": "Delete user",
+      "noResultsTitle": "No users found",
+      "noResultsDescription": "Try changing the search keyword or selected filters.",
+      "form": {
+        "name": "Full name",
+        "email": "Email address",
+        "role": "Role",
+        "status": "Status"
+      }
+    },
+    "notifications": {
+      "communicationCenter": "Communication Center",
+      "title": "Notifications",
+      "description": "Send, schedule, and manage notifications for applicants throughout the admission process.",
+      "headerNote": "Keep students updated with clear admission messages.",
+      "composeNotification": "Compose Notification",
+      "useTemplate": "Use Template",
+      "selectTemplate": "Select a template...",
+      "audience": "Audience",
+      "type": "Type",
+      "studentApplicationId": "Student / Application ID",
+      "studentSearchPlaceholder": "Search by name, ID, or application number...",
+      "notificationTitle": "Notification Title",
+      "titlePlaceholder": "Write notification title...",
+      "message": "Message",
+      "messagePlaceholder": "Write the notification message...",
+      "sendNow": "Send Now",
+      "schedule": "Schedule",
+      "saveDraft": "Save Draft",
+      "audiences": {
+        "single_student": "Single Student",
+        "all_applicants": "All Applicants",
+        "filtered_group": "Filtered Group"
+      },
+      "types": {
+        "document": "Document",
+        "status": "Status",
+        "payment": "Payment",
+        "general": "General"
+      },
+      "statuses": {
+        "sent": "Sent",
+        "scheduled": "Scheduled",
+        "draft": "Draft"
+      },
+      "stats": {
+        "sentToday": "Sent Today",
+        "scheduled": "Scheduled",
+        "drafts": "Drafts",
+        "recipientsReached": "Recipients Reached"
+      },
+      "historyTitle": "Notification History",
+      "historyDescription": "Review recently sent, scheduled, and draft notifications.",
+      "searchPlaceholder": "Search notifications...",
+      "noNotificationsFound": "No notifications found.",
+      "audienceLabel": "Audience",
+      "moreActions": "More actions",
+      "templates": {
+        "document-reupload": {
+          "title": "Document Re-upload Required",
+          "message": "Please re-upload a clearer copy of the required document to continue the review process."
+        },
+        "application-approved": {
+          "title": "Application Approved",
+          "message": "Congratulations. Your application has been approved. Please follow the next steps in your dashboard."
+        },
+        "payment-reminder": {
+          "title": "Payment Reminder",
+          "message": "Please complete the admission fee payment before the deadline to avoid delays."
+        }
+      },
+      "rows": {
+        "1": {
+          "title": "Document Re-upload Required",
+          "message": "Please re-upload a clearer image of your personal ID to continue the review process.",
+          "audience": "Khaled Ibrahim Khalil",
+          "sentAt": "Today, 10:20 AM"
+        },
+        "2": {
+          "title": "Application Under Review",
+          "message": "Your admission application is currently being reviewed by the admissions team.",
+          "audience": "All applicants under review",
+          "sentAt": "Yesterday, 02:45 PM"
+        },
+        "3": {
+          "title": "Payment Step Available",
+          "message": "Your documents have been verified. You can now proceed to the admission fee payment step.",
+          "audience": "Verified applicants",
+          "sentAt": "Tomorrow, 09:00 AM"
+        },
+        "4": {
+          "title": "Welcome to Admission Portal",
+          "message": "Welcome to the Islamic University of Gaza admission portal. Please complete your profile to continue.",
+          "audience": "New applicants",
+          "sentAt": "Not sent yet"
+        }
+      },
+      "successTitle": "Success",
+      "ok": "OK",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "sentSuccessfully": "Notification sent successfully.",
+      "scheduledSuccessfully": "Notification scheduled successfully.",
+      "draftSavedSuccessfully": "Notification saved as draft successfully.",
+      "deletedSuccessfully": "Notification deleted successfully.",
+      "statusChangedSuccessfully": "Notification status changed successfully.",
+      "deleteConfirmTitle": "Delete notification?",
+      "deleteConfirmDescription": "This action will remove the notification from the current list.",
+      "scheduledTime": "Scheduled time",
+      "notSentYet": "Not sent yet"
+    },
+    "settings": {
+      "systemConfiguration": "System Configuration",
+      "title": "Admin Settings",
+      "description": "Configure admission rules, AI behavior, notifications, and security settings for the admission portal.",
+      "headerNote": "Changes may affect the whole admission system.",
+      "languages": {
+        "english": "English",
+        "arabic": "Arabic"
+      },
+      "cycles": {
+        "fall-2026": "Fall 2026 Admission",
+        "spring-2027": "Spring 2027 Admission"
+      },
+      "general": {
+        "title": "General Settings",
+        "description": "Basic information and behavior for the admission portal.",
+        "portalName": "Portal Name",
+        "portalNameDescription": "The name displayed across public and admin pages.",
+        "portalNameValue": "Islamic University of Gaza Admission Portal",
+        "supportEmail": "Support Email",
+        "supportEmailDescription": "Email shown to applicants when they need help.",
+        "defaultLanguage": "Default Language",
+        "defaultLanguageDescription": "The default language for first-time visitors.",
+        "maintenanceMode": "Maintenance Mode",
+        "maintenanceModeDescription": "Temporarily disable access to the public portal."
+      },
+      "admission": {
+        "title": "Admission Settings",
+        "description": "Control active admission cycles, deadlines, and applicant rules.",
+        "activeAdmissionCycle": "Active Admission Cycle",
+        "activeAdmissionCycleDescription": "The admission cycle currently open for applicants.",
+        "applicationOpeningDate": "Application Opening Date",
+        "applicationOpeningDateDescription": "The first day students can submit applications.",
+        "applicationDeadline": "Application Deadline",
+        "applicationDeadlineDescription": "Applications cannot be submitted after this date.",
+        "maximumProgramPreferences": "Maximum Program Preferences",
+        "maximumProgramPreferencesDescription": "Maximum number of program choices applicants can select.",
+        "allowApplicationEditing": "Allow Application Editing",
+        "allowApplicationEditingDescription": "Allow students to edit applications before final submission."
+      },
+      "ai": {
+        "title": "AI Review Settings",
+        "description": "Configure how the AI assistant analyzes documents and flags risks.",
+        "reviewMode": "AI Review Mode",
+        "reviewModeDescription": "Choose how much the system should rely on AI analysis.",
+        "autoFlagRiskThreshold": "Auto-Flag Risk Threshold",
+        "autoFlagRiskThresholdDescription": "Applications above this score will be sent to manual review.",
+        "autoApproveSafeDocuments": "Auto-Approve Safe Documents",
+        "autoApproveSafeDocumentsDescription": "Allow low-risk documents to be marked verified automatically.",
+        "requireHumanDecision": "Require Human Decision",
+        "requireHumanDecisionDescription": "Force a supervisor decision even if AI confidence is high."
+      },
+      "aiModes": {
+        "assistive": {
+          "label": "Assistive Only"
+        },
+        "semi-automatic": {
+          "label": "Semi-Automatic"
+        },
+        "manual": {
+          "label": "Manual Review Only"
+        }
+      },
+      "notification": {
+        "title": "Notification Settings",
+        "description": "Control how students receive updates about their applications.",
+        "emailNotifications": "Email Notifications",
+        "emailNotificationsDescription": "Send important application updates by email.",
+        "smsNotifications": "SMS Notifications",
+        "smsNotificationsDescription": "Send urgent updates to the applicant mobile number.",
+        "reminderBeforeDeadline": "Reminder Before Deadline",
+        "reminderBeforeDeadlineDescription": "Number of days before deadline to send a reminder.",
+        "senderName": "Sender Name",
+        "senderNameDescription": "The name displayed in notification messages.",
+        "senderNameValue": "IUG Admission"
+      },
+      "security": {
+        "title": "Security",
+        "description": "Protect supervisor accounts and sensitive admission data.",
+        "twoFactorAuthentication": "Two-Factor Authentication",
+        "twoFactorAuthenticationDescription": "Require staff to verify login with a second factor.",
+        "sessionTimeout": "Session Timeout",
+        "sessionTimeoutDescription": "Automatically sign out inactive staff after this period.",
+        "loginAttemptLimit": "Login Attempt Limit",
+        "loginAttemptLimitDescription": "Maximum failed login attempts before account lock.",
+        "securityStatus": "Security Status",
+        "securityStatusDescription": "Your admin portal currently follows the recommended security baseline.",
+        "protected": "Protected",
+        "protectedDescription": "2FA is enabled for staff accounts."
+      },
+      "unsavedChanges": "Unsaved changes",
+      "unsavedChangesDescription": "Review your updates before saving system settings.",
+      "reset": "Reset",
+      "saveSettings": "Save Settings"
+    },
+    "legalPolicies": {
+      "complianceCenter": "Compliance Center",
+      "title": "Legal Policies",
+      "description": "Manage legal documents, admission policies, privacy notices, and terms shown to applicants during the admission process.",
+      "newPolicy": "New Policy",
+      "stats": {
+        "totalPolicies": "Total Policies",
+        "published": "Published",
+        "drafts": "Drafts",
+        "archived": "Archived"
+      },
+      "policyLibrary": "Policy Library",
+      "policyLibraryDescription": "Select a policy to view, edit, or publish.",
+      "searchPlaceholder": "Search policies...",
+      "statuses": {
+        "published": "Published",
+        "draft": "Draft",
+        "archived": "Archived"
+      },
+      "policyEditor": "Policy Editor",
+      "lastUpdatedBy": "Last updated by {name} on {date}",
+      "preview": "Preview",
+      "history": "History",
+      "archive": "Archive",
+      "policyTitle": "Policy Title",
+      "shortDescription": "Short Description",
+      "policyContent": "Policy Content",
+      "applicantAgreement": "Applicant Agreement",
+      "applicantAgreementDescription": "Published policies may appear in applicant registration, submission confirmation, and legal agreement screens.",
+      "savingRevisionNote": "Saving changes will create a new policy revision.",
+      "saveDraft": "Save Draft",
+      "publishPolicy": "Publish Policy",
+      "rows": {
+        "terms": {
+          "title": "Terms and Conditions",
+          "description": "Defines applicant responsibilities, system usage rules, and admission portal terms.",
+          "lastUpdated": "Oct 12, 2026",
+          "updatedBy": "Ahmed Mahmoud",
+          "content": "Applicants must provide accurate and complete information. The university reserves the right to verify all submitted data and documents before making an admission decision."
+        },
+        "privacy": {
+          "title": "Privacy Policy",
+          "description": "Explains how applicant data is collected, processed, protected, and retained.",
+          "lastUpdated": "Sep 28, 2026",
+          "updatedBy": "Mona Saleh",
+          "content": "The admission portal collects personal, academic, and contact information required to process university applications. Data is handled securely and used only for admission-related purposes."
+        },
+        "admission": {
+          "title": "Admission Policy",
+          "description": "Outlines admission rules, eligibility conditions, program preferences, and decision stages.",
+          "lastUpdated": "Oct 18, 2026",
+          "updatedBy": "Admissions Office",
+          "content": "Admission decisions are based on academic eligibility, program capacity, document verification, and any additional requirements determined by the university."
+        },
+        "documents": {
+          "title": "Document Verification Policy",
+          "description": "Defines how uploaded documents are checked using AI-assisted and manual review.",
+          "lastUpdated": "Oct 05, 2026",
+          "updatedBy": "Document Verification Team",
+          "content": "Uploaded documents may be reviewed automatically and manually. Applicants may be requested to re-upload unclear, incomplete, or suspicious documents."
+        }
+      },
+      "successTitle": "Success",
+      "ok": "OK",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "createdSuccessfully": "Policy created successfully.",
+      "savedDraftSuccessfully": "Policy saved as draft successfully.",
+      "publishedSuccessfully": "Policy published successfully.",
+      "archivedSuccessfully": "Policy archived successfully.",
+      "deletedSuccessfully": "Policy deleted successfully.",
+      "deleteConfirmTitle": "Delete policy?",
+      "deleteConfirmDescription": "This action will remove the policy from the current list.",
+      "noResultsDescription": "No policies match your search."
+    }
+  },
+  "applicationSubmitted": {
+    "hero": {
+      "badge": "Application Submitted",
+      "title": "Your application was submitted successfully",
+      "description": "Thank you, {name}. Your admission application has been received and is now ready for review."
+    },
+    "summary": {
+      "title": "Application Summary",
+      "applicationNo": "Application Number",
+      "submittedAt": "Submitted At",
+      "program": "Program",
+      "faculty": "Faculty",
+      "currentStatus": "Current Status"
+    },
+    "status": {
+      "underReview": "Under Review"
+    },
+    "nextSteps": {
+      "title": "What Happens Next?",
+      "items": {
+        "documents": {
+          "title": "Document Review",
+          "description": "The admissions team will review your uploaded documents and may request clearer copies if needed."
+        },
+        "verification": {
+          "title": "Academic Verification",
+          "description": "Your academic information will be verified against your submitted certificate."
+        },
+        "decision": {
+          "title": "Admission Decision",
+          "description": "You will receive a notification once the admission decision is available."
+        },
+        "payment": {
+          "title": "Payment Step",
+          "description": "If accepted, you will be asked to complete the admission payment to finalize the process."
+        }
+      },
+      "note": "You can track your application status anytime from the status page. Important updates will also appear in your notifications."
+    },
+    "actions": {
+      "title": "Quick Actions",
+      "trackStatus": "Track Status",
+      "viewNotifications": "View Notifications",
+      "goToDashboard": "Go to Dashboard",
+      "downloadReceipt": "Download Receipt"
+    },
+    "receipt": {
+      "title": "Application Submission Receipt",
+      "studentName": "Student Name"
+    }
+  },
+  "socialResearch": {
+    "badge": "Social Research",
+    "title": "Social Research Form",
+    "description": "Please complete the required social research information to finalize your admission file after receiving your university number.",
+    "studentInfoTitle": "Student Information",
+    "studentName": "Student Name",
+    "applicationNo": "Application No.",
+    "program": "Program",
+    "universityNumber": "University Number",
+    "notIssuedYet": "Not issued yet",
+    "formTitle": "Social Research Information",
+    "formDescription": "This information helps the university complete the student file and review social cases when needed.",
+    "guardianName": "Guardian Name",
+    "guardianNamePlaceholder": "Enter guardian name",
+    "guardianPhone": "Guardian Phone",
+    "familyMembersCount": "Family Members Count",
+    "familyIncomeRange": "Monthly Family Income",
+    "housingType": "Housing Type",
+    "socialStatus": "Social Status",
+    "hasScholarshipRequest": "I want to apply for a scholarship or financial aid",
+    "hasScholarshipRequestDescription": "This information may be used to review scholarship or financial aid eligibility.",
+    "notes": "Additional Notes",
+    "notesPlaceholder": "Write any notes or special circumstances you want to explain...",
+    "submit": "Submit Form",
+    "submittedTitle": "Form Submitted Successfully",
+    "submittedDescription": "Your social research form has been received, and your admission file has been completed successfully.",
+    "backToStatus": "Back to Application Status",
+    "incomeRanges": {
+      "less_than_500": "Less than 500",
+      "500_1000": "500 to 1000",
+      "1000_1500": "1000 to 1500",
+      "1500_2000": "1500 to 2000",
+      "more_than_2000": "More than 2000"
+    },
+    "housingTypes": {
+      "owned": "Owned",
+      "rented": "Rented",
+      "family_house": "Family house",
+      "temporary": "Temporary housing"
+    },
+    "socialStatuses": {
+      "single": "Single",
+      "married": "Married",
+      "orphan": "Orphan",
+      "special_case": "Special case"
+    }
+  },
+  "errors": {
+    "unauthorizedTitle": "You do not have permission to access this page",
+    "unauthorizedDescription": "This area is restricted to authorized users only. Please return to your dashboard or contact the admissions office if you believe this is a mistake.",
+    "notFoundTitle": "The page you are looking for does not exist",
+    "notFoundDescription": "The link may be incorrect, moved, or no longer available. You can go back to the homepage or continue from your dashboard.",
+    "goDashboard": "Go to Dashboard",
+    "backToHome": "Back to Home",
+    "restrictedAreaTitle": "Restricted Area",
+    "restrictedAreaDescription": "This page requires a specific role or permission.",
+    "useDashboardTitle": "Use Your Dashboard",
+    "useDashboardDescription": "Go back to your available dashboard and continue safely.",
+    "needHelpTitle": "Need Help?",
+    "needHelpDescription": "Contact admissions support if access should be allowed.",
+    "checkUrlTitle": "Check the URL",
+    "checkUrlDescription": "Make sure the address is typed correctly.",
+    "useNavigationTitle": "Use Navigation",
+    "useNavigationDescription": "Browse the portal using the main navigation links.",
+    "continueSafelyTitle": "Continue Safely",
+    "continueSafelyDescription": "Return to your dashboard and continue your process."
+  },
+  "footer": {
+    "description": "A complete digital admission experience for students and university admission teams.",
+    "quickLinks": "Quick Links",
+    "studentServices": "Student Services",
+    "rights": "All rights reserved.",
+    "universityAdmission": "University Admission"
+  },
+  "reports": {
+    "badge": "Analytics Center",
+    "title": "Admin Reports",
+    "description": "Monitor admission performance, application trends, faculty capacity, AI alerts, and export reports for administrative review.",
+    "cards": {
+      "total": {
+        "label": "Total Applications",
+        "description": "Total submitted applications in the current cycle"
+      },
+      "accepted": {
+        "label": "Accepted Students",
+        "description": "Students who met all requirements and were accepted"
+      },
+      "pendingReview": {
+        "label": "Pending Review",
+        "description": "Applications awaiting manual or employee review"
+      },
+      "rejected": {
+        "label": "Rejected",
+        "description": "Applications rejected due to failure in requirements"
+      },
+      "aiFailed": {
+        "label": "AI Flagged Cases",
+        "description": "Applications flagged with potential issues by AI"
+      },
+      "averageAi": {
+        "label": "Avg AI Confidence",
+        "description": "Average confidence score of AI document verification"
+      }
+    },
+    "statusChart": {
+      "title": "Application Status Breakdown",
+      "description": "Overview of applications grouped by their current admission status.",
+      "aiFailed": "AI Review Failed",
+      "headReview": "Under Head Review",
+      "paymentPending": "Payment Pending",
+      "socialResearchRequired": "Social Research Required",
+      "completed": "Completed",
+      "rejected": "Rejected"
+    },
+    "applications": "applications",
+    "facultyChart": {
+      "title": "Faculty Performance",
+      "description": "Applications and capacity usage by faculty."
+    },
+    "table": {
+      "faculty": "Faculty",
+      "applications": "Applications",
+      "percentage": "Percentage"
+    },
+    "aiChart": {
+      "title": "AI Risk Alerts",
+      "description": "Summary of AI-detected risks during document and application review.",
+      "high": "High Severity",
+      "medium": "Medium Severity",
+      "low": "Low Severity"
+    }
+  }
+}
