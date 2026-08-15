@@ -13,13 +13,17 @@ export function NotificationsList() {
   const locale = useLocale();
   const isAr = locale === "ar";
 
-  const { data: notifications, isLoading, isError } = useMyNotificationsQuery();
-  const safeNotifications = Array.isArray(notifications) ? notifications : [];
-
   const searchParams = useSearchParams();
   const search = searchParams?.get("q")?.toLowerCase() || "";
   const typeFilter = searchParams?.get("type") || "all";
   const statusFilter = searchParams?.get("status") || "all";
+
+  // Pass type/status to backend query when available; local filtering still applied as fallback.
+  const { data: notifications, isLoading, isError } = useMyNotificationsQuery({
+    type: typeFilter !== "all" ? (typeFilter as import("@/services/notifications.service").NotificationType) : undefined,
+    status: statusFilter === "read" || statusFilter === "unread" ? statusFilter : undefined,
+  });
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
 
   const filteredNotifications = safeNotifications.filter((notification) => {
     if (typeFilter !== "all" && notification.type !== typeFilter) return false;
