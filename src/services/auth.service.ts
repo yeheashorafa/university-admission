@@ -11,6 +11,9 @@ export type AuthUser = {
   role: UserRole;
   phone?: string;
   avatar?: string;
+  is_verified?: boolean;
+  verified?: boolean;
+  email_verified_at?: string | null;
 };
 
 export type LoginPayload = {
@@ -30,6 +33,15 @@ export type AuthResponse = {
   user: AuthUser;
   token: string;
 };
+
+export function isUserVerified(user: AuthUser | null | undefined): boolean | undefined {
+  if (!user) return undefined;
+  if (typeof user.is_verified === "boolean") return user.is_verified;
+  if (typeof user.verified === "boolean") return user.verified;
+  if (user.email_verified_at !== undefined && user.email_verified_at !== null) return true;
+  if (user.email_verified_at === null) return false;
+  return undefined;
+}
 
 export function extractRoleName(userRaw: Record<string, unknown> | null | undefined): UserRole {
   if (!userRaw) return "student";
@@ -68,6 +80,21 @@ export function extractRoleName(userRaw: Record<string, unknown> | null | undefi
 
 export function normalizeAuthUser(rawUser: Record<string, unknown> | null | undefined): AuthUser {
   const roleName = extractRoleName(rawUser);
+  const rawVerified = rawUser?.is_verified ?? rawUser?.verified;
+  const is_verified =
+    typeof rawVerified === "boolean"
+      ? rawVerified
+      : typeof rawUser?.email_verified_at !== "undefined"
+      ? Boolean(rawUser?.email_verified_at)
+      : undefined;
+
+  const email_verified_at =
+    typeof rawUser?.email_verified_at === "string"
+      ? rawUser.email_verified_at
+      : rawUser?.email_verified_at === null
+      ? null
+      : undefined;
+
   return {
     id: (rawUser?.id as string | number) ?? "",
     name:
@@ -79,6 +106,9 @@ export function normalizeAuthUser(rawUser: Record<string, unknown> | null | unde
     role: roleName,
     phone: (rawUser?.phone as string) ?? "",
     avatar: (rawUser?.avatar as string) ?? "",
+    is_verified,
+    verified: is_verified,
+    email_verified_at,
   };
 }
 

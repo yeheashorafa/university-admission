@@ -8,7 +8,6 @@ import {
   getDocumentTypes,
   getFacultyDepartments,
   getFacultyDepartmentsAndPrograms,
-  getPublicApplicationTypes,
   getPublicFaculties,
 } from "@/services/public-catalog.service";
 
@@ -89,10 +88,8 @@ export function useDocumentTypesQuery() {
 export function usePublicApplicationTypesQuery() {
   return useQuery({
     queryKey: queryKeys.publicCatalog.applicationTypes,
-    queryFn: async () => {
-      const res = await getPublicApplicationTypes();
-      return Array.isArray(res) ? res : [];
-    },
+    queryFn: async () => [],
+    enabled: false,
   });
 }
 

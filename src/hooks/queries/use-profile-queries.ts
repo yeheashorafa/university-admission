@@ -9,6 +9,7 @@ import {
   type UpdateProfilePayload,
 } from "@/services/profile.service";
 
+import { isUserVerified } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 
 export function useMyProfileQuery() {
@@ -16,7 +17,8 @@ export function useMyProfileQuery() {
   const token = useAuthStore((state) => state.token);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
 
-  const isEnabled = Boolean(hasHydrated && token && user);
+  const isUnverified = isUserVerified(user) === false;
+  const isEnabled = Boolean(hasHydrated && token && user && !isUnverified);
 
   return useQuery({
     queryKey: queryKeys.profile.myProfile,

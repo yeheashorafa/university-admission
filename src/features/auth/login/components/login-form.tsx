@@ -60,7 +60,7 @@ export function LoginForm() {
         apiError.status === 401
           ? locale === "ar"
             ? "بيانات الدخول غير صحيحة"
-            : "Invalid email or password"
+            : "Invalid login credentials"
           : getApiErrorMessage(error);
 
       setFormError(errorMessage);

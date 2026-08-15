@@ -2,11 +2,15 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Check, ArrowLeft, ArrowRight, Save, Loader2, AlertCircle } from "lucide-react";
 import { routes, withLocale } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { isVerificationError } from "@/lib/api/api-error";
+import { isUserVerified } from "@/services/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
 import { getMyProfile, updateMyProfile } from "@/services/profile.service";
 import {
   createStudentApplication,
@@ -15,7 +19,7 @@ import {
   updateApplicationPreferences,
 } from "@/services/application.service";
 import { attachDocumentToApplication } from "@/services/documents.service";
-import { usePublicAdmissionCyclesQuery, useDocumentTypesQuery, usePublicApplicationTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
+import { usePublicAdmissionCyclesQuery, useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
 import {
   getSocialInformation,
   updateSocialInformation,
@@ -50,10 +54,12 @@ export function ApplicationWizard() {
   const searchParams = useSearchParams();
   const locale = useLocale();
   const t = useTranslations("application");
+  const user = useAuthStore((state) => state.user);
+
+  const [isUnverified, setIsUnverified] = useState<boolean>(() => isUserVerified(user) === false);
 
   const { data: admissionCycles, isLoading: isLoadingCycles } = usePublicAdmissionCyclesQuery();
   const { data: documentTypes } = useDocumentTypesQuery();
-  const { data: applicationTypes = [] } = usePublicApplicationTypesQuery();
 
   const activeCycles = useMemo(() => {
     if (!admissionCycles || !Array.isArray(admissionCycles)) return [];
@@ -64,8 +70,7 @@ export function ApplicationWizard() {
   const activeCycleId = activeCycle?.id;
   const noOpenCycle = !isLoadingCycles && activeCycles.length === 0;
 
-  const activeAppType = applicationTypes?.[0];
-  const activeAppTypeId = activeAppType?.id ?? CONFIRMED_BACKEND_DEFAULT_APPLICATION_TYPE_ID;
+  const activeAppTypeId = CONFIRMED_BACKEND_DEFAULT_APPLICATION_TYPE_ID;
 
   const applicationId = searchParams.get("id");
   const [targetId, setTargetId] = useState<string | null>(applicationId);
@@ -121,13 +126,33 @@ export function ApplicationWizard() {
     confirmation: { confirmData: false, agreeTerms: false },
   });
 
+  const userIsUnverified = isUnverified || isUserVerified(user) === false;
+
   useEffect(() => {
+    if (userIsUnverified) {
+      return;
+    }
+
     async function loadBackendData() {
       try {
         const [profileRes, socialRes] = await Promise.allSettled([
           getMyProfile(),
           getSocialInformation(),
         ]);
+
+        let verificationErrorDetected = false;
+
+        if (profileRes.status === "rejected" && isVerificationError(profileRes.reason)) {
+          verificationErrorDetected = true;
+        }
+        if (socialRes.status === "rejected" && isVerificationError(socialRes.reason)) {
+          verificationErrorDetected = true;
+        }
+
+        if (verificationErrorDetected) {
+          setIsUnverified(true);
+          return;
+        }
 
         if (profileRes.status === "fulfilled" && profileRes.value) {
           const p = profileRes.value;
@@ -198,7 +223,7 @@ export function ApplicationWizard() {
       }
     }
     loadBackendData();
-  }, []);
+  }, [userIsUnverified]);
 
   const updateSection = <K extends keyof ApplicationWizardState>(
     section: K,
@@ -719,6 +744,34 @@ export function ApplicationWizard() {
   };
 
   const totalSteps = applicationSteps.length;
+
+  if (userIsUnverified) {
+    return (
+      <div className="mx-auto max-w-xl py-12 px-4">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center shadow-sm dark:border-amber-900/50 dark:bg-amber-950/30">
+          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/50">
+            <AlertCircle className="size-8 text-amber-600 dark:text-amber-400" />
+          </div>
+          <h2 className="text-xl font-bold text-amber-900 dark:text-amber-200">
+            {locale === "ar" ? "تأكيد الحساب مطلوب" : "Account Verification Required"}
+          </h2>
+          <p className="mt-2 text-base text-amber-800 dark:text-amber-300">
+            {locale === "ar"
+              ? "يرجى تفعيل حسابك قبل تعبئة طلب الالتحاق."
+              : "Please verify your account before filling out the admission application."}
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Link
+              href={withLocale(locale, routes.verifyOtp)}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              {locale === "ar" ? "الانتقال لتفعيل الحساب" : "Go to Account Verification"}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

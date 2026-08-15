@@ -8,6 +8,7 @@ import {
   type SocialInformation,
 } from "@/services/social-information.service";
 
+import { isUserVerified } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 
 export function useSocialInformationQuery() {
@@ -16,7 +17,8 @@ export function useSocialInformationQuery() {
   const role = useAuthStore((state) => state.role);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
 
-  const isEnabled = Boolean(hasHydrated && token && user && role === "student");
+  const isUnverified = isUserVerified(user) === false;
+  const isEnabled = Boolean(hasHydrated && token && user && role === "student" && !isUnverified);
 
   return useQuery({
     queryKey: queryKeys.socialInformation.mySocialInformation,

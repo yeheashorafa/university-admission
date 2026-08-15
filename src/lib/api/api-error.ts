@@ -45,7 +45,23 @@ export function extractApiError(error: unknown): ApiError {
     if (status === 401) {
       message = responseData?.message || "Unauthenticated session. Please log in again.";
     } else if (status === 403) {
-      message = responseData?.message || "You do not have permission to perform this action.";
+      const serverMsg = responseData?.message || "";
+      const isVerificationMsg =
+        serverMsg.toLowerCase().includes("verify") ||
+        serverMsg.toLowerCase().includes("unverified") ||
+        serverMsg.includes("تفعيل");
+
+      if (isVerificationMsg) {
+        const isAr =
+          typeof window !== "undefined" &&
+          (window.location.pathname.startsWith("/ar") ||
+            document.documentElement.lang === "ar");
+        message = isAr
+          ? "يرجى تفعيل حسابك قبل المتابعة."
+          : "Please verify your account before continuing.";
+      } else {
+        message = serverMsg || "You do not have permission to perform this action.";
+      }
     } else if (status === 404) {
       message = responseData?.message || "Requested resource was not found.";
     } else if (status === 422) {
@@ -64,6 +80,19 @@ export function extractApiError(error: unknown): ApiError {
   }
 
   return new ApiError("An unknown network error occurred.");
+}
+
+export function isVerificationError(error: unknown): boolean {
+  const apiError = extractApiError(error);
+  if (apiError.status === 403) return true;
+  const msg = (apiError.message || "").toLowerCase();
+  return (
+    msg.includes("verify") ||
+    msg.includes("unverified") ||
+    msg.includes("tfeil") ||
+    msg.includes("تفعيل") ||
+    msg.includes("إثبات")
+  );
 }
 
 export function getApiErrorMessage(error: unknown): string {

@@ -14,6 +14,7 @@ import {
   type ApplicationPayload,
 } from "@/services/application.service";
 
+import { isUserVerified } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 
 function useStudentQueryGuard(extraCondition: boolean = true) {
@@ -22,7 +23,9 @@ function useStudentQueryGuard(extraCondition: boolean = true) {
   const role = useAuthStore((state) => state.role);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
 
-  return Boolean(hasHydrated && token && user && role === "student" && extraCondition);
+  const isUnverified = isUserVerified(user) === false;
+
+  return Boolean(hasHydrated && token && user && role === "student" && !isUnverified && extraCondition);
 }
 
 export function useStudentDashboardQuery() {
