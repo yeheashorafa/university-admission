@@ -1186,6 +1186,7 @@
     "personalInformationDescription": "حافظ على دقة بياناتك الشخصية الرسمية وحدّثها عند الحاجة.",
     "firstName": "الاسم الأول",
     "fatherName": "اسم الأب",
+    "grandfatherName": "اسم الجد",
     "familyName": "اسم العائلة",
     "nationalId": "رقم الهوية",
     "birthDate": "تاريخ الميلاد",

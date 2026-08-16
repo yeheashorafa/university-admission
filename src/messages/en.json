@@ -1191,6 +1191,7 @@
     "personalInformationDescription": "Keep your official personal details accurate and up to date.",
     "firstName": "First Name",
     "fatherName": "Father Name",
+    "grandfatherName": "Grandfather Name",
     "familyName": "Family Name",
     "nationalId": "National ID",
     "birthDate": "Birth Date",

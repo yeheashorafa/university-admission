@@ -21,7 +21,7 @@ export async function getAdminUsers(params?: {
     { params }
   );
   const rawUsers = extractArray<Record<string, unknown>>(response.data);
-  return rawUsers.map(normalizeAuthUser);
+  return rawUsers.map((u) => normalizeAuthUser(u));
 }
 
 export async function createAdminUser(payload: AdminUserPayload): Promise<AuthUser> {

@@ -78,20 +78,31 @@ export function extractRoleName(userRaw: Record<string, unknown> | null | undefi
   return "student";
 }
 
-export function normalizeAuthUser(rawUser: Record<string, unknown> | null | undefined): AuthUser {
+export function normalizeAuthUser(
+  rawUser: Record<string, unknown> | null | undefined,
+  outerPayload?: Record<string, unknown> | null
+): AuthUser {
   const roleName = extractRoleName(rawUser);
-  const rawVerified = rawUser?.is_verified ?? rawUser?.verified;
+  const rawVerified =
+    rawUser?.is_verified ??
+    rawUser?.verified ??
+    outerPayload?.is_verified ??
+    outerPayload?.verified;
+
+  const rawEmailVerifiedAt =
+    rawUser?.email_verified_at ?? outerPayload?.email_verified_at;
+
   const is_verified =
     typeof rawVerified === "boolean"
       ? rawVerified
-      : typeof rawUser?.email_verified_at !== "undefined"
-      ? Boolean(rawUser?.email_verified_at)
+      : typeof rawEmailVerifiedAt !== "undefined" && rawEmailVerifiedAt !== null
+      ? Boolean(rawEmailVerifiedAt)
       : undefined;
 
   const email_verified_at =
-    typeof rawUser?.email_verified_at === "string"
-      ? rawUser.email_verified_at
-      : rawUser?.email_verified_at === null
+    typeof rawEmailVerifiedAt === "string"
+      ? rawEmailVerifiedAt
+      : rawEmailVerifiedAt === null
       ? null
       : undefined;
 
@@ -117,7 +128,7 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
   const dataPayload = response.data?.data ?? response.data;
   const token = dataPayload?.access_token || dataPayload?.token || "";
   const rawUser = dataPayload?.user ?? dataPayload;
-  const user = normalizeAuthUser(rawUser);
+  const user = normalizeAuthUser(rawUser, dataPayload);
   return { user, token };
 }
 
@@ -126,7 +137,7 @@ export async function register(payload: RegisterPayload): Promise<AuthResponse> 
   const dataPayload = response.data?.data ?? response.data;
   const token = dataPayload?.access_token || dataPayload?.token || "";
   const rawUser = dataPayload?.user ?? dataPayload;
-  const user = normalizeAuthUser(rawUser);
+  const user = normalizeAuthUser(rawUser, dataPayload);
   return { user, token };
 }
 
@@ -134,7 +145,7 @@ export async function getCurrentUser(): Promise<AuthUser> {
   const response = await apiClient.get(ENDPOINTS.auth.me);
   const dataPayload = response.data?.data ?? response.data;
   const rawUser = dataPayload?.user ?? dataPayload;
-  return normalizeAuthUser(rawUser);
+  return normalizeAuthUser(rawUser, dataPayload);
 }
 
 export async function refreshToken(): Promise<string> {
