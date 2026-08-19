@@ -37,7 +37,6 @@ export const API_BASE_URL = getNormalizedBaseUrl();
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    "Content-Type": "application/json",
     Accept: "application/json",
   },
   timeout: 30000,
@@ -75,6 +74,19 @@ apiClient.interceptors.request.use(
       const token = getAccessToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      if (
+        config.headers &&
+        "delete" in config.headers &&
+        typeof (config.headers as Record<string, unknown>).delete === "function"
+      ) {
+        (config.headers as { delete: (name: string) => void }).delete("Content-Type");
+        (config.headers as { delete: (name: string) => void }).delete("content-type");
+      } else if (config.headers) {
+        delete (config.headers as Record<string, unknown>)["Content-Type"];
+        delete (config.headers as Record<string, unknown>)["content-type"];
       }
     }
     return config;

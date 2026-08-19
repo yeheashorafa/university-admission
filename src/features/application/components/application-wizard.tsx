@@ -298,14 +298,6 @@ export function ApplicationWizard() {
           );
           return false;
         }
-        if (national_id.trim().length !== 9) {
-          toast.error(
-            locale === "ar"
-              ? "يجب أن يتكون رقم الهوية من 9 أرقام"
-              : "National ID must be 9 digits"
-          );
-          return false;
-        }
       }
 
       if (result_check_method === "percentage") {
@@ -363,21 +355,15 @@ export function ApplicationWizard() {
 
     // Step 3: Detailed Tawjihi Academic Data
     if (step === 3) {
-      const { studyProgram, studyYear, seatNumber, totalMarks, percentage, nationalId } =
+      const { studyProgram, studyYear, seatNumber, totalMarks, percentage } =
         state.tawjihi;
-      if (!studyProgram || !studyYear || !seatNumber || !totalMarks || !percentage || !nationalId) {
+      if (!studyProgram || !studyYear || !seatNumber || !totalMarks || !percentage) {
         toast.error(locale === "ar" ? "يرجى تعبئة جميع الحقول المطلوبة *" : "Please fill in all required fields *");
         return false;
       }
       if (parseFloat(percentage) > 100) {
         toast.error(
           locale === "ar" ? "النسبة المئوية لا يمكن أن تتجاوز 100%" : "Percentage cannot exceed 100%"
-        );
-        return false;
-      }
-      if (nationalId.length !== 9) {
-        toast.error(
-          locale === "ar" ? "يجب أن يتكون رقم الهوية من 9 أرقام" : "National ID must be exactly 9 digits"
         );
         return false;
       }
@@ -504,7 +490,6 @@ export function ApplicationWizard() {
       } else if (currentStep === 3) {
         await updateMyProfile({
           personal_information: {
-            national_id: state.tawjihi.nationalId,
             first_name_ar: state.tawjihi.firstNameAr,
             father_name_ar: state.tawjihi.fatherNameAr,
             grandfather_name_ar: state.tawjihi.grandfatherNameAr,

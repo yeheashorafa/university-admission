@@ -52,7 +52,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     labelKey: "documentVerification",
     href: routes.adminDocumentVerification,
     icon: FileSearch,
-    allowedRoles: [userRoles.admin, userRoles.departmentHead, userRoles.admissionEmployee],
+    allowedRoles: [userRoles.admissionEmployee],
   },
   {
     labelKey: "tawjihiImport",

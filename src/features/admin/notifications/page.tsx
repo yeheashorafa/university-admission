@@ -30,8 +30,10 @@ export function AdminNotificationsPage() {
   const { user } = useCurrentAuth();
 
   const isAdmin = user?.role === "admin";
+  const isDean = user?.role === "admission_dean";
+  const isStaff = user?.role === "admission_employee" || user?.role === "department_head";
 
-  const adminQuery = useAdminNotificationsQuery();
+  const adminQuery = useAdminNotificationsQuery({ enabled: isAdmin });
   const staffQuery = useStaffNotificationsQuery();
 
   const markAdminRead = useMarkAdminNotificationAsReadMutation();
@@ -40,7 +42,11 @@ export function AdminNotificationsPage() {
   const deleteAdminNotif = useDeleteAdminNotificationMutation();
   const deleteStaffNotif = useDeleteStaffNotificationMutation();
 
-  const isLoading = isAdmin ? adminQuery.isLoading : staffQuery.isLoading;
+  const isLoading = isAdmin
+    ? adminQuery.isLoading
+    : isStaff
+    ? staffQuery.isLoading
+    : false;
 
   const notifications = useMemo<AdminNotification[]>(() => {
     if (isAdmin) {
@@ -56,7 +62,7 @@ export function AdminNotificationsPage() {
         data: n.data || null,
         readAt: n.read_at || n.readAt || null,
       }));
-    } else {
+    } else if (isStaff) {
       const list = Array.isArray(staffQuery.data) ? staffQuery.data : [];
       return list.map((n) => ({
         id: String(n.id),
@@ -69,13 +75,14 @@ export function AdminNotificationsPage() {
         data: ((n as Record<string, unknown>).data as NotificationDataSummary) || null,
       }));
     }
-  }, [isAdmin, adminQuery.data, staffQuery.data, t]);
+    return [];
+  }, [isAdmin, isStaff, adminQuery.data, staffQuery.data, t]);
 
   async function handleChangeStatus(notificationId: string) {
     try {
       if (isAdmin) {
         await markAdminRead.mutateAsync(notificationId);
-      } else {
+      } else if (isStaff) {
         await markStaffRead.mutateAsync(notificationId);
       }
       await Swal.fire({
@@ -109,7 +116,7 @@ export function AdminNotificationsPage() {
     try {
       if (isAdmin) {
         await deleteAdminNotif.mutateAsync(notificationId);
-      } else {
+      } else if (isStaff) {
         await deleteStaffNotif.mutateAsync(notificationId);
       }
       await Swal.fire({
@@ -144,6 +151,10 @@ export function AdminNotificationsPage() {
             {isLoading ? (
               <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground font-semibold">
                 جاري تحميل الإشعارات من الخادم...
+              </div>
+            ) : isDean ? (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center text-amber-800 font-semibold dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+                لا توجد نقطة نهاية لإشعارات عميد القبول والتسجيل حتى الآن (PENDING_BACKEND_API)
               </div>
             ) : (
               <NotificationsList

@@ -84,14 +84,20 @@ export function extractApiError(error: unknown): ApiError {
 
 export function isVerificationError(error: unknown): boolean {
   const apiError = extractApiError(error);
-  if (apiError.status === 403) return true;
-  const msg = (apiError.message || "").toLowerCase();
+  if (apiError.status !== 403) return false;
+
+  const rawDataMsg =
+    typeof apiError.data === "object" && apiError.data !== null && "message" in apiError.data
+      ? String((apiError.data as { message?: string }).message || "")
+      : "";
+
+  const combinedMsg = `${apiError.message || ""} ${rawDataMsg}`.toLowerCase();
+
   return (
-    msg.includes("verify") ||
-    msg.includes("unverified") ||
-    msg.includes("tfeil") ||
-    msg.includes("تفعيل") ||
-    msg.includes("إثبات")
+    combinedMsg.includes("verify") ||
+    combinedMsg.includes("unverified") ||
+    combinedMsg.includes("verification") ||
+    combinedMsg.includes("تفعيل")
   );
 }
 

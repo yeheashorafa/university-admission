@@ -46,12 +46,7 @@ export async function uploadBankTransferReceipt(file: File): Promise<PaymentInvo
 
   const response = await apiClient.post<PaymentInvoice | { data: PaymentInvoice }>(
     "/student/payment/bank-transfer-receipt",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
   return extractResource<PaymentInvoice>(response.data);
 }

@@ -154,15 +154,15 @@ export function TawjihiDataStep({ data, onChange }: TawjihiDataStepProps) {
 
         <div className="space-y-2 sm:col-span-2">
           <label className="text-sm font-bold text-foreground block">
-            {locale === "ar" ? "رقم الهوية الوطنية *" : "National ID Number *"}
+            {locale === "ar" ? "رقم الهوية الوطنية (منسوب من التسجيل)" : "National ID Number (From Registration)"}
           </label>
           <input
             type="text"
             value={data.nationalId}
-            onChange={(e) => onChange({ nationalId: e.target.value.replace(/\D/g, "").slice(0, 9) })}
-            className="w-full h-11 rounded-xl border border-input bg-card px-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-            placeholder={locale === "ar" ? "أدخل رقم الهوية المكون من 9 أرقام" : "Enter 9-digit ID number"}
-            maxLength={9}
+            readOnly
+            disabled
+            className="w-full h-11 rounded-xl border border-input bg-muted px-3 text-sm text-muted-foreground outline-none cursor-not-allowed opacity-80 font-mono"
+            placeholder={locale === "ar" ? "رقم الهوية المسجل" : "Registered National ID"}
           />
         </div>
       </div>

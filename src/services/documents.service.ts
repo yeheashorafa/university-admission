@@ -77,12 +77,7 @@ export async function uploadDocument(
 
   const response = await apiClient.post(
     ENDPOINTS.student.documents,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
   return extractResource<StudentDocument>(response.data);
 }

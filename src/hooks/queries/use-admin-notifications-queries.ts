@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   getAdminNotifications,
   markAdminNotificationAsRead,
@@ -6,10 +7,20 @@ import {
   deleteAdminNotification,
 } from "@/services/admin-notifications.service";
 
-export function useAdminNotificationsQuery() {
+export function useAdminNotificationsQuery(options?: { enabled?: boolean }) {
+  const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
+  const role = useAuthStore((state) => state.role);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+
+  const isAdmin = role === "admin";
+  const isEnabled = Boolean(hasHydrated && token && user && isAdmin) && (options?.enabled ?? true);
+
   return useQuery({
     queryKey: ["admin", "notifications"],
     queryFn: getAdminNotifications,
+    enabled: isEnabled,
+    retry: false,
   });
 }
 
