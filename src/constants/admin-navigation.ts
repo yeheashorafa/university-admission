@@ -3,6 +3,7 @@ import {
   Bell,
   FileCheck2,
   FileSearch,
+  FileSpreadsheet,
   Settings,
   Users,
   LayoutDashboard,
@@ -52,6 +53,12 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     href: routes.adminDocumentVerification,
     icon: FileSearch,
     allowedRoles: [userRoles.admin, userRoles.departmentHead, userRoles.admissionEmployee],
+  },
+  {
+    labelKey: "tawjihiImport",
+    href: routes.adminSecondarySchoolRecords,
+    icon: FileSpreadsheet,
+    allowedRoles: [userRoles.admin],
   },
   {
     labelKey: "users",

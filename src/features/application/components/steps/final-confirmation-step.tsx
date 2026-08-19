@@ -7,9 +7,10 @@ import type { FinalConfirmationData } from "../../types/application-form.types";
 type FinalConfirmationStepProps = {
   data: FinalConfirmationData;
   onChange: (updated: Partial<FinalConfirmationData>) => void;
+  hasTawjihiRecord?: boolean;
 };
 
-export function FinalConfirmationStep({ data, onChange }: FinalConfirmationStepProps) {
+export function FinalConfirmationStep({ data, onChange, hasTawjihiRecord = true }: FinalConfirmationStepProps) {
   const locale = useLocale();
 
   return (
@@ -24,6 +25,22 @@ export function FinalConfirmationStep({ data, onChange }: FinalConfirmationStepP
             : "Please review the pledge and confirm accuracy of your inputs to submit."}
         </p>
       </div>
+
+      {!hasTawjihiRecord && (
+        <div className="flex gap-4 p-5 rounded-2xl border border-destructive/30 bg-destructive/10 text-destructive">
+          <AlertTriangle className="size-6 text-destructive shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-bold">
+              {locale === "ar" ? "تعذر تقديم الطلب - لا يوجد سجل توجيهي" : "Cannot Submit Application - Missing Tawjihi Record"}
+            </h4>
+            <p className="text-sm font-semibold leading-relaxed">
+              {locale === "ar"
+                ? "لا يوجد سجل توجيهي مرتبط برقم الهوية الخاص بك. يرجى التأكد من رقم الهوية أو مراجعة القبول والتسجيل."
+                : "No verified Tawjihi record is linked to your National ID. Please verify your National ID or contact admissions."}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Pledge Box */}

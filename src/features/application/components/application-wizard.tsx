@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { isVerificationError } from "@/lib/api/api-error";
 import { isUserVerified } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
-import { getMyProfile, updateMyProfile } from "@/services/profile.service";
+import { getMyProfile, updateMyProfile, hasVerifiedTawjihiRecord, type StudentProfile } from "@/services/profile.service";
 import {
   createStudentApplication,
   getApplicationDocumentChecklist,
@@ -75,6 +75,9 @@ export function ApplicationWizard() {
   const applicationId = searchParams.get("id");
   const [targetId, setTargetId] = useState<string | null>(applicationId);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadedProfile, setLoadedProfile] = useState<StudentProfile | null>(null);
+
+  const hasTawjihiRecord = loadedProfile ? hasVerifiedTawjihiRecord(loadedProfile) : true;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [state, setState] = useState<ApplicationWizardState>({
@@ -156,6 +159,7 @@ export function ApplicationWizard() {
 
         if (profileRes.status === "fulfilled" && profileRes.value) {
           const p = profileRes.value;
+          setLoadedProfile(p);
           const pi = p.personal_information;
           if (pi) {
             setState((curr) => ({
@@ -469,6 +473,14 @@ export function ApplicationWizard() {
 
     // Step 11: Final Confirmation
     if (step === 11) {
+      if (!hasTawjihiRecord) {
+        toast.error(
+          locale === "ar"
+            ? "لا يوجد سجل توجيهي مرتبط برقم الهوية الخاص بك. يرجى التأكد من رقم الهوية أو مراجعة القبول والتسجيل."
+            : "No verified Tawjihi record is linked to your National ID. Please verify your National ID or contact admissions."
+        );
+        return false;
+      }
       if (!state.confirmation.confirmData || !state.confirmation.agreeTerms) {
         toast.error(
           locale === "ar"
@@ -726,6 +738,18 @@ export function ApplicationWizard() {
           if (formatted) errorMessage = formatted;
         }
 
+        const lowerMsg = errorMessage.toLowerCase();
+        if (
+          lowerMsg.includes("secondary school") ||
+          lowerMsg.includes("tawjihi") ||
+          lowerMsg.includes("سجل توجيهي")
+        ) {
+          errorMessage =
+            locale === "ar"
+              ? "لا يوجد سجل توجيهي مرتبط برقم الهوية الخاص بك. يرجى التأكد من رقم الهوية أو مراجعة القبول والتسجيل."
+              : "No verified Tawjihi record is linked to your National ID. Please verify your National ID or contact admissions.";
+        }
+
         toast.error(errorMessage);
         setIsSubmitting(false);
         return;
@@ -932,6 +956,7 @@ export function ApplicationWizard() {
           <FinalConfirmationStep
             data={state.confirmation}
             onChange={(u) => updateSection("confirmation", u)}
+            hasTawjihiRecord={hasTawjihiRecord}
           />
         )}
       </div>
@@ -950,7 +975,7 @@ export function ApplicationWizard() {
         <button
           type="button"
           onClick={handleNext}
-          disabled={isSubmitting}
+          disabled={isSubmitting || (currentStep === totalSteps && loadedProfile !== null && !hasTawjihiRecord)}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-extrabold text-primary-foreground shadow-md hover:bg-primary/95 transition hover:shadow-lg active:scale-95 disabled:opacity-50 w-full sm:w-auto"
         >
           {isSubmitting ? (

@@ -1,0 +1,167 @@
+{
+  "_metadata": {
+    "status": "DRAFT_FOR_REVIEW",
+    "scrapedFrom": "https://www.iugaza.edu.ps/facalties/",
+    "generatedAt": "2026-08-19T12:00:00Z",
+    "notice": "Draft generated from website structure for manual review. Do not use directly in production logic without review."
+  },
+  "faculties": [
+    {
+      "id": 1,
+      "nameAr": "كلية الطب",
+      "nameEn": "Faculty of Medicine",
+      "slug": "medicine",
+      "descriptionAr": "الطب وعلومه وطبيبٌ للمستقبل",
+      "websiteUrl": "https://medicine.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "الطب البشري", "nameEn": "Doctor of Medicine (MD)", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 2,
+      "nameAr": "كلية الهندسة",
+      "nameEn": "Faculty of Engineering",
+      "slug": "engineering",
+      "descriptionAr": "هندسة المستقبل بكافة مجالات الحياة",
+      "websiteUrl": "https://eng.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "الهندسة المدنية", "nameEn": "Civil Engineering", "level": "bachelor" },
+        { "nameAr": "الهندسة المعمارية", "nameEn": "Architectural Engineering", "level": "bachelor" },
+        { "nameAr": "هندسة الحاسوب", "nameEn": "Computer Engineering", "level": "bachelor" },
+        { "nameAr": "الهندسة الكهربائية", "nameEn": "Electrical Engineering", "level": "bachelor" },
+        { "nameAr": "الهندسة الميكانيكية", "nameEn": "Mechanical Engineering", "level": "bachelor" },
+        { "nameAr": "الهندسة البيئية", "nameEn": "Environmental Engineering", "level": "bachelor" },
+        { "nameAr": "الهندسة الصناعية", "nameEn": "Industrial Engineering", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 3,
+      "nameAr": "كلية تكنولوجيا المعلومات",
+      "nameEn": "Faculty of Information Technology",
+      "slug": "information-technology",
+      "descriptionAr": "عصر التكنولوجيا والمعلوماتية وأمن المعلومات والبيانات",
+      "websiteUrl": "https://fit.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "تطوير البرمجيات", "nameEn": "Software Development", "level": "bachelor" },
+        { "nameAr": "تكنولوجيا المعلومات", "nameEn": "Information Technology", "level": "bachelor" },
+        { "nameAr": "أمن المعلومات", "nameEn": "Information Security", "level": "bachelor" },
+        { "nameAr": "الحوسبة المتنقلة وتطبيقات الجوال", "nameEn": "Mobile Computing", "level": "bachelor" },
+        { "nameAr": "الذكاء الاصطناعي وعلم البيانات", "nameEn": "Artificial Intelligence & Data Science", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 4,
+      "nameAr": "كلية التمريض",
+      "nameEn": "Faculty of Nursing",
+      "slug": "nursing",
+      "descriptionAr": "بذلٌ وعطاءٌ وتفانٍ لكل مريض وفي كل مكان",
+      "websiteUrl": "https://nursing.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "التمريض العام", "nameEn": "General Nursing", "level": "bachelor" },
+        { "nameAr": "تمريض القبالة", "nameEn": "Midwifery Nursing", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 5,
+      "nameAr": "كلية العلوم الصحية",
+      "nameEn": "Faculty of Health Sciences",
+      "slug": "health-sciences",
+      "descriptionAr": "العلاج السليم يبدأ من هنا",
+      "websiteUrl": "https://healthscience.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "العلوم الطبية المخبرية", "nameEn": "Medical Laboratory Sciences", "level": "bachelor" },
+        { "nameAr": "العلاج الطبيعي", "nameEn": "Physical Therapy", "level": "bachelor" },
+        { "nameAr": "البصريات الطبية", "nameEn": "Medical Optics", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 6,
+      "nameAr": "كلية العلوم",
+      "nameEn": "Faculty of Science",
+      "slug": "science",
+      "descriptionAr": "علوم الطبيعة وأسرار الكون",
+      "websiteUrl": "https://science.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "الرياضيات", "nameEn": "Mathematics", "level": "bachelor" },
+        { "nameAr": "الفيزياء", "nameEn": "Physics", "level": "bachelor" },
+        { "nameAr": "الكيمياء", "nameEn": "Chemistry", "level": "bachelor" },
+        { "nameAr": "العلوم الحياتية والتكنولوجيا الحيوية", "nameEn": "Biological Sciences & Biotechnology", "level": "bachelor" },
+        { "nameAr": "البيئة وعلوم الأرض", "nameEn": "Environmental & Earth Sciences", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 7,
+      "nameAr": "كلية الآداب",
+      "nameEn": "Faculty of Arts",
+      "slug": "arts",
+      "descriptionAr": "علمٌ ولغاتٌ وأدبٌ وثقافة الأمم المختلفة قديماً وحديثاً",
+      "websiteUrl": "https://arts.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "اللغة العربية وآدابها", "nameEn": "Arabic Language & Literature", "level": "bachelor" },
+        { "nameAr": "اللغة الإنجليزية", "nameEn": "English Language", "level": "bachelor" },
+        { "nameAr": "الصحافة والإعلام", "nameEn": "Journalism & Media", "level": "bachelor" },
+        { "nameAr": "التاريخ وآثاره", "nameEn": "History & Archaeology", "level": "bachelor" },
+        { "nameAr": "الخدمة الاجتماعية", "nameEn": "Social Work", "level": "bachelor" },
+        { "nameAr": "الجغرافيا ونظم المعلومات الجغرافية", "nameEn": "Geography & GIS", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 8,
+      "nameAr": "كلية الشريعة والقانون",
+      "nameEn": "Faculty of Sharia & Law",
+      "slug": "sharia-law",
+      "descriptionAr": "دراسة للشريعة الاسلامية والمحاماة على مبادئ الشريعة السمحة",
+      "websiteUrl": "https://sharea.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "الشريعة الإسلامية", "nameEn": "Islamic Sharia", "level": "bachelor" },
+        { "nameAr": "الشريعة والقانون", "nameEn": "Sharia & Law", "level": "bachelor" },
+        { "nameAr": "القانون", "nameEn": "Law", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 9,
+      "nameAr": "كلية أصول الدين",
+      "nameEn": "Faculty of Usul al-Din",
+      "slug": "usul-al-din",
+      "descriptionAr": "الدين الإسلامي ، أصوله وأحكامه",
+      "websiteUrl": "https://osool.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "التفسير وعلوم القرآن", "nameEn": "Quranic Exegesis & Sciences", "level": "bachelor" },
+        { "nameAr": "الحديث الشريف وعلومه", "nameEn": "Hadith & Its Sciences", "level": "bachelor" },
+        { "nameAr": "العقيدة الإسلامية", "nameEn": "Islamic Creed", "level": "bachelor" },
+        { "nameAr": "الدعوة والإعلام الإسلامي", "nameEn": "Islamic Dawah & Media", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 10,
+      "nameAr": "كلية التربية",
+      "nameEn": "Faculty of Education",
+      "slug": "education",
+      "descriptionAr": "معلمٌ .. يربي أجيال المستقبل المستنيرة",
+      "websiteUrl": "https://education.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "التعليم الأساسي", "nameEn": "Basic Education", "level": "bachelor" },
+        { "nameAr": "الإرشاد النفسي والتوجيه التربوي", "nameEn": "Psychological Counseling & Educational Guidance", "level": "bachelor" },
+        { "nameAr": "المناهج وطرق التدريس", "nameEn": "Curricula & Instruction", "level": "bachelor" },
+        { "nameAr": "التربية الخاصة", "nameEn": "Special Education", "level": "bachelor" },
+        { "nameAr": "تكنولوجيا التعليم", "nameEn": "Educational Technology", "level": "bachelor" }
+      ]
+    },
+    {
+      "id": 11,
+      "nameAr": "كلية الاقتصاد والعلوم الإدارية",
+      "nameEn": "Faculty of Economics & Administrative Sciences",
+      "slug": "economics-administrative-sciences",
+      "descriptionAr": "بناء الاقتصاد والإدارة السليمة والمال",
+      "websiteUrl": "https://commerce.iugaza.edu.ps/",
+      "programs": [
+        { "nameAr": "إدارة الأعمال", "nameEn": "Business Administration", "level": "bachelor" },
+        { "nameAr": "المحاسبة", "nameEn": "Accounting", "level": "bachelor" },
+        { "nameAr": "الاقتصاد والعلوم المالية", "nameEn": "Economics & Finance", "level": "bachelor" },
+        { "nameAr": "إدارة الأعمال باللغة الإنجليزية", "nameEn": "Business Administration (English)", "level": "bachelor" },
+        { "nameAr": "العلوم السياسية والدبلوماسية", "nameEn": "Political Science & Diplomacy", "level": "bachelor" },
+        { "nameAr": "المحاسبة باللغة الإنجليزية", "nameEn": "Accounting (English)", "level": "bachelor" }
+      ]
+    }
+  ]
+}

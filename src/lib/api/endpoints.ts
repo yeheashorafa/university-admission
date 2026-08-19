@@ -96,5 +96,10 @@ export const ENDPOINTS = {
     admissionCycles: "/admin/admission-cycles",
     documentTypes: "/admin/document-types",
     applicationTypes: "/admin/application-types",
+    secondarySchoolRecordsImport: "/admin/secondary-school-records/import",
+    notifications: "/admin/notifications",
+    readNotification: (id: string | number) => `/admin/notifications/${id}/read`,
+    readAllNotifications: "/admin/notifications/read-all",
+    deleteNotification: (id: string | number) => `/admin/notifications/${id}`,
   },
 } as const;

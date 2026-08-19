@@ -11,9 +11,11 @@ export type AuthUser = {
   role: UserRole;
   phone?: string;
   avatar?: string;
+  national_id?: string;
   is_verified?: boolean;
   verified?: boolean;
   email_verified_at?: string | null;
+  verification_method?: string | null;
 };
 
 export type LoginPayload = {
@@ -25,6 +27,7 @@ export type RegisterPayload = {
   name: string;
   email: string;
   phone: string;
+  national_id: string;
   password: string;
   password_confirmation: string;
 };
@@ -92,6 +95,17 @@ export function normalizeAuthUser(
   const rawEmailVerifiedAt =
     rawUser?.email_verified_at ?? outerPayload?.email_verified_at;
 
+  const rawVerificationMethod =
+    (rawUser?.verification_method as string) ??
+    (outerPayload?.verification_method as string) ??
+    null;
+
+  const rawNationalId =
+    (rawUser?.national_id as string) ??
+    (outerPayload?.national_id as string) ??
+    ((rawUser?.personal_information as Record<string, unknown> | null | undefined)?.national_id as string) ??
+    undefined;
+
   const is_verified =
     typeof rawVerified === "boolean"
       ? rawVerified
@@ -117,9 +131,11 @@ export function normalizeAuthUser(
     role: roleName,
     phone: (rawUser?.phone as string) ?? "",
     avatar: (rawUser?.avatar as string) ?? "",
+    national_id: rawNationalId,
     is_verified,
     verified: is_verified,
     email_verified_at,
+    verification_method: rawVerificationMethod,
   };
 }
 

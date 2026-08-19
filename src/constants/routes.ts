@@ -34,8 +34,7 @@ export const routes = {
   adminReports: "/admin/reports",
   adminSettings: "/admin/settings",
   adminLegalPolicies: "/admin/legal-policies",
-
-
+  adminSecondarySchoolRecords: "/admin/secondary-school-records",
 } as const;
 
 export function withLocale(locale: string, path: string) {

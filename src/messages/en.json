@@ -40,7 +40,6 @@
     "delete": "Delete",
     "approve": "Approve",
     "reject": "Reject",
-    "loading": "Loading...",
     "checkingAccess": "Checking access...",
     "pleaseWaitPermissions": "Please wait while we verify your account permissions.",
     "somethingWentWrong": "Something went wrong. Please try again.",
@@ -53,46 +52,96 @@
     }
   },
   "application": {
+    "applicationHeader": "Bachelor Admission",
+    "applicationTitle": "Admission Application",
+    "description": "Complete your personal, academic, and program selection information.",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "academicInfo": "Academic Information",
+    "programSelection": "Program Selection",
+    "reviewSubmit": "Review & Submit",
+    "saveDraft": "Save Draft",
+    "submitApplication": "Submit Application",
+    "submittedTitle": "Application Submitted",
+    "submittedDescription": "Your application has been submitted successfully and is now under review.",
+    "universityName": "Islamic University of Gaza",
+    "savedJustNow": "Saved just now",
+    "closeApplication": "Close application",
+    "highSchoolInformation": "High School Information",
+    "highSchoolBranch": "High School Branch",
+    "scientific": "Scientific",
+    "literary": "Literary",
+    "industrial": "Industrial",
+    "generalAverage": "General Average",
+    "coreSubjectMarks": "Core Subject Marks",
+    "mathematics": "Mathematics",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "english": "English",
+    "footerCopyright": "© 2026 Islamic University of Gaza - Admission and Registration",
+    "privacyPolicy": "Privacy Policy",
+    "termsAndConditions": "Terms and Conditions",
     "steps": {
       "1": "Qualification Data",
       "2": "Admission Type",
-      "3": "Tawjihi Details",
-      "4": "Personal Data",
+      "3": "Main / Tawjihi Data",
+      "4": "Basic Personal Data",
       "5": "Guardian Data",
-      "6": "Contact Data",
-      "7": "Preferences",
+      "6": "Address & Contact Data",
+      "7": "Student Preferences",
       "8": "Student Photo",
-      "9": "Documents",
-      "10": "Review",
+      "9": "Application Documents",
+      "10": "Full Application Review",
       "11": "Final Confirmation"
     },
-    "qualificationData": "Qualification Data",
-    "qualificationType": "Qualification Type (Last Degree Obtained)",
-    "desiredStudyLevel": "Desired Study Program Level",
-    "qualificationYear": "Study / Tawjihi Year",
-    "verificationMethod": "Verification Method",
-    "seatNumber": "Seat Number",
-    "nationalId": "National ID",
-    "resultCheckMethod": "Result Check Method",
-    "tawjihiPercentage": "Tawjihi Percentage",
-    "tawjihiTotalScore": "Tawjihi Total Score",
-    "confirm": "Confirm",
-    "reset": "Reset",
-    "pendingEducationVerification": "These details will be verified later through the Ministry/Education integration when available.",
-    "highSchool": "General High School (Tawjihi)",
-    "intermediateDiploma": "Intermediate Diploma",
-    "specializedVocationalDiploma": "Specialized Vocational Diploma",
-    "bachelor": "Bachelor's Degree",
-    "highDiploma": "Higher Diploma",
-    "master": "Master's Degree",
-    "transfer": "Transfer",
-    "doctorate": "Doctorate / PhD",
-    "educationalDiploma": "Educational Diploma",
-    "percentage": "Tawjihi Percentage",
-    "totalScore": "Tawjihi Total Score",
-    "requiredField": "This field is required",
-    "invalidPercentage": "Percentage must be between 0 and 100",
-    "invalidTotalScore": "Total score must be a positive number"
+    "selectPrograms": "Select Programs",
+    "searchProgramPlaceholder": "Search for a program...",
+    "minimumRate": "Minimum rate",
+    "eligible": "Eligible",
+    "notEligible": "Not Eligible",
+    "addProgram": "Add {program}",
+    "back": "Back",
+    "selectedPreferences": "Selected Preferences",
+    "selectedPreferencesDescription": "You can select and arrange up to 3 preferences. Use the arrows to change the priority order.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeProgram": "Remove {program}",
+    "emptyPreferenceSlot": "Empty preference slot",
+    "programOptions": {
+      "computer-engineering": {
+        "title": "Computer Engineering",
+        "faculty": "Faculty of Engineering"
+      },
+      "medicine": {
+        "title": "Medicine and Surgery",
+        "faculty": "Faculty of Medicine"
+      },
+      "software-engineering": {
+        "title": "Software Engineering",
+        "faculty": "Faculty of Engineering"
+      },
+      "data-ai": {
+        "title": "Data Science and Artificial Intelligence",
+        "faculty": "Faculty of Information Technology"
+      },
+      "accounting": {
+        "title": "Accounting",
+        "faculty": "Faculty of Commerce"
+      },
+      "english": {
+        "title": "English Language and Literature",
+        "faculty": "Faculty of Arts"
+      },
+      "architecture": {
+        "title": "Architecture",
+        "faculty": "Faculty of Engineering"
+      },
+      "business-administration": {
+        "title": "Business Administration",
+        "faculty": "Faculty of Commerce"
+      }
+    },
+    "noTawjihiRecordMessage": "No verified Tawjihi record is linked to your National ID. Please verify your National ID or contact admissions."
   },
   "navigation": {
     "accountMenu": "Account menu",
@@ -104,7 +153,6 @@
     "login": "Login",
     "createStudentAccount": "Create Student Account",
     "studentMenu": "Student Menu",
-    "adminPortal": "Admin Portal",
     "adminPortal": "Admin Portal",
     "overview": "Overview",
     "applications": "Applications",
@@ -211,7 +259,11 @@
     "close": "Close",
     "resetPasswordTitle": "Reset Password",
     "resetPasswordDescription": "Create a new password for your account.",
-    "newPassword": "New Password"
+    "newPassword": "New Password",
+    "nationalId": "National ID",
+    "nationalIdRequired": "National ID is required",
+    "nationalIdMaxLength": "National ID cannot exceed 20 characters",
+    "nationalIdAlreadyTaken": "National ID has already been taken."
   },
   "landing": {
     "nav": {
@@ -940,97 +992,6 @@
       }
     ]
   },
-  "application": {
-    "applicationHeader": "Bachelor Admission",
-    "applicationTitle": "Admission Application",
-    "description": "Complete your personal, academic, and program selection information.",
-    "personalInfo": "Personal Information",
-    "contactInfo": "Contact Information",
-    "academicInfo": "Academic Information",
-    "programSelection": "Program Selection",
-    "reviewSubmit": "Review & Submit",
-    "saveDraft": "Save Draft",
-    "submitApplication": "Submit Application",
-    "submittedTitle": "Application Submitted",
-    "submittedDescription": "Your application has been submitted successfully and is now under review.",
-    "universityName": "Islamic University of Gaza",
-    "savedJustNow": "Saved just now",
-    "closeApplication": "Close application",
-    "highSchoolInformation": "High School Information",
-    "highSchoolBranch": "High School Branch",
-    "scientific": "Scientific",
-    "literary": "Literary",
-    "industrial": "Industrial",
-    "generalAverage": "General Average",
-    "coreSubjectMarks": "Core Subject Marks",
-    "mathematics": "Mathematics",
-    "physics": "Physics",
-    "chemistry": "Chemistry",
-    "english": "English",
-    "footerCopyright": "© 2026 Islamic University of Gaza - Admission and Registration",
-    "privacyPolicy": "Privacy Policy",
-    "termsAndConditions": "Terms and Conditions",
-    "steps": {
-      "1": "Qualification Data",
-      "2": "Admission Type",
-      "3": "Main / Tawjihi Data",
-      "4": "Basic Personal Data",
-      "5": "Guardian Data",
-      "6": "Address & Contact Data",
-      "7": "Student Preferences",
-      "8": "Student Photo",
-      "9": "Application Documents",
-      "10": "Full Application Review",
-      "11": "Final Confirmation"
-    },
-    "selectPrograms": "Select Programs",
-    "searchProgramPlaceholder": "Search for a program...",
-    "minimumRate": "Minimum rate",
-    "eligible": "Eligible",
-    "notEligible": "Not Eligible",
-    "addProgram": "Add {program}",
-    "back": "Back",
-    "selectedPreferences": "Selected Preferences",
-    "selectedPreferencesDescription": "You can select and arrange up to 3 preferences. Use the arrows to change the priority order.",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
-    "removeProgram": "Remove {program}",
-    "emptyPreferenceSlot": "Empty preference slot",
-    "programOptions": {
-      "computer-engineering": {
-        "title": "Computer Engineering",
-        "faculty": "Faculty of Engineering"
-      },
-      "medicine": {
-        "title": "Medicine and Surgery",
-        "faculty": "Faculty of Medicine"
-      },
-      "software-engineering": {
-        "title": "Software Engineering",
-        "faculty": "Faculty of Engineering"
-      },
-      "data-ai": {
-        "title": "Data Science and Artificial Intelligence",
-        "faculty": "Faculty of Information Technology"
-      },
-      "accounting": {
-        "title": "Accounting",
-        "faculty": "Faculty of Commerce"
-      },
-      "english": {
-        "title": "English Language and Literature",
-        "faculty": "Faculty of Arts"
-      },
-      "architecture": {
-        "title": "Architecture",
-        "faculty": "Faculty of Engineering"
-      },
-      "business-administration": {
-        "title": "Business Administration",
-        "faculty": "Faculty of Commerce"
-      }
-    }
-  },
   "documents": {
     "title": "Documents",
     "description": "Upload and manage the required admission documents.",
@@ -1078,7 +1039,6 @@
       }
     }
   },
-
   "studentStatusWorkflow": {
     "badge": "Admission Application Tracking",
     "title": "Your Application Status",
@@ -1221,7 +1181,15 @@
     "scientific": "Scientific",
     "graduationYear": "Graduation Year",
     "school": "School",
-    "mockSchool": "Al-Karmel Secondary School"
+    "mockSchool": "Al-Karmel Secondary School",
+    "firstNameEn": "First name (English)",
+    "fatherNameEn": "Father name (English)",
+    "grandfatherNameEn": "Grandfather name (English)",
+    "familyNameEn": "Family name (English)",
+    "placeOfBirth": "Place of birth",
+    "officialAddress": "Official address",
+    "readOnlyNationalId": "National ID saved automatically from registration",
+    "missingBaseFieldsError": "Please fill in all basic personal details before saving."
   },
   "payment": {
     "title": "Payment",
@@ -1889,11 +1857,12 @@
       "reviewReason": "Review Reason",
       "aiReviewSummary": "AI Review Summary",
       "riskScore": "Risk Score",
-      "aiSummary": [
-        "Student name matches the uploaded certificate.",
-        "Official seal was detected successfully.",
-        "Average value appears inconsistent and requires supervisor confirmation."
-      ],
+      "aiSummary": {
+        "nameMatch": "Student name matches the uploaded documents.",
+        "sealDetected": "Official seal was detected successfully.",
+        "highRisk": "AI detected a high-risk inconsistency that requires supervisor confirmation.",
+        "lowRisk": "No critical inconsistency was detected by AI."
+      },
       "submittedAverage": "Submitted Average",
       "extractedAverage": "Extracted Average",
       "reviewChecklist": "Review Checklist",
@@ -1943,12 +1912,6 @@
         "approved": "Approved",
         "rejected": "Rejected",
         "fix_requested": "Fix requested"
-      },
-      "aiSummary": {
-        "nameMatch": "Student name matches the uploaded documents.",
-        "sealDetected": "Official seal was detected successfully.",
-        "highRisk": "AI detected a high-risk inconsistency that requires supervisor confirmation.",
-        "lowRisk": "No critical inconsistency was detected by AI."
       },
       "employeeBadge": "Employee Review Queue",
       "employeeTitle": "Applications with Failed AI Verification",
@@ -2290,7 +2253,6 @@
       "allStatuses": "All Statuses",
       "applyFilters": "Apply Filters",
       "roles": {
-
         "student": "Student"
       },
       "statuses": {
@@ -2468,7 +2430,16 @@
       "deleteConfirmTitle": "Delete notification?",
       "deleteConfirmDescription": "This action will remove the notification from the current list.",
       "scheduledTime": "Scheduled time",
-      "notSentYet": "Not sent yet"
+      "notSentYet": "Not sent yet",
+      "importSummaryTitle": "Tawjihi Import Summary",
+      "totalRows": "Total Rows",
+      "matched": "Matched",
+      "pending": "Pending",
+      "failed": "Failed",
+      "failedRowsDetails": "Error Details (First 200 Rows)",
+      "rowIndex": "Row",
+      "nationalIdColumn": "National ID",
+      "errorDetailsColumn": "Errors"
     },
     "settings": {
       "systemConfiguration": "System Configuration",
@@ -2639,7 +2610,19 @@
       "deleteConfirmTitle": "Delete policy?",
       "deleteConfirmDescription": "This action will remove the policy from the current list.",
       "noResultsDescription": "No policies match your search."
-    }
+    },
+    "tawjihiImport": "Import Tawjihi Results",
+    "tawjihiImportTitle": "Import Tawjihi Results",
+    "tawjihiImportDescription": "Upload an Excel file containing Tawjihi results to automatically link student records.",
+    "chooseExcelFile": "Choose Excel File",
+    "dragDropOrClick": "Drag and drop Excel file here or click to select",
+    "fileFormatNotice": "Accepted formats: .xlsx or .xls (Max size: 50MB)",
+    "uploading": "Uploading...",
+    "uploadButton": "Upload Tawjihi Results",
+    "fileReceivedProcessing": "File received and is being processed in the background. You will receive a notification when finished.",
+    "viewAdminNotifications": "View Admin Notifications",
+    "unauthorizedUpload": "You are not authorized to upload Tawjihi results.",
+    "invalidFileFormatOrSize": "Please select a valid Excel file with format .xlsx or .xls and size not exceeding 50MB."
   },
   "applicationSubmitted": {
     "hero": {

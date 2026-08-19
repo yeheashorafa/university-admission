@@ -1,9 +1,12 @@
+import type { NotificationDataSummary } from "@/services/admin-notifications.service";
+
 export type NotificationType =
   | "document"
   | "status"
   | "payment"
   | "admission"
-  | "general";
+  | "general"
+  | "secondary_school_record_import";
 
 export type NotificationAudience = "single_student" | "all_applicants" | "filtered_group";
 
@@ -17,6 +20,8 @@ export type AdminNotification = {
   audience: string;
   status: AdminNotificationStatus;
   sentAt: string;
+  data?: NotificationDataSummary | null;
+  readAt?: string | null;
 };
 
 export const adminNotificationsMock: AdminNotification[] = [

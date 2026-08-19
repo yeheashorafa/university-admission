@@ -40,7 +40,6 @@
     "delete": "حذف",
     "approve": "قبول",
     "reject": "رفض",
-    "loading": "جاري التحميل...",
     "checkingAccess": "جاري التحقق من الصلاحيات...",
     "pleaseWaitPermissions": "يرجى الانتظار بينما نتحقق من صلاحيات حسابك.",
     "somethingWentWrong": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
@@ -53,46 +52,96 @@
     }
   },
   "application": {
+    "applicationHeader": "القبول في برنامج البكالوريوس",
+    "applicationTitle": "طلب الالتحاق",
+    "description": "أكمل بياناتك الشخصية والأكاديمية واختر البرامج المناسبة.",
+    "personalInfo": "البيانات الشخصية",
+    "contactInfo": "بيانات التواصل",
+    "academicInfo": "البيانات الأكاديمية",
+    "programSelection": "اختيار البرامج",
+    "reviewSubmit": "المراجعة والإرسال",
+    "saveDraft": "حفظ كمسودة",
+    "submitApplication": "إرسال الطلب",
+    "submittedTitle": "تم إرسال الطلب",
+    "submittedDescription": "تم إرسال طلبك بنجاح وهو الآن قيد المراجعة.",
+    "universityName": "الجامعة الإسلامية بغزة",
+    "savedJustNow": "تم الحفظ الآن",
+    "closeApplication": "إغلاق الطلب",
+    "highSchoolInformation": "معلومات الثانوية العامة",
+    "highSchoolBranch": "فرع الثانوية العامة",
+    "scientific": "علمي",
+    "literary": "أدبي",
+    "industrial": "صناعي",
+    "generalAverage": "المعدل العام",
+    "coreSubjectMarks": "علامات المواد الأساسية",
+    "mathematics": "الرياضيات",
+    "physics": "الفيزياء",
+    "chemistry": "الكيمياء",
+    "english": "اللغة الإنجليزية",
+    "footerCopyright": "© 2026 الجامعة الإسلامية بغزة - القبول والتسجيل",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsAndConditions": "الشروط والأحكام",
     "steps": {
-      "1": "بيانات التوجيهي",
-      "2": "نوع القبول",
-      "3": "تفاصيل الثانوية العامة",
-      "4": "البيانات الشخصية",
+      "1": "بيانات المؤهل",
+      "2": "نوع الالتحاق",
+      "3": "بيانات رئيسية",
+      "4": "بيانات أساسية",
       "5": "بيانات ولي الأمر",
-      "6": "بيانات التواصل",
-      "7": "رغبات القبول",
-      "8": "الصورة الشخصية",
+      "6": "بيانات الاتصال",
+      "7": "رغبات الطالب",
+      "8": "صورة الطالب",
       "9": "مستندات الطلب",
-      "10": "مراجعة الطلب",
-      "11": "التأكيد النهائي"
+      "10": "الطلب الكامل",
+      "11": "اعتماد نهائي"
     },
-    "qualificationData": "بيانات التوجيهي",
-    "qualificationType": "نوع القبول (آخر شهادة حصلت عليها)",
-    "desiredStudyLevel": "برنامج الدراسة الذي ترغب الالتحاق به",
-    "qualificationYear": "سنة الدراسة/التوجيهي",
-    "verificationMethod": "طريقة التحقق",
-    "seatNumber": "رقم الجلوس",
-    "nationalId": "رقم الهوية",
-    "resultCheckMethod": "طريقة فحص النتيجة",
-    "tawjihiPercentage": "نسبة توجيهي",
-    "tawjihiTotalScore": "مجموع علامات التوجيهي",
-    "confirm": "موافق",
-    "reset": "إعادة تعيين",
-    "pendingEducationVerification": "سيتم التحقق من هذه البيانات لاحقاً من مصادر وزارة التربية والتعليم عند توفر الربط.",
-    "highSchool": "ثانوية عامة",
-    "intermediateDiploma": "دبلوم متوسط",
-    "specializedVocationalDiploma": "دبلوم مهني متخصص",
-    "bachelor": "بكالوريوس",
-    "highDiploma": "دبلوم عالي",
-    "master": "ماجستير",
-    "transfer": "تحويل",
-    "doctorate": "الدكتوراه",
-    "educationalDiploma": "الدبلوم التربوي",
-    "percentage": "نسبة التوجيهي",
-    "totalScore": "مجموع درجات توجيهي",
-    "requiredField": "حقل مطلوب",
-    "invalidPercentage": "نسبة التوجيهي يجب أن تكون بين 0 و 100",
-    "invalidTotalScore": "مجموع درجات التوجيهي يجب أن يكون رقم أكثر من 0"
+    "selectPrograms": "اختيار البرامج",
+    "searchProgramPlaceholder": "ابحث عن برنامج...",
+    "minimumRate": "الحد الأدنى للمعدل",
+    "eligible": "مؤهل",
+    "notEligible": "غير مؤهل",
+    "addProgram": "إضافة {program}",
+    "back": "رجوع",
+    "selectedPreferences": "الرغبات المختارة",
+    "selectedPreferencesDescription": "يمكنك اختيار وترتيب حتى 3 رغبات. استخدم الأسهم لتغيير ترتيب الأولوية.",
+    "moveUp": "نقل للأعلى",
+    "moveDown": "نقل للأسفل",
+    "removeProgram": "إزالة {program}",
+    "emptyPreferenceSlot": "رغبة فارغة",
+    "programOptions": {
+      "computer-engineering": {
+        "title": "هندسة الحاسوب",
+        "faculty": "كلية الهندسة"
+      },
+      "medicine": {
+        "title": "الطب والجراحة",
+        "faculty": "كلية الطب"
+      },
+      "software-engineering": {
+        "title": "هندسة البرمجيات",
+        "faculty": "كلية الهندسة"
+      },
+      "data-ai": {
+        "title": "علم البيانات والذكاء الاصطناعي",
+        "faculty": "كلية تكنولوجيا المعلومات"
+      },
+      "accounting": {
+        "title": "المحاسبة",
+        "faculty": "كلية التجارة"
+      },
+      "english": {
+        "title": "اللغة الإنجليزية وآدابها",
+        "faculty": "كلية الآداب"
+      },
+      "architecture": {
+        "title": "الهندسة المعمارية",
+        "faculty": "كلية الهندسة"
+      },
+      "business-administration": {
+        "title": "إدارة الأعمال",
+        "faculty": "كلية التجارة"
+      }
+    },
+    "noTawjihiRecordMessage": "لا يوجد سجل توجيهي مرتبط برقم الهوية الخاص بك. يرجى التأكد من رقم الهوية أو مراجعة القبول والتسجيل."
   },
   "navigation": {
     "accountMenu": "قائمة الحساب",
@@ -104,7 +153,6 @@
     "login": "تسجيل الدخول",
     "createStudentAccount": "إنشاء حساب طالب",
     "studentMenu": "قائمة الطالب",
-    "adminPortal": "بوابة الإدارية",
     "adminPortal": "بوابة الإدارية",
     "overview": "نظرة عامة",
     "applications": "الطلبات",
@@ -211,7 +259,11 @@
     "startJourney": "ابدأ رحلة قبولك الجامعي",
     "resetPasswordTitle": "إعادة تعيين كلمة المرور",
     "resetPasswordDescription": "أنشئ كلمة مرور جديدة لحسابك.",
-    "newPassword": "كلمة المرور الجديدة"
+    "newPassword": "كلمة المرور الجديدة",
+    "nationalId": "رقم الهوية",
+    "nationalIdRequired": "رقم الهوية مطلوب",
+    "nationalIdMaxLength": "رقم الهوية يجب ألا يتجاوز 20 خانة",
+    "nationalIdAlreadyTaken": "رقم الهوية مستخدم من قبل."
   },
   "landing": {
     "nav": {
@@ -616,7 +668,12 @@
           "التواصل بفعالية مع المرضى وفرق الرعاية الصحية.",
           "الالتزام بأخلاقيات المهنة والمعايير الطبية."
         ],
-        "careerPaths": ["طبيب", "طبيب مقيم", "باحث سريري", "أخصائي صحة عامة"],
+        "careerPaths": [
+          "طبيب",
+          "طبيب مقيم",
+          "باحث سريري",
+          "أخصائي صحة عامة"
+        ],
         "studyPlan": [
           {
             "year": "السنتان الأولى والثانية",
@@ -935,97 +992,6 @@
       }
     ]
   },
-  "application": {
-    "applicationHeader": "القبول في برنامج البكالوريوس",
-    "applicationTitle": "طلب الالتحاق",
-    "description": "أكمل بياناتك الشخصية والأكاديمية واختر البرامج المناسبة.",
-    "personalInfo": "البيانات الشخصية",
-    "contactInfo": "بيانات التواصل",
-    "academicInfo": "البيانات الأكاديمية",
-    "programSelection": "اختيار البرامج",
-    "reviewSubmit": "المراجعة والإرسال",
-    "saveDraft": "حفظ كمسودة",
-    "submitApplication": "إرسال الطلب",
-    "submittedTitle": "تم إرسال الطلب",
-    "submittedDescription": "تم إرسال طلبك بنجاح وهو الآن قيد المراجعة.",
-    "universityName": "الجامعة الإسلامية بغزة",
-    "savedJustNow": "تم الحفظ الآن",
-    "closeApplication": "إغلاق الطلب",
-    "highSchoolInformation": "معلومات الثانوية العامة",
-    "highSchoolBranch": "فرع الثانوية العامة",
-    "scientific": "علمي",
-    "literary": "أدبي",
-    "industrial": "صناعي",
-    "generalAverage": "المعدل العام",
-    "coreSubjectMarks": "علامات المواد الأساسية",
-    "mathematics": "الرياضيات",
-    "physics": "الفيزياء",
-    "chemistry": "الكيمياء",
-    "english": "اللغة الإنجليزية",
-    "footerCopyright": "© 2026 الجامعة الإسلامية بغزة - القبول والتسجيل",
-    "privacyPolicy": "سياسة الخصوصية",
-    "termsAndConditions": "الشروط والأحكام",
-    "steps": {
-      "1": "بيانات المؤهل",
-      "2": "نوع الالتحاق",
-      "3": "بيانات رئيسية",
-      "4": "بيانات أساسية",
-      "5": "بيانات ولي الأمر",
-      "6": "بيانات الاتصال",
-      "7": "رغبات الطالب",
-      "8": "صورة الطالب",
-      "9": "مستندات الطلب",
-      "10": "الطلب الكامل",
-      "11": "اعتماد نهائي"
-    },
-    "selectPrograms": "اختيار البرامج",
-    "searchProgramPlaceholder": "ابحث عن برنامج...",
-    "minimumRate": "الحد الأدنى للمعدل",
-    "eligible": "مؤهل",
-    "notEligible": "غير مؤهل",
-    "addProgram": "إضافة {program}",
-    "back": "رجوع",
-    "selectedPreferences": "الرغبات المختارة",
-    "selectedPreferencesDescription": "يمكنك اختيار وترتيب حتى 3 رغبات. استخدم الأسهم لتغيير ترتيب الأولوية.",
-    "moveUp": "نقل للأعلى",
-    "moveDown": "نقل للأسفل",
-    "removeProgram": "إزالة {program}",
-    "emptyPreferenceSlot": "رغبة فارغة",
-    "programOptions": {
-      "computer-engineering": {
-        "title": "هندسة الحاسوب",
-        "faculty": "كلية الهندسة"
-      },
-      "medicine": {
-        "title": "الطب والجراحة",
-        "faculty": "كلية الطب"
-      },
-      "software-engineering": {
-        "title": "هندسة البرمجيات",
-        "faculty": "كلية الهندسة"
-      },
-      "data-ai": {
-        "title": "علم البيانات والذكاء الاصطناعي",
-        "faculty": "كلية تكنولوجيا المعلومات"
-      },
-      "accounting": {
-        "title": "المحاسبة",
-        "faculty": "كلية التجارة"
-      },
-      "english": {
-        "title": "اللغة الإنجليزية وآدابها",
-        "faculty": "كلية الآداب"
-      },
-      "architecture": {
-        "title": "الهندسة المعمارية",
-        "faculty": "كلية الهندسة"
-      },
-      "business-administration": {
-        "title": "إدارة الأعمال",
-        "faculty": "كلية التجارة"
-      }
-    }
-  },
   "documents": {
     "title": "المستندات",
     "description": "ارفع وأدر المستندات المطلوبة للقبول.",
@@ -1073,7 +1039,6 @@
       }
     }
   },
-
   "studentStatusWorkflow": {
     "badge": "متابعة طلب القبول",
     "title": "حالة طلبك",
@@ -1216,7 +1181,15 @@
     "scientific": "علمي",
     "graduationYear": "سنة التخرج",
     "school": "المدرسة",
-    "mockSchool": "مدرسة الكرمل الثانوية"
+    "mockSchool": "مدرسة الكرمل الثانوية",
+    "firstNameEn": "الاسم الأول بالإنجليزية",
+    "fatherNameEn": "اسم الأب بالإنجليزية",
+    "grandfatherNameEn": "اسم الجد بالإنجليزية",
+    "familyNameEn": "اسم العائلة بالإنجليزية",
+    "placeOfBirth": "مكان الميلاد",
+    "officialAddress": "العنوان الرسمي",
+    "readOnlyNationalId": "رقم الهوية مسجل ومحفوظ تلقائياً من التسجيل",
+    "missingBaseFieldsError": "يرجى تعبئة جميع بياناتك الشخصية الأساسية قبل الحفظ."
   },
   "payment": {
     "title": "الدفع",
@@ -1517,7 +1490,6 @@
           "generatedBy": "منى صالح"
         }
       },
-
       "percentage": "النسبة"
     },
     "roles": {
@@ -1526,7 +1498,6 @@
       "department_head": "رئيس القسم",
       "admission_employee": "موظف قبول وتدقيق"
     },
-
     "sidebar": {
       "dashboard": "لوحة التحكم",
       "reports": "الإحصائيات والتقارير",
@@ -1886,11 +1857,12 @@
       "reviewReason": "سبب المراجعة",
       "aiReviewSummary": "ملخص مراجعة الذكاء الاصطناعي",
       "riskScore": "درجة المخاطرة",
-      "aiSummary": [
-        "اسم الطالب مطابق للشهادة المرفوعة.",
-        "تم اكتشاف الختم الرسمي بنجاح.",
-        "قيمة المعدل تبدو غير متطابقة وتحتاج إلى تأكيد من المشرف."
-      ],
+      "aiSummary": {
+        "nameMatch": "اسم الطالب مطابق للمستندات المرفوعة.",
+        "sealDetected": "تم اكتشاف الختم الرسمي بنجاح.",
+        "highRisk": "اكتشف الذكاء الاصطناعي تعارضًا عالي الخطورة يحتاج لتأكيد المشرف.",
+        "lowRisk": "لم يتم اكتشاف تعارض خطير من الذكاء الاصطناعي."
+      },
       "submittedAverage": "المعدل المدخل",
       "extractedAverage": "المعدل المستخرج",
       "reviewChecklist": "قائمة التحقق",
@@ -1940,12 +1912,6 @@
         "approved": "معتمد",
         "rejected": "مرفوض",
         "fix_requested": "مطلوب تعديل"
-      },
-      "aiSummary": {
-        "nameMatch": "اسم الطالب مطابق للمستندات المرفوعة.",
-        "sealDetected": "تم اكتشاف الختم الرسمي بنجاح.",
-        "highRisk": "اكتشف الذكاء الاصطناعي تعارضًا عالي الخطورة يحتاج لتأكيد المشرف.",
-        "lowRisk": "لم يتم اكتشاف تعارض خطير من الذكاء الاصطناعي."
       },
       "employeeBadge": "قائمة تدقيق الموظف",
       "employeeTitle": "طلبات فشل التحقق الآلي منها",
@@ -2287,7 +2253,6 @@
       "allStatuses": "كل الحالات",
       "applyFilters": "تطبيق الفلاتر",
       "roles": {
-
         "student": "طالب"
       },
       "statuses": {
@@ -2465,7 +2430,16 @@
       "deleteConfirmTitle": "حذف الإشعار؟",
       "deleteConfirmDescription": "سيتم حذف الإشعار من القائمة الحالية.",
       "scheduledTime": "وقت مجدول",
-      "notSentYet": "لم يتم الإرسال بعد"
+      "notSentYet": "لم يتم الإرسال بعد",
+      "importSummaryTitle": "ملخص استيراد نتائج التوجيهي",
+      "totalRows": "إجمالي الصفوف",
+      "matched": "المطابقة",
+      "pending": "قيد الانتظار",
+      "failed": "الفاشلة",
+      "failedRowsDetails": "تفاصيل الأخطاء (أول 200 صف)",
+      "rowIndex": "الصف",
+      "nationalIdColumn": "رقم الهوية",
+      "errorDetailsColumn": "الأخطاء"
     },
     "settings": {
       "systemConfiguration": "إعدادات النظام",
@@ -2636,7 +2610,19 @@
       "deleteConfirmTitle": "حذف السياسة؟",
       "deleteConfirmDescription": "سيتم حذف السياسة من القائمة الحالية.",
       "noResultsDescription": "لا توجد سياسات مطابقة للبحث."
-    }
+    },
+    "tawjihiImport": "استيراد نتائج التوجيهي",
+    "tawjihiImportTitle": "استيراد نتائج التوجيهي",
+    "tawjihiImportDescription": "رفع ملف Excel لنتائج التوجيهي لربط بيانات الطلاب تلقائياً.",
+    "chooseExcelFile": "اختر ملف Excel",
+    "dragDropOrClick": "اسحب وإسقاط ملف Excel هنا أو اضغط للاختيار",
+    "fileFormatNotice": "الصيغ المقبولة: .xlsx أو .xls (الحجم الأقصى: 50 ميجابايت)",
+    "uploading": "جاري الرفع...",
+    "uploadButton": "رفع نتائج التوجيهي",
+    "fileReceivedProcessing": "تم استلام الملف وجارٍ معالجته بالخلفية. ستصلك رسالة إشعار عند الانتهاء.",
+    "viewAdminNotifications": "عرض إشعارات الأدمن",
+    "unauthorizedUpload": "غير مصرح لك برفع ملفات نتائج التوجيهي.",
+    "invalidFileFormatOrSize": "يرجى اختيار ملف Excel صحيح بصيغة .xlsx أو .xls وبحجم لا يتجاوز 50MB."
   },
   "applicationSubmitted": {
     "hero": {

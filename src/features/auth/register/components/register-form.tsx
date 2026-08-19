@@ -7,6 +7,7 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
+  IdCard,
   Loader2,
   LockKeyhole,
   Mail,
@@ -27,6 +28,7 @@ type FieldErrors = {
   fullName?: string;
   email?: string;
   phone?: string;
+  nationalId?: string;
   password?: string;
   passwordConfirmation?: string;
 };
@@ -41,6 +43,7 @@ export function RegisterForm() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [nationalId, setNationalId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -82,6 +85,13 @@ export function RegisterForm() {
       newFieldErrors.phone = locale === "ar" ? "رقم الهاتف مطلوب" : "Phone number is required";
     }
 
+    if (!nationalId.trim()) {
+      newFieldErrors.nationalId = locale === "ar" ? "رقم الهوية مطلوب" : "National ID is required";
+    } else if (nationalId.trim().length > 20) {
+      newFieldErrors.nationalId =
+        locale === "ar" ? "رقم الهوية يجب ألا يتجاوز 20 خانة" : "National ID cannot exceed 20 characters";
+    }
+
     if (!password) {
       newFieldErrors.password = t("passwordRequired");
     } else if (password.length < 8) {
@@ -108,6 +118,7 @@ export function RegisterForm() {
       name: fullName.trim(),
       email: email.trim(),
       phone: phone.trim(),
+      national_id: nationalId.trim(),
       password: password,
       password_confirmation: passwordConfirmation,
     };
@@ -134,6 +145,13 @@ export function RegisterForm() {
         }
         if (backendErrors.phone?.[0]) {
           mappedFieldErrors.phone = backendErrors.phone[0];
+        }
+        if (backendErrors.national_id?.[0]) {
+          const msg = backendErrors.national_id[0];
+          const isDuplicate = msg.toLowerCase().includes("taken") || msg.includes("مستخدم") || msg.includes("موجود");
+          mappedFieldErrors.nationalId = isDuplicate
+            ? (locale === "ar" ? "رقم الهوية مستخدم من قبل." : "National ID has already been taken.")
+            : msg;
         }
         if (backendErrors.password?.[0]) {
           mappedFieldErrors.password = backendErrors.password[0];
@@ -276,6 +294,41 @@ export function RegisterForm() {
           {fieldErrors.phone && (
             <p className="mt-1 text-xs text-destructive font-medium">
               {fieldErrors.phone}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="national-id"
+            className="mb-2 block text-sm font-medium text-muted-foreground"
+          >
+            {t("nationalId")}
+          </label>
+
+          <div className="relative">
+            <IdCard className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+
+            <input
+              id="national-id"
+              type="text"
+              maxLength={20}
+              value={nationalId}
+              onChange={(event) => {
+                setNationalId(event.target.value);
+                clearFieldError("nationalId");
+              }}
+              placeholder="123456789"
+              className={`h-12 w-full rounded-lg border bg-card px-4 ps-10 text-base outline-none transition ${
+                fieldErrors.nationalId
+                  ? "border-destructive focus:border-destructive focus:ring-1 focus:ring-destructive"
+                  : "border-input focus:border-primary focus:ring-1 focus:ring-primary"
+              }`}
+            />
+          </div>
+          {fieldErrors.nationalId && (
+            <p className="mt-1 text-xs text-destructive font-medium">
+              {fieldErrors.nationalId}
             </p>
           )}
         </div>
