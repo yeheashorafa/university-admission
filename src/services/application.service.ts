@@ -1,4 +1,4 @@
-import { apiClient, extractArray, extractResource, unwrapRootResponse } from "@/lib/api/client";
+import { apiClient, extractArray, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { BackendApplicationStatus } from "@/lib/adapters/status-adapter";
 import {
@@ -35,7 +35,7 @@ export type StudentDashboardStats = {
 
 export async function getStudentDashboard(): Promise<StudentDashboardStats> {
   const response = await apiClient.get(ENDPOINTS.student.dashboard);
-  const raw = unwrapRootResponse<Record<string, unknown>>(response.data);
+  const raw = extractResource<Record<string, unknown>>(response.data);
   const stats = (raw?.statistics || raw?.stats || {}) as Record<string, unknown>;
 
   const rawApps = extractArray<BackendApplicationRaw>(raw?.applications);

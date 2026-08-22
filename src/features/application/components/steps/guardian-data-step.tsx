@@ -105,10 +105,10 @@ export function GuardianDataStep({ data, onChange }: GuardianDataStepProps) {
           <input
             type="text"
             value={data.guardianNationalId}
-            onChange={(e) => onChange({ guardianNationalId: e.target.value.replace(/\D/g, "").slice(0, 9) })}
+            onChange={(e) => onChange({ guardianNationalId: e.target.value.replace(/\D/g, "").slice(0, 20) })}
             className="w-full h-11 rounded-xl border border-input bg-card px-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-            placeholder={locale === "ar" ? "أدخل 9 أرقام" : "Enter 9-digit ID"}
-            maxLength={9}
+            placeholder={locale === "ar" ? "أدخل رقم هوية ولي الأمر" : "Enter guardian national ID"}
+            maxLength={20}
           />
         </div>
 

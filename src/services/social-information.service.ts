@@ -1,4 +1,4 @@
-import { apiClient, unwrapRootResponse } from "@/lib/api/client";
+import { apiClient, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 
 export type BirthPlace = "inside_palestine" | "outside_palestine";
@@ -69,7 +69,7 @@ export type SocialInformation = {
 
 export async function getSocialInformation(): Promise<SocialInformation> {
   const response = await apiClient.get<SocialInformation>(ENDPOINTS.student.socialInformation);
-  return unwrapRootResponse<SocialInformation>(response.data);
+  return extractResource<SocialInformation>(response.data);
 }
 
 export async function updateSocialInformation(
@@ -79,5 +79,5 @@ export async function updateSocialInformation(
     ENDPOINTS.student.socialInformation,
     payload
   );
-  return unwrapRootResponse<SocialInformation>(response.data);
+  return extractResource<SocialInformation>(response.data);
 }

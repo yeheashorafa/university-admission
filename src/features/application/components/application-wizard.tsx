@@ -11,7 +11,14 @@ import { cn } from "@/lib/utils";
 import { isVerificationError } from "@/lib/api/api-error";
 import { isUserVerified } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
-import { getMyProfile, updateMyProfile, hasVerifiedTawjihiRecord, type StudentProfile } from "@/services/profile.service";
+import {
+  getMyProfile,
+  updateMyProfile,
+  hasVerifiedTawjihiRecord,
+  getStudentNationalId,
+  getSocialInformationFromProfile,
+  type StudentProfile,
+} from "@/services/profile.service";
 import {
   createStudentApplication,
   getApplicationDocumentChecklist,
@@ -23,6 +30,7 @@ import { usePublicAdmissionCyclesQuery, useDocumentTypesQuery } from "@/hooks/qu
 import {
   getSocialInformation,
   updateSocialInformation,
+  type SocialInformation,
   type BirthPlace,
   type FatherStatus,
   type GuardianProfession,
@@ -157,68 +165,108 @@ export function ApplicationWizard() {
           return;
         }
 
+        let resolvedNationalId = "";
+        let embeddedSocial: SocialInformation | null = null;
+
         if (profileRes.status === "fulfilled" && profileRes.value) {
           const p = profileRes.value;
           setLoadedProfile(p);
+          resolvedNationalId = getStudentNationalId(p, user);
+          embeddedSocial = getSocialInformationFromProfile(p);
           const pi = p.personal_information;
-          if (pi) {
-            setState((curr) => ({
-              ...curr,
-              qualificationData: {
-                ...curr.qualificationData,
-                national_id: curr.qualificationData.national_id || pi.national_id || "",
-              },
-              tawjihi: {
-                ...curr.tawjihi,
-                nationalId: pi.national_id || curr.tawjihi.nationalId,
-                firstNameAr: pi.first_name_ar || curr.tawjihi.firstNameAr,
-                fatherNameAr: pi.father_name_ar || curr.tawjihi.fatherNameAr,
-                grandfatherNameAr: pi.grandfather_name_ar || curr.tawjihi.grandfatherNameAr,
-                familyNameAr: pi.family_name_ar || curr.tawjihi.familyNameAr,
-                gender: pi.gender || curr.tawjihi.gender,
-                nationality: pi.nationality || curr.tawjihi.nationality,
-              },
-              contact: {
-                ...curr.contact,
-                email: p.email || curr.contact.email,
-                mobile: p.phone || curr.contact.mobile,
-              },
-            }));
-          }
+
+          setState((curr) => ({
+            ...curr,
+            qualificationData: {
+              ...curr.qualificationData,
+              national_id: curr.qualificationData.national_id || resolvedNationalId || "",
+            },
+            tawjihi: {
+              ...curr.tawjihi,
+              nationalId: resolvedNationalId || curr.tawjihi.nationalId,
+              firstNameAr: curr.tawjihi.firstNameAr || pi?.first_name_ar || "",
+              fatherNameAr: curr.tawjihi.fatherNameAr || pi?.father_name_ar || "",
+              grandfatherNameAr: curr.tawjihi.grandfatherNameAr || pi?.grandfather_name_ar || "",
+              familyNameAr: curr.tawjihi.familyNameAr || pi?.family_name_ar || "",
+              gender: curr.tawjihi.gender || pi?.gender || "male",
+              nationality: curr.tawjihi.nationality || pi?.nationality || "ps",
+            },
+            contact: {
+              ...curr.contact,
+              email: curr.contact.email || p.email || user?.email || "",
+              mobile: curr.contact.mobile || p.phone || user?.phone || "",
+            },
+            // Apply embedded social info if present as preliminary baseline
+            ...(embeddedSocial
+              ? {
+                  basicData: {
+                    ...curr.basicData,
+                    birthPlace: curr.basicData.birthPlace || (embeddedSocial as Record<string, string>).birth_place || (embeddedSocial as Record<string, string>).place_of_birth || "",
+                    birthDate: curr.basicData.birthDate || (embeddedSocial as Record<string, string>).birth_date || (embeddedSocial as Record<string, string>).date_of_birth || "",
+                    firstNameEn: curr.basicData.firstNameEn || embeddedSocial.first_name_en || "",
+                    fatherNameEn: curr.basicData.fatherNameEn || embeddedSocial.father_name_en || "",
+                    grandfatherNameEn: curr.basicData.grandfatherNameEn || embeddedSocial.grandfather_name_en || "",
+                    lastNameEn: curr.basicData.lastNameEn || embeddedSocial.family_name_en || "",
+                  },
+                  guardian: {
+                    ...curr.guardian,
+                    guardianName: curr.guardian.guardianName || embeddedSocial.guardian_name || "",
+                    guardianNationalId: curr.guardian.guardianNationalId || embeddedSocial.guardian_national_id || "",
+                    guardianRelationship: curr.guardian.guardianRelationship || embeddedSocial.guardian_relationship || "",
+                    guardianJob: curr.guardian.guardianJob || embeddedSocial.guardian_profession || "",
+                    guardianWorkplace: curr.guardian.guardianWorkplace || embeddedSocial.guardian_workplace || "",
+                    guardianPhone: curr.guardian.guardianPhone || embeddedSocial.guardian_phone || "",
+                    fatherStatus: (embeddedSocial.father_status as FatherStatus) || curr.guardian.fatherStatus || "alive",
+                    fatherWorks: curr.guardian.fatherWorks || (embeddedSocial.father_is_working ? "yes" : "no"),
+                    motherWorks: curr.guardian.motherWorks || (embeddedSocial.mother_is_working ? "yes" : "no"),
+                  },
+                  contact: {
+                    ...curr.contact,
+                    email: curr.contact.email || p.email || user?.email || "",
+                    mobile: curr.contact.mobile || p.phone || user?.phone || "",
+                    governorate: curr.contact.governorate || embeddedSocial.governorate || "",
+                    city: curr.contact.city || embeddedSocial.city || "",
+                    neighborhood: curr.contact.neighborhood || embeddedSocial.neighborhood || "",
+                    street: curr.contact.street || embeddedSocial.street || "",
+                    phone: curr.contact.phone || embeddedSocial.phone_landline || "",
+                  },
+                }
+              : {}),
+          }));
         }
 
         if (socialRes.status === "fulfilled" && socialRes.value) {
-          const s = socialRes.value;
+          const s = socialRes.value as Record<string, unknown>;
           setState((curr) => ({
             ...curr,
             basicData: {
               ...curr.basicData,
-              birthPlace: s.birth_place || curr.basicData.birthPlace,
-              birthDate: s.birth_date || curr.basicData.birthDate,
-              firstNameEn: s.first_name_en || curr.basicData.firstNameEn,
-              fatherNameEn: s.father_name_en || curr.basicData.fatherNameEn,
-              grandfatherNameEn: s.grandfather_name_en || curr.basicData.grandfatherNameEn,
-              lastNameEn: s.family_name_en || curr.basicData.lastNameEn,
+              birthPlace: (s.birth_place as string) || (s.place_of_birth as string) || curr.basicData.birthPlace,
+              birthDate: (s.birth_date as string) || (s.date_of_birth as string) || curr.basicData.birthDate,
+              firstNameEn: (s.first_name_en as string) || curr.basicData.firstNameEn,
+              fatherNameEn: (s.father_name_en as string) || curr.basicData.fatherNameEn,
+              grandfatherNameEn: (s.grandfather_name_en as string) || curr.basicData.grandfatherNameEn,
+              lastNameEn: (s.family_name_en as string) || (s.last_name_en as string) || curr.basicData.lastNameEn,
             },
             guardian: {
               ...curr.guardian,
-              guardianName: s.guardian_name || curr.guardian.guardianName,
-              guardianNationalId: s.guardian_national_id || curr.guardian.guardianNationalId,
-              guardianRelationship: s.guardian_relationship || curr.guardian.guardianRelationship,
-              guardianJob: s.guardian_profession || curr.guardian.guardianJob,
-              guardianWorkplace: s.guardian_workplace || curr.guardian.guardianWorkplace,
-              guardianPhone: s.guardian_phone || curr.guardian.guardianPhone,
-              fatherStatus: s.father_status || curr.guardian.fatherStatus,
-              fatherWorks: s.father_is_working ? "yes" : "no",
-              motherWorks: s.mother_is_working ? "yes" : "no",
+              guardianName: (s.guardian_name as string) || curr.guardian.guardianName,
+              guardianNationalId: (s.guardian_national_id as string) || curr.guardian.guardianNationalId,
+              guardianRelationship: (s.guardian_relationship as string) || curr.guardian.guardianRelationship,
+              guardianJob: (s.guardian_profession as string) || (s.guardian_job as string) || curr.guardian.guardianJob,
+              guardianWorkplace: (s.guardian_workplace as string) || curr.guardian.guardianWorkplace,
+              guardianPhone: (s.guardian_phone as string) || curr.guardian.guardianPhone,
+              fatherStatus: (s.father_status as FatherStatus) || curr.guardian.fatherStatus,
+              fatherWorks: typeof s.father_is_working === "boolean" ? (s.father_is_working ? "yes" : "no") : curr.guardian.fatherWorks,
+              motherWorks: typeof s.mother_is_working === "boolean" ? (s.mother_is_working ? "yes" : "no") : curr.guardian.motherWorks,
             },
             contact: {
               ...curr.contact,
-              governorate: s.governorate || curr.contact.governorate,
-              city: s.city || curr.contact.city,
-              neighborhood: s.neighborhood || curr.contact.neighborhood,
-              street: s.street || curr.contact.street,
-              phone: s.phone_landline || curr.contact.phone,
+              governorate: (s.governorate as string) || curr.contact.governorate,
+              city: (s.city as string) || curr.contact.city,
+              neighborhood: (s.neighborhood as string) || curr.contact.neighborhood,
+              street: (s.street as string) || curr.contact.street,
+              phone: (s.phone_landline as string) || curr.contact.phone,
             },
           }));
         }
@@ -227,7 +275,7 @@ export function ApplicationWizard() {
       }
     }
     loadBackendData();
-  }, [userIsUnverified]);
+  }, [userIsUnverified, user]);
 
   const updateSection = <K extends keyof ApplicationWizardState>(
     section: K,
@@ -400,11 +448,11 @@ export function ApplicationWizard() {
         toast.error(locale === "ar" ? "يرجى تعبئة جميع الحقول المطلوبة *" : "Please fill in all required fields *");
         return false;
       }
-      if (guardianNationalId.length !== 9) {
+      if (guardianNationalId.trim().length > 20) {
         toast.error(
           locale === "ar"
-            ? "يجب أن يتكون رقم هوية ولي الأمر من 9 أرقام"
-            : "Guardian ID must be exactly 9 digits"
+            ? "يجب ألا يتجاوز رقم هوية ولي الأمر 20 رقماً"
+            : "Guardian ID must not exceed 20 digits"
         );
         return false;
       }

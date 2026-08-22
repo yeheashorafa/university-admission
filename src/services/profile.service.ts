@@ -1,5 +1,23 @@
 import { apiClient, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
+import type { SocialInformation } from "@/services/social-information.service";
+import {
+  normalizeStudentProfile,
+  getStudentDisplayName,
+  getStudentNationalId,
+  getPersonalInformation,
+  getSocialInformationFromProfile,
+  hasTawjihiRecord,
+} from "@/lib/adapters/student-profile-adapter";
+
+export {
+  normalizeStudentProfile,
+  getStudentDisplayName,
+  getStudentNationalId,
+  getPersonalInformation,
+  getSocialInformationFromProfile,
+  hasTawjihiRecord,
+};
 
 export type PersonalInformation = {
   national_id?: string;
@@ -30,6 +48,7 @@ export type StudentProfile = {
   address?: string;
   profileCompletion?: number;
   personal_information?: PersonalInformation | null;
+  social_information?: SocialInformation | null;
   addresses?: Record<string, unknown>;
   emergency_contacts?: Record<string, unknown>;
   secondary_school_record?: Record<string, unknown> | null;
@@ -39,21 +58,7 @@ export type StudentProfile = {
 };
 
 export function hasVerifiedTawjihiRecord(profile: StudentProfile | null | undefined): boolean {
-  if (!profile) return false;
-  if (
-    profile.secondary_school_record &&
-    typeof profile.secondary_school_record === "object" &&
-    Object.keys(profile.secondary_school_record).length > 0
-  ) {
-    return true;
-  }
-  if (
-    Array.isArray(profile.secondary_school_records) &&
-    profile.secondary_school_records.length > 0
-  ) {
-    return true;
-  }
-  return false;
+  return hasTawjihiRecord(profile);
 }
 
 export type UpdateProfilePayload = {
@@ -69,7 +74,8 @@ export type UpdateProfilePayload = {
 
 export async function getMyProfile(): Promise<StudentProfile> {
   const response = await apiClient.get<StudentProfile>(ENDPOINTS.student.profile);
-  return extractResource<StudentProfile>(response.data);
+  const resource = extractResource<unknown>(response.data);
+  return normalizeStudentProfile(resource);
 }
 
 export async function updateMyProfile(payload: UpdateProfilePayload): Promise<StudentProfile> {
@@ -77,7 +83,8 @@ export async function updateMyProfile(payload: UpdateProfilePayload): Promise<St
     ENDPOINTS.student.profile,
     payload
   );
-  return extractResource<StudentProfile>(response.data);
+  const resource = extractResource<unknown>(response.data);
+  return normalizeStudentProfile(resource);
 }
 
 export async function changePassword(payload: {

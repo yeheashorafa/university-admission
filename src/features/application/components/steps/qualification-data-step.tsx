@@ -145,11 +145,11 @@ export function QualificationDataStep({
       if (!data.national_id || !data.national_id.trim()) {
         newErrors.identifier =
           locale === "ar" ? "رقم الهوية مطلوب" : "National ID is required";
-      } else if (data.national_id.trim().length !== 9) {
+      } else if (data.national_id.trim().length > 20) {
         newErrors.identifier =
           locale === "ar"
-            ? "يجب أن يتكون رقم الهوية من 9 أرقام"
-            : "National ID must be 9 digits";
+            ? "يجب ألا يتجاوز رقم الهوية 20 رقماً"
+            : "National ID must not exceed 20 digits";
       }
     }
 
@@ -418,7 +418,7 @@ export function QualificationDataStep({
                   onChange({
                     national_id: e.target.value
                       .replace(/\D/g, "")
-                      .slice(0, 9),
+                      .slice(0, 20),
                   });
                 }
               }}
@@ -428,10 +428,10 @@ export function QualificationDataStep({
                     ? "أدخل رقم الجلوس الخاص بالتوجيهي"
                     : "Enter high school seat number"
                   : locale === "ar"
-                  ? "أدخل رقم الهوية الوطنية المكون من 9 أرقام"
-                  : "Enter 9-digit national ID"
+                  ? "أدخل رقم الهوية الوطنية"
+                  : "Enter national ID"
               }
-              maxLength={data.verification_method === "national_id" ? 9 : 20}
+              maxLength={20}
               className={`w-full h-11 rounded-xl border bg-card px-3 text-sm outline-none transition focus:ring-1 ${
                 errors.identifier
                   ? "border-red-500 focus:border-red-500 focus:ring-red-500"

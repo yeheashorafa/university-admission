@@ -1,9 +1,13 @@
 "use client";
-
+ 
 import { useLocale } from "next-intl";
 import { UserCircle2, Loader2 } from "lucide-react";
 import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
 import { useAuthStore } from "@/stores/auth.store";
+import {
+  getStudentDisplayName,
+  getStudentNationalId,
+} from "@/lib/adapters/student-profile-adapter";
 
 export function ProfileHeader() {
   const locale = useLocale();
@@ -11,15 +15,8 @@ export function ProfileHeader() {
   const user = useAuthStore((state) => state.user);
   const { data: profile, isLoading } = useMyProfileQuery();
 
-  const pi = profile?.personal_information;
-  const fullName =
-    pi
-      ? [pi.first_name_ar, pi.father_name_ar, pi.grandfather_name_ar, pi.family_name_ar]
-          .filter(Boolean)
-          .join(" ")
-      : profile?.name || user?.name || (isAr ? "طالب منشور" : "Registered Student");
-
-  const nationalId = pi?.national_id || (isAr ? "غير متوفر" : "N/A");
+  const fullName = getStudentDisplayName(profile, user, locale);
+  const nationalId = getStudentNationalId(profile, user, locale);
 
   return (
     <section className="relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)] md:p-8">

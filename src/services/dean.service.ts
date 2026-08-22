@@ -1,4 +1,4 @@
-import { apiClient, unwrapRootResponse } from "@/lib/api/client";
+import { apiClient, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 
 export type DeanDashboardStats = {
@@ -23,5 +23,5 @@ export async function getDeanDashboardStats(): Promise<DeanDashboardStats> {
   const response = await apiClient.get<DeanDashboardStats>(
     ENDPOINTS.admissionDean.dashboard
   );
-  return unwrapRootResponse<DeanDashboardStats>(response.data);
+  return extractResource<DeanDashboardStats>(response.data);
 }

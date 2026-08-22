@@ -6,7 +6,9 @@ import { Save, UserRound, Loader2, AlertCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { FormSkeleton } from "@/components/common/loading/form-skeleton";
 import { useMyProfileQuery, useUpdateMyProfileMutation } from "@/hooks/queries/use-profile-queries";
+import { useAuthStore } from "@/stores/auth.store";
 import { extractApiError } from "@/lib/api/api-error";
+import { getStudentNationalId } from "@/lib/adapters/student-profile-adapter";
 import type { PersonalInformation } from "@/services/profile.service";
 
 type FormErrors = Partial<Record<keyof PersonalInformation, string>>;
@@ -16,13 +18,13 @@ export function PersonalInformationForm() {
   const locale = useLocale();
   const isAr = locale === "ar";
 
+  const user = useAuthStore((state) => state.user);
   const { data: profile, isLoading, isFetched } = useMyProfileQuery();
   const updateMutation = useUpdateMyProfileMutation();
 
   const isProfileLoaded = !isLoading && isFetched && profile !== undefined;
   const pi = profile?.personal_information;
-  const nationalIdValue =
-    pi?.national_id || profile?.nationalId || profile?.national_id || "";
+  const nationalIdValue = getStudentNationalId(profile, user);
 
   // Base profile is incomplete if ANY of the required 6 base fields is missing/null in backend
   const isBaseProfileIncomplete =
