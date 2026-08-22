@@ -1,9 +1,11 @@
 /**
  * Runtime Contract Audit Script
  * Validates backend API contracts across all roles and routes with 4-5 checks per endpoint.
+ * Includes optional end-to-end Application Lifecycle & Submission Workflow Audit.
  *
  * Usage:
- *   node scripts/runtime-contract-audit.mjs
+ *   TEST_ALLOW_APPLICATION_FLOW=true node scripts/runtime-contract-audit.mjs
+ *   TEST_ALLOW_APPLICATION_FLOW=true TEST_ALLOW_APPLICATION_SUBMIT=true node scripts/runtime-contract-audit.mjs
  */
 
 import axios from "axios";
@@ -100,11 +102,13 @@ function extractArray(responseData) {
   if (!responseData) return [];
   if (Array.isArray(responseData)) return responseData;
   if (responseData && typeof responseData === "object") {
+    if (Array.isArray(responseData.applications)) return responseData.applications;
     if (Array.isArray(responseData.data)) return responseData.data;
     if (Array.isArray(responseData.items)) return responseData.items;
     if (Array.isArray(responseData.results)) return responseData.results;
     if (responseData.data && typeof responseData.data === "object") {
       const inner = responseData.data;
+      if (Array.isArray(inner.applications)) return inner.applications;
       if (Array.isArray(inner.data)) return inner.data;
       if (Array.isArray(inner.items)) return inner.items;
       if (Array.isArray(inner.results)) return inner.results;
@@ -114,6 +118,7 @@ function extractArray(responseData) {
 }
 
 const results = [];
+const workflowResults = [];
 
 function recordResult({
   route,
@@ -130,6 +135,30 @@ function recordResult({
     status,
     keyChecks,
     valueChecks,
+    classification,
+    notes,
+  });
+}
+
+function recordWorkflowStep({
+  route,
+  method,
+  status,
+  createdApplicationId,
+  listContainsId,
+  detailStatus,
+  dashboardCount,
+  classification,
+  notes,
+}) {
+  workflowResults.push({
+    route,
+    method,
+    status,
+    createdApplicationId: createdApplicationId || "N/A",
+    listContainsId: listContainsId !== undefined ? (listContainsId ? "YES" : "NO") : "N/A",
+    detailStatus: detailStatus || "N/A",
+    dashboardCount: dashboardCount !== undefined ? String(dashboardCount) : "N/A",
     classification,
     notes,
   });
@@ -163,6 +192,8 @@ async function runAudit() {
   console.log(` UNIVERSITY ADMISSION RUNTIME CONTRACT AUDIT`);
   console.log(` API Base URL: ${API_BASE_URL}`);
   console.log(` Timestamp: ${new Date().toISOString()}`);
+  console.log(` Workflow Test Enabled: ${process.env.TEST_ALLOW_APPLICATION_FLOW === "true" || process.env.TEST_ALLOW_APPLICATION_FLOW === "1" ? "YES" : "NO"}`);
+  console.log(` Submit Test Enabled: ${process.env.TEST_ALLOW_APPLICATION_SUBMIT === "true" || process.env.TEST_ALLOW_APPLICATION_SUBMIT === "1" ? "YES" : "NO"}`);
   console.log(`======================================================\n`);
 
   const client = createClient();
@@ -173,8 +204,10 @@ async function runAudit() {
 
   // 1. PUBLIC CATALOG AUDIT
   console.log("--> Auditing Public Catalog Endpoints (4-5 checks each)...");
+  let sampleCycleId = null;
   let sampleFacultyId = null;
   let sampleDepartmentId = null;
+  let sampleProgramId = null;
 
   // GET /public/admission-cycles
   {
@@ -184,6 +217,7 @@ async function runAudit() {
       const list = extractArray(res.data);
       const hasArray = Array.isArray(list);
       const sample = list[0] || {};
+      if (sample.id) sampleCycleId = sample.id;
       const hasId = list.length === 0 || sample.id !== undefined;
       const hasName = list.length === 0 || !!(sample.name || sample.name_ar || sample.name_en || sample.year);
       const hasDates = list.length > 0 && !!(sample.start_date || sample.end_date || sample.startDate);
@@ -274,6 +308,7 @@ async function runAudit() {
       const list = extractArray(res.data);
       const hasArray = Array.isArray(list);
       const sample = list[0] || {};
+      if (sample.id) sampleProgramId = sample.id;
       const hasId = list.length === 0 || sample.id !== undefined;
       const hasName = list.length === 0 || !!(sample.name_ar || sample.name || sample.name_en);
       const hasDegree = list.length === 0 || sample.degree_type !== undefined || sample.degree !== undefined || sample.type !== undefined;
@@ -287,7 +322,7 @@ async function runAudit() {
         keyChecks: `Array: ${hasArray ? "YES" : "NO"} | ID: ${hasId ? "YES" : "NO"} | Name: ${hasName ? "YES" : "NO"} | Degree: ${hasDegree ? "YES" : "NO"} | DeptID: ${hasDeptId ? "YES" : "NO"}`,
         valueChecks: `Count: ${list.length} | First Program: ${sample.name_ar || sample.name || "None"}`,
         classification: checksPassed ? "PASS" : (is200 ? "BACKEND_RESPONSE_MISSING_KEY" : `BACKEND_${res.status}`),
-        notes: `Programs for department ${sampleDepartmentId}`,
+        notes: `Programs for department ${sampleDepartmentId} (Sample Program ID: ${sampleProgramId})`,
       });
     }
   }
@@ -322,6 +357,7 @@ async function runAudit() {
   console.log("--> Auditing Student Authentication & Endpoints...");
   let studentToken = null;
   let studentAuthMethod = "none";
+  let studentProfileData = null;
 
   const studentEmail = process.env.TEST_STUDENT_EMAIL;
   const studentPassword = process.env.TEST_STUDENT_PASSWORD;
@@ -408,6 +444,8 @@ async function runAudit() {
     }
   }
 
+  let studentInitialAppsCount = 0;
+
   if (studentToken) {
     console.log(`--> Testing authenticated student endpoints using ${studentAuthMethod} token...`);
     const studentClient = createClient(studentToken);
@@ -443,19 +481,19 @@ async function runAudit() {
       const profRes = await safeRequest(studentClient, "get", "/student/profile");
       if (typeof profRes.status === "number") {
         const is200 = profRes.status === 200;
-        const profData = extractResource(profRes.data);
-        const hasDataObj = !!profData && typeof profData === "object";
-        const pi = profData?.personal_information || null;
-        const hasPiKey = "personal_information" in (profData || {}) || pi !== null;
+        studentProfileData = extractResource(profRes.data);
+        const hasDataObj = !!studentProfileData && typeof studentProfileData === "object";
+        const pi = studentProfileData?.personal_information || null;
+        const hasPiKey = "personal_information" in (studentProfileData || {}) || pi !== null;
         const resolvedName =
-          profData?.name ||
-          profData?.fullName ||
+          studentProfileData?.name ||
+          studentProfileData?.fullName ||
           (pi ? [pi.first_name_ar, pi.father_name_ar, pi.grandfather_name_ar, pi.family_name_ar].filter(Boolean).join(" ") : null);
-        const resolvedNationalId = pi?.national_id || profData?.national_id || profData?.nationalId;
-        const hasTawjihiKey = "secondary_school_record" in (profData || {}) || "secondary_school_records" in (profData || {});
-        const hasContactKey = "phone" in (profData || {}) || "email" in (profData || {});
+        const resolvedNationalId = pi?.national_id || studentProfileData?.national_id || studentProfileData?.nationalId;
+        const hasTawjihiKey = "secondary_school_record" in (studentProfileData || {}) || "secondary_school_records" in (studentProfileData || {});
+        const hasContactKey = "phone" in (studentProfileData || {}) || "email" in (studentProfileData || {});
 
-        const profPassed = is200 && hasDataObj && (!!resolvedName || !!profData?.email);
+        const profPassed = is200 && hasDataObj && (!!resolvedName || !!studentProfileData?.email);
         recordResult({
           route: "GET /student/profile",
           role: "Student",
@@ -499,6 +537,7 @@ async function runAudit() {
       if (typeof appsRes.status === "number") {
         const is200 = appsRes.status === 200;
         const appsList = extractArray(appsRes.data);
+        studentInitialAppsCount = appsList.length;
         const hasArray = Array.isArray(appsList);
         const sampleApp = appsList[0] || {};
         const hasId = appsList.length === 0 || sampleApp.id !== undefined;
@@ -593,6 +632,210 @@ async function runAudit() {
           classification: notifsPassed ? "PASS" : (is200 ? "BACKEND_RESPONSE_MISSING_KEY" : `BACKEND_${notifsRes.status}`),
           notes: `${notifsList.length} student notifications`,
         });
+      }
+    }
+
+    // ========================================================
+    // 2.5 END-TO-END APPLICATION WORKFLOW AUDIT
+    // ========================================================
+    const allowWorkflow =
+      process.env.TEST_ALLOW_APPLICATION_FLOW === "true" ||
+      process.env.TEST_ALLOW_APPLICATION_FLOW === "1";
+
+    if (allowWorkflow) {
+      console.log("\n--> Executing End-to-End Application Workflow Audit...");
+
+      // A. GET /student/applications (before create)
+      const beforeListRes = await safeRequest(studentClient, "get", "/student/applications");
+      const beforeList = extractArray(beforeListRes.data);
+      const beforeCount = beforeList.length;
+
+      recordWorkflowStep({
+        route: "GET /student/applications (before create)",
+        method: "GET",
+        status: beforeListRes.status,
+        createdApplicationId: null,
+        listContainsId: undefined,
+        detailStatus: "N/A",
+        dashboardCount: beforeCount,
+        classification: beforeListRes.status === 200 ? "PASS" : `BACKEND_${beforeListRes.status}`,
+        notes: `Initial applications count: ${beforeCount}`,
+      });
+
+      // B. POST /student/applications (Create application)
+      const targetCycleId = sampleCycleId || 1;
+      const targetProgramId = sampleProgramId || 1;
+      const createPayload = {
+        application_type_id: 1, // CONFIRMED_BACKEND_DEFAULT
+        admission_cycle_id: targetCycleId,
+        program_id: targetProgramId,
+        student_notes: "فحص آلي لدورة حياة الطلب",
+      };
+
+      console.log(`--> Creating application with cycle ${targetCycleId}, program ${targetProgramId}...`);
+      const createRes = await safeRequest(studentClient, "post", "/student/applications", createPayload);
+
+      let createdAppId = null;
+      let createdAppStatus = null;
+      let createdAppNumber = null;
+      let isCreateSuccess = false;
+
+      if (typeof createRes.status === "number" && (createRes.status === 200 || createRes.status === 201)) {
+        const createdResource = extractResource(createRes.data);
+        createdAppId = createdResource?.id;
+        createdAppStatus = createdResource?.status || "draft";
+        createdAppNumber =
+          createdResource?.application_number ||
+          createdResource?.applicationNo ||
+          createdResource?.code ||
+          createdResource?.number ||
+          null;
+        isCreateSuccess = Boolean(createdAppId);
+
+        recordWorkflowStep({
+          route: "POST /student/applications",
+          method: "POST",
+          status: createRes.status,
+          createdApplicationId: createdAppId,
+          listContainsId: undefined,
+          detailStatus: createdAppStatus,
+          dashboardCount: undefined,
+          classification: isCreateSuccess ? "PASS" : "BACKEND_RESPONSE_MISSING_KEY",
+          notes: isCreateSuccess
+            ? `Created draft application ID: ${createdAppId} (AppNo: ${createdAppNumber || "Generated by DB"})`
+            : "POST succeeded but returned body missing application id",
+        });
+      } else {
+        recordWorkflowStep({
+          route: "POST /student/applications",
+          method: "POST",
+          status: createRes.status,
+          createdApplicationId: null,
+          listContainsId: undefined,
+          detailStatus: "FAILED",
+          dashboardCount: undefined,
+          classification: `BACKEND_${createRes.status}`,
+          notes: `Create failed with error: ${JSON.stringify(createRes.data?.errors || createRes.data?.message || createRes.error || "Unknown")}`,
+        });
+      }
+
+      if (createdAppId) {
+        // C. GET /student/applications (after create)
+        const afterListRes = await safeRequest(studentClient, "get", "/student/applications");
+        const afterList = extractArray(afterListRes.data);
+        const containsCreatedId = afterList.some((item) => String(item.id) === String(createdAppId));
+
+        recordWorkflowStep({
+          route: "GET /student/applications (after create)",
+          method: "GET",
+          status: afterListRes.status,
+          createdApplicationId: createdAppId,
+          listContainsId: containsCreatedId,
+          detailStatus: createdAppStatus,
+          dashboardCount: afterList.length,
+          classification: containsCreatedId
+            ? "PASS"
+            : (afterListRes.status === 200 ? "BACKEND_APPLICATION_LIST_NOT_UPDATED" : `BACKEND_${afterListRes.status}`),
+          notes: containsCreatedId
+            ? `Verified created ID ${createdAppId} appears in applications list (Count: ${afterList.length})`
+            : `Created ID ${createdAppId} missing from GET /student/applications response`,
+        });
+
+        // D. GET /student/dashboard (after create)
+        const afterDashRes = await safeRequest(studentClient, "get", "/student/dashboard");
+        const dashData = extractResource(afterDashRes.data);
+        const stats = dashData?.statistics || dashData?.stats || dashData || {};
+        const totalApps = stats.total_applications ?? dashData?.totalApplicationsCount ?? afterList.length;
+
+        recordWorkflowStep({
+          route: "GET /student/dashboard (after create)",
+          method: "GET",
+          status: afterDashRes.status,
+          createdApplicationId: createdAppId,
+          listContainsId: containsCreatedId,
+          detailStatus: createdAppStatus,
+          dashboardCount: totalApps,
+          classification: afterDashRes.status === 200 ? "PASS" : `BACKEND_${afterDashRes.status}`,
+          notes: `Dashboard reflects total applications: ${totalApps}`,
+        });
+
+        // E. Optional Submission Step (TEST_ALLOW_APPLICATION_SUBMIT=true)
+        const allowSubmit =
+          process.env.TEST_ALLOW_APPLICATION_SUBMIT === "true" ||
+          process.env.TEST_ALLOW_APPLICATION_SUBMIT === "1";
+
+        if (allowSubmit) {
+          console.log(`--> Checking Tawjihi prerequisite for application ${createdAppId}...`);
+          const hasTawjihi =
+            Boolean(studentProfileData?.secondary_school_record) ||
+            (Array.isArray(studentProfileData?.secondary_school_records) &&
+              studentProfileData.secondary_school_records.length > 0);
+
+          if (!hasTawjihi) {
+            recordWorkflowStep({
+              route: `POST /student/applications/${createdAppId}/submit`,
+              method: "POST",
+              status: "SKIPPED",
+              createdApplicationId: createdAppId,
+              listContainsId: containsCreatedId,
+              detailStatus: createdAppStatus,
+              dashboardCount: totalApps,
+              classification: "BACKEND_422_OR_PREREQUISITE_MISSING",
+              notes: "Submit skipped because Tawjihi record is required by backend business rules.",
+            });
+          } else {
+            console.log(`--> Submitting application ${createdAppId}...`);
+            const submitRes = await safeRequest(
+              studentClient,
+              "post",
+              `/student/applications/${createdAppId}/submit`,
+              { documents: [] }
+            );
+
+            if (typeof submitRes.status === "number" && (submitRes.status === 200 || submitRes.status === 201)) {
+              const submittedResource = extractResource(submitRes.data);
+              const subStatus = submittedResource?.status || "submitted";
+
+              // Verify GET /student/applications after submit
+              const postSubmitListRes = await safeRequest(studentClient, "get", "/student/applications");
+              const postSubmitList = extractArray(postSubmitListRes.data);
+              const subInList = postSubmitList.find((item) => String(item.id) === String(createdAppId));
+
+              // Verify GET /student/applications/{id} detail
+              const detailRes = await safeRequest(studentClient, "get", `/student/applications/${createdAppId}`);
+              const detailData = extractResource(detailRes.data);
+              const currentDetailStatus = detailData?.status || subStatus;
+
+              const isStatusSubmitted = currentDetailStatus === "submitted" || subStatus === "submitted";
+
+              recordWorkflowStep({
+                route: `POST /student/applications/${createdAppId}/submit`,
+                method: "POST",
+                status: submitRes.status,
+                createdApplicationId: createdAppId,
+                listContainsId: Boolean(subInList),
+                detailStatus: currentDetailStatus,
+                dashboardCount: postSubmitList.length,
+                classification: isStatusSubmitted ? "PASS" : "BACKEND_STATUS_NOT_UPDATED",
+                notes: isStatusSubmitted
+                  ? `Application successfully submitted and status is '${currentDetailStatus}'`
+                  : `Submit returned 200 but detail status remains '${currentDetailStatus}'`,
+              });
+            } else {
+              recordWorkflowStep({
+                route: `POST /student/applications/${createdAppId}/submit`,
+                method: "POST",
+                status: submitRes.status,
+                createdApplicationId: createdAppId,
+                listContainsId: containsCreatedId,
+                detailStatus: createdAppStatus,
+                dashboardCount: totalApps,
+                classification: `BACKEND_${submitRes.status}`,
+                notes: `Submission returned ${submitRes.status}: ${JSON.stringify(submitRes.data?.message || submitRes.data?.errors || "Error")}`,
+              });
+            }
+          }
+        }
       }
     }
   } else {
@@ -988,6 +1231,17 @@ async function runAudit() {
   let md = `# Runtime API Contract Audit Report\n\n`;
   md += `**Execution Date**: ${new Date().toISOString()}\n`;
   md += `**API Base URL**: \`${API_BASE_URL}\`\n\n`;
+
+  if (workflowResults.length > 0) {
+    md += `## Application Lifecycle & Submission Workflow Audit\n\n`;
+    md += `| Route | Method | Status | Created App ID | In List? | Detail Status | Dash Count | Classification | Notes |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    for (const w of workflowResults) {
+      md += `| \`${w.route}\` | \`${w.method}\` | ${w.status} | ${w.createdApplicationId} | ${w.listContainsId} | ${w.detailStatus} | ${w.dashboardCount} | **${w.classification}** | ${w.notes} |\n`;
+    }
+    md += `\n`;
+  }
+
   md += `## Summary Table\n\n`;
   md += `| Route | Role | Status | Key Checks | Value Checks | Classification | Notes |\n`;
   md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
@@ -1001,6 +1255,9 @@ async function runAudit() {
   md += `- **FRONTEND_MAPPING**: Backend response contains the required key, but frontend mapping or adapter failed to read it.\n`;
   md += `- **FRONTEND_VALIDATION**: Frontend validation is stricter or inconsistent with backend contract (e.g. 9-digit restriction on national_id).\n`;
   md += `- **BACKEND_RESPONSE_MISSING_KEY**: Backend response succeeds (200 OK) but omits a required key from its payload.\n`;
+  md += `- **BACKEND_APPLICATION_LIST_NOT_UPDATED**: Application was created or submitted successfully, but does not appear in GET /student/applications.\n`;
+  md += `- **BACKEND_STATUS_NOT_UPDATED**: Application was submitted successfully, but status remains 'draft' in detail or list.\n`;
+  md += `- **BACKEND_422_OR_PREREQUISITE_MISSING**: Prerequisite business rule missing (e.g. Tawjihi records).\n`;
   md += `- **BACKEND_403_OR_422**: Backend returned 403 Forbidden (RBAC issue) or 422 Unprocessable Entity (validation mismatch).\n`;
   md += `- **PENDING_BACKEND_API**: Endpoint or test credentials not yet configured or pending backend implementation.\n`;
   md += `- **FRONTEND_PAYLOAD**: Frontend sent an invalid or deprecated payload shape to the backend.\n\n`;
@@ -1029,6 +1286,12 @@ async function runAudit() {
   console.log("================ AUDIT SUMMARY ================");
   for (const r of results) {
     console.log(`[${r.classification}] ${r.route} (${r.role}) => Status ${r.status} | ${r.notes}`);
+  }
+  if (workflowResults.length > 0) {
+    console.log("\n================ WORKFLOW SUMMARY ================");
+    for (const w of workflowResults) {
+      console.log(`[${w.classification}] ${w.method} ${w.route} => Status ${w.status} | ID: ${w.createdApplicationId} | InList: ${w.listContainsId} | DetailStatus: ${w.detailStatus} | ${w.notes}`);
+    }
   }
   console.log("===============================================\n");
 }

@@ -44,6 +44,8 @@ export function useStudentApplicationsQuery() {
     queryKey: queryKeys.student.applications,
     queryFn: getStudentApplications,
     enabled: isEnabled,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     retry: false,
   });
 }

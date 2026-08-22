@@ -5,7 +5,9 @@ export type BackendApplicationRaw = {
   id: string | number;
   application_number?: string;
   applicationNo?: string;
+  application_no?: string;
   code?: string;
+  number?: string;
   status?: string;
   admission_cycle_id?: string | number;
   admissionCycleId?: string | number;
@@ -33,6 +35,23 @@ export type BackendApplicationRaw = {
     email?: string;
     phone?: string;
   };
+  student?: {
+    id?: string | number;
+    name?: string;
+    first_name_ar?: string;
+    father_name_ar?: string;
+    family_name_ar?: string;
+    national_id?: string;
+    email?: string;
+    phone?: string;
+  };
+  user?: {
+    id?: string | number;
+    name?: string;
+    national_id?: string;
+    email?: string;
+    phone?: string;
+  };
   program?: {
     id?: string | number;
     name_ar?: string;
@@ -48,6 +67,28 @@ export type BackendApplicationRaw = {
         name?: string;
       };
     };
+  };
+  selected_program?: {
+    id?: string | number;
+    name_ar?: string;
+    name_en?: string;
+    name?: string;
+    department?: {
+      name_ar?: string;
+      name_en?: string;
+      name?: string;
+      faculty?: {
+        name_ar?: string;
+        name_en?: string;
+        name?: string;
+      };
+    };
+  };
+  selectedProgram?: {
+    id?: string | number;
+    name_ar?: string;
+    name_en?: string;
+    name?: string;
   };
   admission_cycle?: {
     id?: string | number;
@@ -114,22 +155,26 @@ export function adaptBackendApplication(
 ): StudentApplicationDetail {
   const status = normalizeStatus(raw.status);
 
-  const programName = raw.program
+  const prog = raw.program || raw.selected_program || raw.selectedProgram;
+
+  const programName = prog
     ? locale === "ar"
-      ? raw.program.name_ar || raw.program.name_en || raw.program.name || ""
-      : raw.program.name_en || raw.program.name_ar || raw.program.name || ""
+      ? prog.name_ar || prog.name_en || prog.name || ""
+      : prog.name_en || prog.name_ar || prog.name || ""
     : undefined;
 
-  const departmentName = raw.program?.department
+  const dept = (prog as { department?: { name_ar?: string; name_en?: string; name?: string; faculty?: { name_ar?: string; name_en?: string; name?: string } } })?.department;
+
+  const departmentName = dept
     ? locale === "ar"
-      ? raw.program.department.name_ar || raw.program.department.name_en || raw.program.department.name || ""
-      : raw.program.department.name_en || raw.program.department.name_ar || raw.program.department.name || ""
+      ? dept.name_ar || dept.name_en || dept.name || ""
+      : dept.name_en || dept.name_ar || dept.name || ""
     : undefined;
 
-  const facultyName = raw.program?.department?.faculty
+  const facultyName = dept?.faculty
     ? locale === "ar"
-      ? raw.program.department.faculty.name_ar || raw.program.department.faculty.name_en || raw.program.department.faculty.name || ""
-      : raw.program.department.faculty.name_en || raw.program.department.faculty.name_ar || raw.program.department.faculty.name || ""
+      ? dept.faculty.name_ar || dept.faculty.name_en || dept.faculty.name || ""
+      : dept.faculty.name_en || dept.faculty.name_ar || dept.faculty.name || ""
     : undefined;
 
   const preferencesMapped = (raw.preferences || []).map((pref, idx) => ({
@@ -142,20 +187,34 @@ export function adaptBackendApplication(
     order: pref.order ?? idx + 1,
   }));
 
-  const applicantName = raw.applicant
-    ? raw.applicant.name ||
-      [raw.applicant.first_name_ar, raw.applicant.father_name_ar, raw.applicant.family_name_ar]
+  const applicant = raw.applicant || raw.student || raw.user;
+
+  const applicantName = applicant
+    ? applicant.name ||
+      [
+        (applicant as { first_name_ar?: string }).first_name_ar,
+        (applicant as { father_name_ar?: string }).father_name_ar,
+        (applicant as { family_name_ar?: string }).family_name_ar,
+      ]
         .filter(Boolean)
         .join(" ")
     : undefined;
 
+  const appNo =
+    raw.application_number ||
+    raw.applicationNo ||
+    raw.application_no ||
+    raw.code ||
+    raw.number ||
+    String(raw.id);
+
   return {
     id: raw.id,
-    applicationNo: raw.application_number || raw.applicationNo || raw.code || String(raw.id),
+    applicationNo: appNo,
     status,
     admissionCycleId: raw.admission_cycle_id ?? raw.admissionCycleId,
     applicationTypeId: raw.application_type_id ?? raw.applicationTypeId,
-    programId: raw.program_id ?? raw.programId ?? raw.program?.id,
+    programId: raw.program_id ?? raw.programId ?? prog?.id,
     programName,
     facultyName,
     departmentName,
@@ -165,9 +224,9 @@ export function adaptBackendApplication(
     studentNotes: raw.student_notes ?? raw.notes,
     universityNumber: raw.university_number ?? raw.universityNumber,
     applicantName,
-    applicantNationalId: raw.applicant?.national_id,
-    applicantEmail: raw.applicant?.email,
-    applicantPhone: raw.applicant?.phone,
+    applicantNationalId: applicant?.national_id,
+    applicantEmail: applicant?.email,
+    applicantPhone: applicant?.phone,
     preferences: preferencesMapped,
   };
 }

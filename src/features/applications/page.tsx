@@ -30,12 +30,17 @@ export function StudentApplicationsPage() {
   const locale = useLocale();
   const isAr = locale === "ar";
 
-  const { data: apiApps, isLoading, isError, error, refetch } = useStudentApplicationsQuery();
+  const { data: apiApps, isLoading, isFetching, isError, error, refetch } = useStudentApplicationsQuery();
 
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   const safeApiApps = Array.isArray(apiApps) ? apiApps : [];
+
+  if (process.env.NODE_ENV !== "production") {
+    // Dev diagnostics logging
+    console.debug(`[MyApplications] query status: isLoading=${isLoading}, isFetching=${isFetching}, count=${safeApiApps.length}`);
+  }
 
   const applications = safeApiApps.map((app) => ({
     id: String(app.id),
@@ -43,7 +48,7 @@ export function StudentApplicationsPage() {
     selectedProgram: app.programName || (isAr ? "غير متوفر" : "N/A"),
     faculty: app.facultyName || (isAr ? "غير متوفر" : "N/A"),
     average: isAr ? "غير متوفر" : "N/A",
-    currentStatus: app.status || "submitted",
+    currentStatus: app.status || "draft",
     createdAt: app.createdAt || app.submittedAt || new Date().toISOString().split("T")[0],
     statusConfig: getStatusConfig(app.status),
   }));
@@ -286,12 +291,22 @@ export function StudentApplicationsPage() {
                   <FileText className="size-7" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground">
-                  {isAr ? "لا توجد طلبات مطابقة" : "No matching applications found"}
+                  {isAr
+                    ? totalCount === 0
+                      ? "لا توجد طلبات حتى الآن"
+                      : "لا توجد طلبات مطابقة"
+                    : totalCount === 0
+                    ? "No applications yet"
+                    : "No matching applications found"}
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground max-w-sm">
                   {isAr
-                    ? "لم نجد أي طلبات قبول بهذا التصنيف. يمكنك تقديم طلب قبول جديد الآن."
-                    : "No admission applications found for this filter. You can submit a new application now."}
+                    ? totalCount === 0
+                      ? "لم تقم بإنشاء أي طلبات قبول بعد. يمكنك تقديم طلب قبول جديد الآن."
+                      : "لم نجد أي طلبات قبول بهذا التصنيف. يمكنك إعادة تعيين البحث أو تقديم طلب جديد."
+                    : totalCount === 0
+                    ? "You have not created any applications yet. You can submit a new application now."
+                    : "No admission applications found for this filter. Reset search or submit a new application."}
                 </p>
                 <Link
                   href={withLocale(locale, routes.newApplication)}

@@ -57,8 +57,35 @@ export async function getStudentDashboard(): Promise<StudentDashboardStats> {
 
 export async function getStudentApplications(): Promise<StudentApplicationDetail[]> {
   const response = await apiClient.get(ENDPOINTS.student.applications);
-  const list = extractArray<BackendApplicationRaw>(response.data);
-  return list.map((item) => adaptBackendApplication(item));
+  const data = response.data as Record<string, unknown> | BackendApplicationRaw[] | undefined;
+
+  let rawList: BackendApplicationRaw[] = [];
+  if (Array.isArray(data)) {
+    rawList = data;
+  } else if (data && typeof data === "object") {
+    if (Array.isArray(data.applications)) {
+      rawList = data.applications as BackendApplicationRaw[];
+    } else if (Array.isArray(data.data)) {
+      rawList = data.data as BackendApplicationRaw[];
+    } else if (Array.isArray(data.items)) {
+      rawList = data.items as BackendApplicationRaw[];
+    } else if (data.data && typeof data.data === "object") {
+      const inner = data.data as Record<string, unknown>;
+      if (Array.isArray(inner.applications)) {
+        rawList = inner.applications as BackendApplicationRaw[];
+      } else if (Array.isArray(inner.data)) {
+        rawList = inner.data as BackendApplicationRaw[];
+      } else if (Array.isArray(inner.items)) {
+        rawList = inner.items as BackendApplicationRaw[];
+      } else {
+        rawList = extractArray<BackendApplicationRaw>(response.data);
+      }
+    } else {
+      rawList = extractArray<BackendApplicationRaw>(response.data);
+    }
+  }
+
+  return rawList.map((item) => adaptBackendApplication(item));
 }
 
 export async function createStudentApplication(

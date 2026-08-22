@@ -19,11 +19,16 @@ import {
   getSocialInformationFromProfile,
   type StudentProfile,
 } from "@/services/profile.service";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/constants/query-keys";
 import {
   createStudentApplication,
   getApplicationDocumentChecklist,
   submitStudentApplication,
   updateApplicationPreferences,
+  getStudentApplicationById,
+  getStudentApplications,
+  type StudentApplicationDetail,
 } from "@/services/application.service";
 import { attachDocumentToApplication } from "@/services/documents.service";
 import { usePublicAdmissionCyclesQuery, useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
@@ -63,6 +68,7 @@ export function ApplicationWizard() {
   const locale = useLocale();
   const t = useTranslations("application");
   const user = useAuthStore((state) => state.user);
+  const queryClient = useQueryClient();
 
   const [isUnverified, setIsUnverified] = useState<boolean>(() => isUserVerified(user) === false);
 
@@ -616,6 +622,20 @@ export function ApplicationWizard() {
           });
           activeId = String(draft.id);
           setTargetId(activeId);
+
+          // Update React Query cache immediately
+          queryClient.setQueryData(
+            queryKeys.student.applications,
+            (old: StudentApplicationDetail[] | undefined) => {
+              const prev = Array.isArray(old) ? old : [];
+              if (prev.some((a) => String(a.id) === String(draft.id))) return prev;
+              return [draft, ...prev];
+            }
+          );
+          queryClient.invalidateQueries({ queryKey: queryKeys.student.applications });
+          queryClient.invalidateQueries({ queryKey: queryKeys.student.dashboard });
+          queryClient.invalidateQueries({ queryKey: queryKeys.application.myApplication });
+          queryClient.invalidateQueries({ queryKey: queryKeys.application.status });
         }
         if (state.preferences.preferences.length > 0) {
           await updateApplicationPreferences(activeId, state.preferences.preferences);
@@ -752,12 +772,46 @@ export function ApplicationWizard() {
 
         await submitStudentApplication(activeId, checklistPayload);
 
-        toast.success(
-          locale === "ar"
-            ? "تم تقديم طلب الالتحاق بنجاح!"
-            : "Admission application submitted successfully!"
-        );
-        router.push(withLocale(locale, `/status/${activeId}`));
+        // Safety verification: verify refreshed detail and list
+        let refreshedList: StudentApplicationDetail[] = [];
+        try {
+          const [, list] = await Promise.all([
+            getStudentApplicationById(activeId),
+            getStudentApplications(),
+          ]);
+          refreshedList = list;
+        } catch {
+          // continue to cache invalidation
+        }
+
+        const listContainsId =
+          refreshedList.length === 0 ||
+          refreshedList.some((a) => String(a.id) === String(activeId));
+
+        // Await query cache invalidations
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: queryKeys.student.applications }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.student.dashboard }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.student.applicationDetail(activeId) }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.application.myApplication }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.application.status }),
+        ]);
+
+        if (!listContainsId && refreshedList.length > 0) {
+          toast.warning(
+            locale === "ar"
+              ? "تم إرسال الطلب، لكن لم يتم تحديث قائمة طلباتي بعد. يرجى تحديث الصفحة أو التواصل مع الدعم."
+              : "Application submitted, but My Applications list has not updated yet. Please refresh or contact support."
+          );
+        } else {
+          toast.success(
+            locale === "ar"
+              ? "تم تقديم طلب الالتحاق بنجاح!"
+              : "Admission application submitted successfully!"
+          );
+        }
+
+        router.push(withLocale(locale, routes.applications));
       } catch (error: unknown) {
         const err = error as { message?: string; status?: number; data?: { errors?: Record<string, string[]> } };
         let errorMessage =
