@@ -3,7 +3,7 @@
 > **Audience:** Frontend developers. No prior backend knowledge required.
 > **Base URL:** `https://your-api-host/api/v1`
 > **Version:** v1
-> **Last updated:** 2026-08-03
+> **Last updated:** 2026-08-13
 
 ---
 
@@ -27,19 +27,17 @@ This API uses **JWT bearer tokens** provided by `php-open-source-saver/jwt-auth`
 
 | Response type                     | Shape                                                                                          |
 | --------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **With data**                     | `{ "data": T, "message"?: string }`                                                            |
-| **Auth (register/login/refresh)** | `{ "data": { access_token, token_type, expires_in, user } }`                                   |
-| **Auth (logout)**                 | `{ "data": { message, access_token: null, token_type: null, expires_in: null, user: null } }`  |
-| **Auth (me)**                     | `{ "data": { user fields... } }`                                                               |
-| **Paginated list**                | `{ "data": [...], "links": {...}, "meta": {...} }` (Laravel default pagination)                |
-| **Message-only**                  | `{ "message": "..." }`                                                                         |
-| **Validation error (422)**        | `{ "message": "Validation failed.", "errors": { "field": ["rule message"], ... } }`            |
-| **Auth error (401)**              | `{ "message": "Invalid credentials." }` or `{ "message": "Unauthenticated." }`                 |
-| **Forbidden (403)**               | `{ "message": "Admin access required." }` or `{ "message": "role access required." }`          |
-| **Not found (404)**               | Laravel default JSON error: `{ "message": "No query results for model [App\\Models\\X] 999" }` |
-| **Server error (500)**            | Laravel default JSON error structure (do not rely on stable field names)                       |
+| **Auth endpoints**                | `{ "data": { access_token, token_type, expires_in, verified, verification_method, user } }`    |
+| **Non-auth endpoints**            | `{ "success": true/false, "message": string?, "data": T, "errors"?: array }`                   |
+| **Paginated list**                | `{ "success": true, "data": { "data": [...], "links": {...}, "meta": {...} } }`                |
+| **No content (204)**              | Raw `null` with no envelope body                                                               |
+| **Validation error (422)**        | `{ "success": false, "message": "Validation failed.", "data": null, "errors": { ... } }`       |
+| **Auth error (401)**              | `{ "success": false, "message": "Unauthorized.", "data": null, "errors": null }`               |
+| **Forbidden (403)**               | `{ "success": false, "message": "Forbidden.", "data": null, "errors": null }`                  |
+| **Not found (404)**               | `{ "success": false, "message": "Not found.", "data": null, "errors": null }`                  |
+| **Server error (500)**            | `{ "success": false, "message": "Server error.", "data": null, "errors": null }`               |
 
-> **Note:** Some endpoints (student dashboard, student profile, dean dashboard, social information) deliberately return root-level data without the `data` wrapper. This is intentional — they represent a single view or profile, not a resource collection. All other resource endpoints use the `{ "data": ... }` envelope.
+> **Note:** Auth endpoints (`register`, `login`, `refresh`, `logout`, `me`) return raw `JsonResource` instances, which Laravel wraps in `{ "data": ... }`. All other endpoints use `ApiResponse`, which returns `{ "success": true/false, "message": ..., "data": ... }`.
 
 ### 1.4 Rate limiting
 
@@ -109,6 +107,7 @@ A new user is created with the `student` role automatically assigned. No email v
 | `name`                  | string | Yes      | required, string, max:255                    | Full name                                       |
 | `email`                 | string | Yes      | required, email, max:255, unique:users,email | Email address                                   |
 | `phone`                 | string | Yes      | required, string, max:20, unique:users,phone | Phone number (e.g. `+201234567890`)             |
+| `national_id`           | string | Yes      | required, string, max:20                     | National ID (used for Tawjihi matching)         |
 | `password`              | string | Yes      | required, confirmed, min:8                   | Password (must include `password_confirmation`) |
 | `password_confirmation` | string | Yes      | required, string, min:8                      | Must match `password`                           |
 
@@ -133,12 +132,14 @@ A new user is created with the `student` role automatically assigned. No email v
         "access_token": "eyJ0...",
         "token_type": "Bearer",
         "expires_in": 3600,
+        "verified": true,
+        "verification_method": "email",
         "user": {
             "id": 1,
             "name": "Ahmed Khaled",
             "email": "ahmed@example.com",
             "phone": "+201234567890",
-            "is_verified": false,
+            "is_verified": true,
             "is_active": true,
             "role": {
                 "id": 1,
@@ -257,6 +258,8 @@ Invalidates the current JWT token on the server side.
         "access_token": null,
         "token_type": null,
         "expires_in": null,
+        "verified": false,
+        "verification_method": null,
         "user": null
     }
 }
@@ -904,7 +907,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.7 Social Information — get
+#### 3.3.8 Social Information — get
 
 | Property          | Value                                    |
 | ----------------- | ---------------------------------------- |
@@ -948,7 +951,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.8 Social Information — update
+#### 3.3.9 Social Information — update
 
 | Property          | Value                                    |
 | ----------------- | ---------------------------------------- |
@@ -1013,7 +1016,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.9 Applications — index
+#### 3.3.10 Applications — index
 
 | Property          | Value                              |
 | ----------------- | ---------------------------------- |
@@ -1083,11 +1086,11 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 }
 ```
 
-**Notes:** Returns all applications belonging to the authenticated student. Not paginated (uses `get()`).
+**Notes:** Returns all applications belonging to the authenticated student. Paginated (default 20 per page).
 
 ---
 
-#### 3.3.9 Applications — create draft
+#### 3.3.11 Applications — create draft
 
 | Property          | Value                               |
 | ----------------- | ----------------------------------- |
@@ -1151,7 +1154,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.10 Applications — show detail
+#### 3.3.12 Applications — show detail
 
 | Property          | Value                                            |
 | ----------------- | ------------------------------------------------ |
@@ -1214,7 +1217,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.11 Applications — update
+#### 3.3.13 Applications — update
 
 | Property          | Value                                            |
 | ----------------- | ------------------------------------------------ |
@@ -1256,7 +1259,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.12 Applications — submit
+#### 3.3.14 Applications — submit
 
 | Property          | Value                                                    |
 | ----------------- | -------------------------------------------------------- |
@@ -1316,7 +1319,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.13 Applications — document checklist
+#### 3.3.15 Applications — document checklist
 
 | Property          | Value                                                               |
 | ----------------- | ------------------------------------------------------------------- |
@@ -1361,7 +1364,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.14 Applications — set preferences
+#### 3.3.16 Applications — set preferences
 
 | Property          | Value                                                        |
 | ----------------- | ------------------------------------------------------------ |
@@ -1406,7 +1409,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.15 Documents — index
+#### 3.3.17 Documents — index
 
 | Property          | Value                           |
 | ----------------- | ------------------------------- |
@@ -1423,7 +1426,6 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
             "id": 1,
             "user_id": 1,
             "document_type_id": 1,
-            "file_path": "documents/abc-123.pdf",
             "status": "pending",
             "ai_check_status": "pending",
             "ai_check_notes": null,
@@ -1461,7 +1463,7 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ---
 
-#### 3.3.16 Documents — upload
+#### 3.3.18 Documents — upload
 
 | Property          | Value                            |
 | ----------------- | -------------------------------- |
@@ -1494,7 +1496,6 @@ curl -X POST /api/v1/student/documents \
   "id": 1,
   "user_id": 1,
   "document_type_id": 1,
-  "file_path": "documents/abc-123.pdf",
   "status": "pending",
   "ai_check_status": "pending",
   "ai_check_notes": null,
@@ -1509,11 +1510,11 @@ curl -X POST /api/v1/student/documents \
 }
 ```
 
-**Notes:** After creation, a queued job (`VerifyDocumentJob`) runs AI verification on the document asynchronously. The `ai_check_status` will update from `pending` to either `verified` or `failed`.
+**Notes:** After creation, a queued job (`VerifyDocumentJob`) runs document checks asynchronously. No AI provider is configured yet, so the `ai_check_status` will update from `pending` to `pending_manual_review` (awaiting human review) rather than claiming an automated `verified` result. On a processing error it updates to `failed`.
 
 ---
 
-#### 3.3.17 Documents — show detail
+#### 3.3.19 Documents — show detail
 
 | Property          | Value                                      |
 | ----------------- | ------------------------------------------ |
@@ -1536,7 +1537,6 @@ curl -X POST /api/v1/student/documents \
       "id": 1,
       "user_id": 1,
       "document_type_id": 1,
-      "file_path": "documents/abc-123.pdf",
       "status": "pending",
       "ai_check_status": "pending",
       "ai_check_notes": null,
@@ -1549,7 +1549,7 @@ curl -X POST /api/v1/student/documents \
       "created_at": "2026-01-15T10:00:00Z",
       "updated_at": "2026-01-15T10:00:00Z"
     },
-    "download_url": "http://localhost/storage/documents/abc-123.pdf"
+    "download_url": "https://app.example.com/storage/documents/1/transcript.pdf?expires=1786607760&signature=..."
   }
 }
 ```
@@ -1561,7 +1561,7 @@ curl -X POST /api/v1/student/documents \
 
 ---
 
-#### 3.3.18 Documents — delete
+#### 3.3.20 Documents — delete
 
 | Property          | Value                                         |
 | ----------------- | --------------------------------------------- |
@@ -1586,7 +1586,7 @@ curl -X POST /api/v1/student/documents \
 
 ---
 
-#### 3.3.19 Application documents — attach
+#### 3.3.21 Application documents — attach
 
 | Property          | Value                                                                         |
 | ----------------- | ----------------------------------------------------------------------------- |
@@ -1620,7 +1620,7 @@ curl -X POST /api/v1/student/documents \
 
 ---
 
-#### 3.3.20 Secondary school records — index
+#### 3.3.22 Secondary school records — index
 
 | Property          | Value                                          |
 | ----------------- | ---------------------------------------------- |
@@ -1647,7 +1647,7 @@ curl -X POST /api/v1/student/documents \
 
 ---
 
-#### 3.3.21 Secondary school records — update
+#### 3.3.23 Secondary school records — update
 
 | Property          | Value                                                                  |
 | ----------------- | ---------------------------------------------------------------------- |
@@ -1985,7 +1985,7 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 - `403` — policy forbids action
 - `404` — application not found or no application type configured
 
-**Notes:** In production, the `AiVerificationServiceInterface` is not bound (throws exception). A real implementation must be provided. The current `FakeAiVerificationService` returns a random score between 60 and 95.
+**Notes:** No real AI provider is configured yet. In production `RealAiVerificationService::verify()` throws a `RuntimeException` until a provider is connected; outside production the fail-closed `FakeAiVerificationService` also throws (only its `verifyForLocalTesting()` method returns a score — an obvious `999` — for local UI development). Treat the resulting score/status as provisional until real AI integration is wired in.
 
 ---
 
@@ -2050,11 +2050,59 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 - `422` — validation failure
 - `403` — application is not assigned to the authenticated employee
 
-**Notes:** Only `store` is wired for comments. `update` and `delete` are declared in `ApplicationCommentPolicy` but do not have route/controller entries yet.
+**Notes:** Comments support full CRUD for admission employees on assigned applications.
 
 ---
 
-#### 3.4.9 Documents — verify
+#### 3.4.9 Comments — update
+
+| Property          | Value                                                                     |
+| ----------------- | ------------------------------------------------------------------------- |
+| **Method + URL**  | `PUT /api/v1/admission_employee/applications/{application}/comments/{comment}` |
+| **Route name**    | `v1.admission_employee.comments.update`                                  |
+| **Auth required** | Yes (admission_employee)                                                  |
+
+**Path parameters:**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `application` | integer | Application ID |
+| `comment` | integer | Comment ID |
+
+**Request body:**
+
+| Field | Type | Required | Rules | Description |
+| ----- | ---- | -------- | ----- | ----------- |
+| `body` | string | Yes | required, string, max:1000 | Updated comment text |
+
+**Success response (200):** Returns updated comment resource.
+
+**Error responses:** `403`, `404`.
+
+---
+
+#### 3.4.10 Comments — delete
+
+| Property          | Value                                                                     |
+| ----------------- | ------------------------------------------------------------------------- |
+| **Method + URL**  | `DELETE /api/v1/admission_employee/applications/{application}/comments/{comment}` |
+| **Route name**    | `v1.admission_employee.comments.destroy`                                 |
+| **Auth required** | Yes (admission_employee)                                                  |
+
+**Path parameters:**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `application` | integer | Application ID |
+| `comment` | integer | Comment ID |
+
+**Success response (204):** No body.
+
+**Error responses:** `403`, `404`.
+
+---
+
+#### 3.4.11 Documents — verify
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -2097,7 +2145,7 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ---
 
-#### 3.4.10 Notifications — index
+#### 3.4.12 Notifications — index
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -2137,7 +2185,7 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ---
 
-#### 3.4.11 Notifications — mark as read
+#### 3.4.13 Notifications — mark as read
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -2160,7 +2208,7 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ---
 
-#### 3.4.12 Notifications — mark all as read
+#### 3.4.14 Notifications — mark all as read
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -2184,7 +2232,7 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ---
 
-#### 3.4.13 Notifications — delete
+#### 3.4.15 Notifications — delete
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3424,12 +3472,12 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.18 Application types — CRUD
+#### 3.7.18 Application types — read/update/delete
 
 | Property           | Value                                                                                                                                                                                                                                                          |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Methods + URLs** | `GET /api/v1/admin/application-types`, `POST /api/v1/admin/application-types`, `GET /api/v1/admin/application-types/{application_type}`, `PUT /api/v1/admin/application-types/{application_type}`, `DELETE /api/v1/admin/application-types/{application_type}` |
-| **Route names**    | `v1.admin.application-types.index/store/show/update/destroy`                                                                                                                                                                                                   |
+| **Methods + URLs** | `GET /api/v1/admin/application-types`, `GET /api/v1/admin/application-types/{application_type}`, `PUT /api/v1/admin/application-types/{application_type}`, `DELETE /api/v1/admin/application-types/{application_type}` |
+| **Route names**    | `v1.admin.application-types.index/show/update/destroy`                                                                                                                                                                                                          |
 | **Auth required**  | Yes (admin)                                                                                                                                                                                                                                                    |
 
 **Store/Update request body:**
@@ -3442,24 +3490,84 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 | `requires_department_head_approval` | boolean | No       | boolean                                                                              | If true, high AI scores forward to department head instead of auto-accepting |
 | `is_active`                         | boolean | No       | boolean                                                                              | Whether this type is active                                                  |
 
-**Success responses:** `200` (show/update), `201` (store), `204` (destroy).
+**Success responses:** `200` (show/update), `204` (destroy).
 
-**Notes:** See `verify-ai` endpoint (3.4.7) for how `requires_department_head_approval` affects routing.
-
----
-
-#### 3.7.20 Branches — CRUD
-
-> **Note:** No dedicated `BranchController` exists yet. `Branch` is primarily managed via seeders and the `program_branches` pivot. The `Admin/BranchController` is not registered in `routes/api.php` despite the `Admin` directory containing other controllers. If a branches CRUD is needed, it has not been implemented.
-
-**Current branch exposure:**
-
-- `Branch` records are returned embedded inside `ProgramResource` (`branches` array) when loaded.
-- `PublicCatalogTest::test_program_returns_program_with_branches` confirms the public program endpoint returns branches.
+**Notes:** See `verify-ai` endpoint (3.4.7) for how `requires_department_head_approval` affects routing. There is no `POST /api/v1/admin/application-types` endpoint; application types are created via seeders.
 
 ---
 
-#### 3.7.21 Reports — applications by status
+#### 3.7.19 Notifications — CRUD
+
+| Method + URL | Route name | Auth |
+| ------------ | ---------- | ---- |
+| `GET /api/v1/admin/notifications` | `v1.admin.notifications.index` | admin |
+| `PATCH /api/v1/admin/notifications/read-all` | `v1.admin.notifications.read-all` | admin |
+| `PATCH /api/v1/admin/notifications/{notification}/read` | `v1.admin.notifications.read` | admin |
+| `DELETE /api/v1/admin/notifications/{notification}` | `v1.admin.notifications.destroy` | admin |
+
+**Success responses:** `200` (index/read/read-all), `204` (destroy).
+
+---
+
+#### 3.7.20 Secondary school records — bulk import
+
+| Property          | Value                                                                     |
+| ----------------- | ------------------------------------------------------------------------- |
+| **Method + URL**  | `POST /api/v1/admin/secondary-school-records/import`                      |
+| **Route name**    | `v1.admin.secondary-school-records.import`                                |
+| **Auth required** | Yes (admin)                                                               |
+| **Rate limit**    | `uploads` (10/min)                                                        |
+
+**Request body** (multipart/form-data):
+
+| Field | Type | Required | Description |
+| ----- | ---- | -------- | ----------- |
+| `file` | file | Yes | Excel/CSV file containing Tawjihi/secondary school records |
+
+**Success response (202):**
+
+```json
+{
+  "success": true,
+  "message": "Import job dispatched.",
+  "data": {
+    "job_id": "...",
+    "status": "queued"
+  }
+}
+```
+
+**Error responses:** `401`, `403`, `422` (invalid file).
+
+**Notes:** This endpoint queues an `ImportSecondarySchoolRecordsJob` that processes the file asynchronously. A notification is created for the admin user when the import completes or fails. The import matches records by national ID and creates `PendingSecondarySchoolRecord` entries for unmatched students.
+
+---
+
+#### 3.7.21 Branches — CRUD
+
+| Property          | Value                                  |
+| ----------------- | -------------------------------------- |
+| **Method + URL**  | `GET /api/v1/admin/branches`           |
+| **Route name**    | `v1.admin.branches.index`              |
+| **Auth required** | Yes (admin)                            |
+
+Full CRUD is available:
+
+| Method | URL | Route name |
+| ------ | --- | ---------- |
+| GET | `/api/v1/admin/branches` | `v1.admin.branches.index` |
+| POST | `/api/v1/admin/branches` | `v1.admin.branches.store` |
+| GET | `/api/v1/admin/branches/{branch}` | `v1.admin.branches.show` |
+| PUT | `/api/v1/admin/branches/{branch}` | `v1.admin.branches.update` |
+| DELETE | `/api/v1/admin/branches/{branch}` | `v1.admin.branches.destroy` |
+
+**Success responses:** `200` (index/show/update), `201` (store), `204` (destroy).
+
+**Notes:** `Branch` records are also returned embedded inside `ProgramResource` (`branches` array) when loaded.
+
+---
+
+#### 3.7.22 Reports — applications by status
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3493,7 +3601,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.22 Reports — applications by faculty
+#### 3.7.23 Reports — applications by faculty
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3530,7 +3638,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.23 Reports — applications by department
+#### 3.7.24 Reports — applications by department
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3567,7 +3675,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.24 Reports — applications by program
+#### 3.7.25 Reports — applications by program
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3604,7 +3712,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.25 Reports — time in status
+#### 3.7.26 Reports — time in status
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3648,7 +3756,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.26 Reports — documents upload volume
+#### 3.7.27 Reports — documents upload volume
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3684,7 +3792,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.27 Reports — acceptance rate by program
+#### 3.7.28 Reports — acceptance rate by program
 
 | Property          | Value                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
@@ -3732,7 +3840,7 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ---
 
-#### 3.7.28 Admin dashboard
+#### 3.7.29 Admin dashboard
 
 | Property          | Value                                  |
 | ----------------- | -------------------------------------- |
@@ -3918,7 +4026,7 @@ Frontend dropdowns and status badges should use these exact string values.
 ## 6. Changelog / Versioning
 
 - **Current version:** v1
-- **Last updated:** 2026-08-03
+- **Last updated:** 2026-08-13
 - **Endpoint count:** 117 documented endpoints across Public, Auth, Student, Admission Employee, Department Head, Admission Dean, and Admin. Routes live under `/api/v1/` with role-specific prefixes: `/public`, `/auth`, `/student`, `/admission_employee`, `/department_head`, `/admission_dean`, `/admin`.
 
 ### 6.1 Sentry Test Endpoint (Non-Production Only)
