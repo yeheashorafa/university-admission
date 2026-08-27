@@ -1437,6 +1437,19 @@
       "accepted": "Accepted",
       "rejected": "Rejected"
     },
+    "deanKpi": {
+      "total": "Total Applications",
+      "submitted": "Submitted",
+      "review": "Under Review",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "programs": "Programs",
+      "faculties": "Faculties"
+    },
+    "deanDashboard": {
+      "loading": "Loading dean dashboard...",
+      "error": "Failed to load dean dashboard."
+    },
     "reports": {
       "analyticsCenter": "Analytics Center",
       "adminReports": "Admin Reports",

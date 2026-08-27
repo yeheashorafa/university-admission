@@ -3,13 +3,22 @@
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { useCurrentAuth } from "@/hooks/use-current-auth";
-import { isAdmissionEmployee } from "@/constants/roles";
+import { isAdmissionEmployee, isAdmissionDean } from "@/constants/roles";
 import { AdminDashboardHeader } from "./components/admin-dashboard-header";
 import { AdminKpiGrid } from "./components/admin-kpi-grid";
 import { EmployeeOperationalDashboard } from "./components/employee-operational-dashboard";
+import { DeanDashboard } from "./components/dean-dashboard";
 
 export function AdminDashboardPage() {
   const { user } = useCurrentAuth();
+
+  if (isAdmissionDean(user?.role)) {
+    return (
+      <AdminLayout activePath={routes.admin}>
+        <DeanDashboard />
+      </AdminLayout>
+    );
+  }
 
   if (isAdmissionEmployee(user?.role)) {
     return (

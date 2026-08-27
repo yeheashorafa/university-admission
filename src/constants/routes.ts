@@ -28,6 +28,8 @@ export const routes = {
   adminManualReview: "/admin/manual-review",
   adminDocumentVerification: "/admin/document-verification",
   adminNotifications: "/admin/notifications",
+  adminEmployeeNotifications: "/admin/employee-notifications",
+  adminHeadNotifications: "/admin/head-notifications",
   adminUsers: "/admin/users",
   adminPrograms: "/admin/programs",
   adminFaculties: "/admin/faculties",

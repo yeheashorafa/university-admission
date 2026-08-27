@@ -55,6 +55,7 @@ export const queryKeys = {
 
   admin: {
     dashboardStats: ["admin", "dashboard-stats"] as const,
+    deanDashboard: ["admin", "dean-dashboard"] as const,
     applications: (params?: unknown) =>
       ["admin", "applications", params] as const,
     applicationDetails: (applicationId: string | number) =>
@@ -71,11 +72,13 @@ export const queryKeys = {
     applications: (params?: unknown) => ["employee", "applications", params] as const,
     applicationDetail: (id: string | number) => ["employee", "applications", String(id)] as const,
     manualReview: (params?: unknown) => ["employee", "manual-review", params] as const,
+    notifications: ["employee", "notifications"] as const,
   },
 
   departmentHead: {
     applications: (params?: unknown) => ["departmentHead", "applications", params] as const,
     applicationDetail: (id: string | number) => ["departmentHead", "applications", String(id)] as const,
+    notifications: ["departmentHead", "notifications"] as const,
   },
 
   documentVerification: {

@@ -1437,6 +1437,19 @@
       "accepted": "المقبولون",
       "rejected": "المرفوضون"
     },
+    "deanKpi": {
+      "total": "إجمالي الطلبات",
+      "submitted": "تم الإرسال",
+      "review": "قيد المراجعة",
+      "accepted": "المقبولون",
+      "rejected": "المرفوضون",
+      "programs": "البرامج",
+      "faculties": "الكليات"
+    },
+    "deanDashboard": {
+      "loading": "جاري تحميل لوحة عميد القبول...",
+      "error": "تعذر تحميل لوحة عميد القبول."
+    },
     "reports": {
       "analyticsCenter": "مركز التحليلات",
       "adminReports": "تقارير الإدارة",

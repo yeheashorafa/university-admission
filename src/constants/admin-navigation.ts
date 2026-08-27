@@ -76,6 +76,18 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     allowedRoles: [userRoles.admin, userRoles.admissionDean, userRoles.departmentHead, userRoles.admissionEmployee],
   },
   {
+    labelKey: "employeeNotifications",
+    href: routes.adminEmployeeNotifications,
+    icon: Bell,
+    allowedRoles: [userRoles.admissionEmployee],
+  },
+  {
+    labelKey: "headNotifications",
+    href: routes.adminHeadNotifications,
+    icon: Bell,
+    allowedRoles: [userRoles.departmentHead],
+  },
+  {
     labelKey: "settings",
     href: routes.adminSettings,
     icon: Settings,
