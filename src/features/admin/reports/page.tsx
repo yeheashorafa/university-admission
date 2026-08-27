@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { useAdminApplicationsQuery } from "@/hooks/queries/use-admin-queries";
+import { useAdminReportsQuery } from "@/hooks/queries/use-admin-reports-queries";
 import {
   mapBackendApplicationToWorkflowApplication,
   type WorkflowApplication,
@@ -18,7 +19,10 @@ import { FacultyReportTable } from "./components/faculty-report-table";
 import { buildAdminReportsAnalytics } from "./utils/admin-reports-analytics";
 
 export function AdminReportsPage() {
+  const [range, setRange] = useState<{ from?: string; to?: string }>({});
+
   const { data: apiApps } = useAdminApplicationsQuery();
+  const { data: reports } = useAdminReportsQuery(range);
 
   const applications: WorkflowApplication[] = useMemo(() => {
     const list = Array.isArray(apiApps) ? apiApps : [];
@@ -28,8 +32,11 @@ export function AdminReportsPage() {
   }, [apiApps]);
 
   const analytics = useMemo(() => {
-    return buildAdminReportsAnalytics(applications);
-  }, [applications]);
+    return buildAdminReportsAnalytics(applications, {
+      byStatus: reports?.byStatus,
+      byFaculty: reports?.byFaculty,
+    });
+  }, [applications, reports]);
 
   return (
     <AdminLayout activePath={routes.adminReports}>
@@ -40,7 +47,9 @@ export function AdminReportsPage() {
         </div>
 
         <ReportsHeader />
-        <ReportsFilterBar />
+        <ReportsFilterBar
+          onApply={(nextRange) => setRange(nextRange)}
+        />
 
         <ReportsStats analytics={analytics} />
 

@@ -18,6 +18,15 @@ import {
 import { AdminProgramsFilterBar } from "./components/admin-programs-filter-bar";
 
 import { useAdminMasterCatalogProgramsQuery } from "@/hooks/queries/use-admin-queries";
+import {
+  useCreateAdminProgramMutation,
+  useUpdateAdminProgramMutation,
+  useDeleteAdminProgramMutation,
+} from "@/hooks/queries/use-admin-programs-queries";
+import { type AdminProgramPayload } from "@/services/admin-programs.service";
+import { getApiErrorMessage } from "@/lib/api/api-error";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const PAGE_SIZE = 4;
 
@@ -38,6 +47,11 @@ export function AdminProgramsPage() {
   const searchParams = useSearchParams();
 
   const { data: apiPrograms } = useAdminMasterCatalogProgramsQuery();
+  const t = useTranslations("admin");
+
+  const createProgramMutation = useCreateAdminProgramMutation();
+  const updateProgramMutation = useUpdateAdminProgramMutation();
+  const deleteProgramMutation = useDeleteAdminProgramMutation();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -66,7 +80,13 @@ export function AdminProgramsPage() {
         capacity: Number(p.capacity || 100),
         applicationsCount: Number(p.applications_count || 0),
         acceptedCount: Number(p.accepted_count || 0),
-        branches: Array.isArray(p.branches) ? (p.branches as AcademicBranch[]) : ["scientific"],
+        departmentId: p.department_id != null ? String(p.department_id) : undefined,
+        facultyId: p.faculty_id != null ? String(p.faculty_id) : undefined,
+        branches: Array.isArray(p.branches)
+          ? (p.branches.map((b) =>
+              String((b as { id?: string | number }).id ?? b)
+            ) as unknown as AcademicBranch[])
+          : [],
       };
     });
   }, [apiPrograms]);
@@ -130,11 +150,9 @@ export function AdminProgramsPage() {
   }
 
   function handleOpenCreate() {
-    Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
-    });
+    setModalMode("create");
+    setEditingProgram(null);
+    setModalOpen(true);
   }
 
   function handleOpenEdit(program: AdminProgram) {
@@ -143,30 +161,69 @@ export function AdminProgramsPage() {
     setModalOpen(true);
   }
 
-  async function handleSubmitProgram() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
-    });
-    setModalOpen(false);
-    setEditingProgram(null);
+  async function handleSubmitProgram(program: AdminProgram) {
+    const payload: AdminProgramPayload = {
+      department_id: Number(program.departmentId),
+      name_en: program.title,
+      name_ar: program.title,
+      minimum_average: program.minimumRate,
+      is_active: program.status === "active",
+    };
+
+    try {
+      if (modalMode === "create") {
+        await createProgramMutation.mutateAsync(payload);
+      } else if (program.id) {
+        await updateProgramMutation.mutateAsync({ programId: program.id, payload });
+      }
+      setModalOpen(false);
+      setEditingProgram(null);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    }
   }
 
-  async function handleDeleteProgram() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
+  async function handleDeleteProgram(programId: string) {
+    const result = await Swal.fire({
+      title: t("programs.deleteConfirmTitle") ?? "Delete program?",
+      text:
+        t("programs.deleteConfirmDescription") ??
+        "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: t("programs.delete") ?? "Delete",
+      cancelButtonText: t("programs.cancel") ?? "Cancel",
     });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteProgramMutation.mutateAsync(programId);
+      toast.success(t("programs.deletedSuccessfully") ?? "Program deleted.");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    }
   }
 
-  async function handleToggleStatus() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
-    });
+  async function handleToggleStatus(program: AdminProgram) {
+    const nextActive = program.status === "inactive" || program.status === "closed";
+
+    try {
+      await updateProgramMutation.mutateAsync({
+        programId: program.id,
+        payload: {
+          department_id:
+            program.departmentId != null ? Number(program.departmentId) : undefined,
+          name_en: program.title,
+          name_ar: program.title,
+          minimum_average: program.minimumRate,
+          is_active: nextActive,
+        },
+      });
+      toast.success(t("programs.statusUpdated") ?? "Program status updated.");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    }
   }
 
   return (

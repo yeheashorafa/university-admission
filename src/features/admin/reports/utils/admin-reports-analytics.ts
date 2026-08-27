@@ -3,6 +3,9 @@ import {
   type ApplicationStatus,
 } from "@/constants/application-workflow";
 import type { WorkflowApplication } from "@/features/admin/applications/data/applications-workflow.data";
+import type {
+  ReportLabelCount,
+} from "@/services/admin-reports.service";
 
 export type ReportsChartItem = {
   key: string;
@@ -20,7 +23,8 @@ function countByStatuses(
 }
 
 export function buildAdminReportsAnalytics(
-  applications: WorkflowApplication[]
+  applications: WorkflowApplication[],
+  reports?: { byStatus?: ReportLabelCount[]; byFaculty?: ReportLabelCount[] }
 ) {
   const rejectedStatuses: ApplicationStatus[] = [
     applicationStatuses.aiRejected,
@@ -67,13 +71,17 @@ export function buildAdminReportsAnalytics(
     {}
   );
 
-  const facultyDistribution: ReportsChartItem[] = Object.entries(facultyMap).map(
-    ([faculty, count]) => ({
-      key: faculty,
-      label: faculty,
-      value: count,
-    })
-  );
+  const facultyDistribution: ReportsChartItem[] = reports?.byFaculty?.length
+    ? reports.byFaculty.map((item) => ({
+        key: item.label,
+        label: item.label,
+        value: item.count,
+      }))
+    : Object.entries(facultyMap).map(([faculty, count]) => ({
+        key: faculty,
+        label: faculty,
+        value: count,
+      }));
 
   const aiConfidenceDistribution: ReportsChartItem[] = [
     {
@@ -95,36 +103,42 @@ export function buildAdminReportsAnalytics(
     },
   ];
 
-  const statusDistribution: ReportsChartItem[] = [
-    {
-      key: "aiFailed",
-      value: countByStatuses(applications, [applicationStatuses.aiFailed]),
-    },
-    {
-      key: "headReview",
-      value: countByStatuses(applications, [applicationStatuses.headReview]),
-    },
-    {
-      key: "paymentPending",
-      value: countByStatuses(applications, [
-        applicationStatuses.paymentPending,
-      ]),
-    },
-    {
-      key: "socialResearchRequired",
-      value: countByStatuses(applications, [
-        applicationStatuses.socialResearchRequired,
-      ]),
-    },
-    {
-      key: "completed",
-      value: countByStatuses(applications, [applicationStatuses.completed]),
-    },
-    {
-      key: "rejected",
-      value: countByStatuses(applications, rejectedStatuses),
-    },
-  ];
+  const statusDistribution: ReportsChartItem[] = reports?.byStatus?.length
+    ? reports.byStatus.map((item) => ({
+        key: item.label,
+        label: item.label,
+        value: item.count,
+      }))
+    : [
+        {
+          key: "aiFailed",
+          value: countByStatuses(applications, [applicationStatuses.aiFailed]),
+        },
+        {
+          key: "headReview",
+          value: countByStatuses(applications, [applicationStatuses.headReview]),
+        },
+        {
+          key: "paymentPending",
+          value: countByStatuses(applications, [
+            applicationStatuses.paymentPending,
+          ]),
+        },
+        {
+          key: "socialResearchRequired",
+          value: countByStatuses(applications, [
+            applicationStatuses.socialResearchRequired,
+          ]),
+        },
+        {
+          key: "completed",
+          value: countByStatuses(applications, [applicationStatuses.completed]),
+        },
+        {
+          key: "rejected",
+          value: countByStatuses(applications, rejectedStatuses),
+        },
+      ];
 
   const recentApplications = [...applications]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))

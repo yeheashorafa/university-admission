@@ -4,13 +4,24 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CalendarDays, Filter } from "lucide-react";
 import { AdminCustomSelect } from "@/components/ui/admin-custom-select";
-export function ReportsFilterBar() {
+export function ReportsFilterBar({
+  onApply,
+}: {
+  onApply?: (range: { from?: string; to?: string }) => void;
+}) {
   const t = useTranslations("admin");
 
   const [cycle, setCycle] = useState("all");
   const [faculty, setFaculty] = useState("all");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  function handleApply() {
+    onApply?.({
+      from: fromDate ? fromDate : undefined,
+      to: toDate ? toDate : undefined,
+    });
+  }
 
   return (
     <section className="rounded-xl border border-border bg-card p-5 shadow-[0px_4px_20px_rgba(0,77,64,0.05)]">
@@ -121,6 +132,7 @@ export function ReportsFilterBar() {
 
         <button
           type="button"
+          onClick={handleApply}
           className="flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-muted px-5 text-sm font-bold text-foreground transition hover:bg-muted/70 lg:col-span-2"
         >
           <Filter className="size-5" />

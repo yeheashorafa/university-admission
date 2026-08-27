@@ -7,7 +7,7 @@ import { Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { routes, withLocale } from "@/constants/routes";
 import { forgotPassword } from "@/services/auth.service";
-import { getApiErrorMessage } from "@/lib/api-error";
+import { getApiErrorMessage } from "@/lib/api/api-error";
 import { SubmitHandler } from "@/lib/utils";
 
 export function ForgotPasswordForm() {

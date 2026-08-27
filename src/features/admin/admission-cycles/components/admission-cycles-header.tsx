@@ -14,17 +14,12 @@ export function AdmissionCyclesHeader({
 
   return (
     <header className="flex flex-col justify-between gap-4 border-b border-border pb-6 lg:flex-row lg:items-end">
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          <p className="text-sm font-medium text-muted-foreground">
+        <div>
+          <p className="mb-2 text-sm font-medium text-muted-foreground">
             {t("admissionCycles.admissionCalendar")}
           </p>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-0.5 text-xs font-extrabold text-amber-800 border border-amber-300">
-            Demo / Pending Backend API
-          </span>
-        </div>
 
-        <h1 className="text-3xl font-bold text-primary md:text-4xl">
+          <h1 className="text-3xl font-bold text-primary md:text-4xl">
           {t("admissionCycles.title")}
         </h1>
 

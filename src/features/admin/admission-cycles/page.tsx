@@ -1,21 +1,58 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { AdmissionCyclesStats } from "./components/admission-cycles-stats";
 import { AdmissionCyclesWorkspace } from "./components/admission-cycles-workspace";
 import { AdmissionCyclesHeader } from "./components/admission-cycles-header";
+import { AdmissionCycleCreateModal } from "./components/admission-cycle-create-modal";
 import {
   type AdmissionCycle,
   type AdmissionCycleStatus,
 } from "./data/admission-cycles.data";
+import {
+  useAdminAdmissionCyclesQuery,
+  useCreateAdmissionCycleMutation,
+  useUpdateAdmissionCycleMutation,
+  useDeleteAdmissionCycleMutation,
+} from "@/hooks/queries/use-admin-queries";
+import { getApiErrorMessage } from "@/lib/api/api-error";
+import type { AdminAdmissionCyclePayload } from "@/services/admin.service";
 
-import { useAdminAdmissionCyclesQuery } from "@/hooks/queries/use-admin-queries";
+const SEMESTER_TO_BACKEND: Record<string, AdminAdmissionCyclePayload["semester"]> = {
+  Fall: "first",
+  Spring: "second",
+  Summer: "summer",
+};
+
+function mapCycleUpdates(
+  updates: Partial<AdmissionCycle>
+): Partial<AdminAdmissionCyclePayload> {
+  const payload: Partial<AdminAdmissionCyclePayload> = {};
+  if (updates.name !== undefined) payload.name = updates.name;
+  if (updates.academicYear !== undefined) payload.academic_year = updates.academicYear;
+  if (updates.semester !== undefined) {
+    payload.semester =
+      SEMESTER_TO_BACKEND[updates.semester] ??
+      (updates.semester as AdminAdmissionCyclePayload["semester"]);
+  }
+  if (updates.applicationsOpenAt !== undefined)
+    payload.starts_at = updates.applicationsOpenAt;
+  if (updates.applicationsCloseAt !== undefined)
+    payload.ends_at = updates.applicationsCloseAt;
+  return payload;
+}
 
 export function AdminAdmissionCyclesPage() {
   const { data: apiCycles } = useAdminAdmissionCyclesQuery();
+  const createMutation = useCreateAdmissionCycleMutation();
+  const updateMutation = useUpdateAdmissionCycleMutation();
+  const deleteMutation = useDeleteAdmissionCycleMutation();
+
+  const [showCreate, setShowCreate] = useState(false);
 
   const cycles: AdmissionCycle[] = useMemo(() => {
     const list = Array.isArray(apiCycles) ? apiCycles : [];
@@ -45,36 +82,51 @@ export function AdminAdmissionCyclesPage() {
     return cycles.find((cycle) => cycle.id === activeCycleId) ?? cycles[0];
   }, [cycles, activeCycleId]);
 
-  async function handleCreateCycle() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
-    });
+  function handleCreateCycle() {
+    setShowCreate(true);
   }
 
-  async function handleUpdateCycle() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
-    });
+  async function handleUpdateCycle(
+    cycleId: string,
+    updates: Partial<AdmissionCycle>,
+    successMessage?: string
+  ) {
+    try {
+      await updateMutation.mutateAsync({ id: cycleId, payload: mapCycleUpdates(updates) });
+      toast.success(successMessage || "Admission cycle updated.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
   }
 
-  async function handleChangeStatus() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
-    });
+  async function handleChangeStatus(cycleId: string, status: AdmissionCycleStatus) {
+    try {
+      await updateMutation.mutateAsync({
+        id: cycleId,
+        payload: { is_active: status === "open" },
+      });
+      toast.success(status === "open" ? "Cycle opened." : "Cycle closed.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
   }
 
-  async function handleDeleteCycle() {
-    await Swal.fire({
-      title: "عملية معلقة (PENDING_BACKEND_API)",
-      text: "Endpoint documented but not enabled in current backend deployment.",
-      icon: "info",
+  async function handleDeleteCycle(cycleId: string) {
+    const result = await Swal.fire({
+      title: "Delete admission cycle?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
     });
+    if (!result.isConfirmed) return;
+    try {
+      await deleteMutation.mutateAsync(cycleId);
+      toast.success("Admission cycle deleted.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
   }
 
   return (
@@ -107,6 +159,15 @@ export function AdminAdmissionCyclesPage() {
           </>
         )}
       </div>
+
+      <AdmissionCycleCreateModal
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        onSubmit={async (payload) => {
+          await createMutation.mutateAsync(payload);
+          toast.success("Admission cycle created.");
+        }}
+      />
     </AdminLayout>
   );
 }

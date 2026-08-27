@@ -1,8 +1,9 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { RotateCcw, Search } from "lucide-react";
 import { AdminCustomSelect } from "@/components/ui/admin-custom-select";
+import { useAdminBranchesQuery } from "@/hooks/queries";
 
 type AdminProgramsFilterBarProps = {
   search: string;
@@ -26,6 +27,8 @@ export function AdminProgramsFilterBar({
   onReset,
 }: AdminProgramsFilterBarProps) {
   const t = useTranslations("admin");
+  const locale = useLocale();
+  const { data: branchList = [] } = useAdminBranchesQuery();
 
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-[0px_8px_30px_rgba(0,77,64,0.06)]">
@@ -88,9 +91,13 @@ export function AdminProgramsFilterBar({
           onChange={(value) => onFilterChange("branch", value)}
           options={[
             { value: "all", label: t("programs.allBranches") },
-            { value: "scientific", label: t("programs.branches.scientific") },
-            { value: "literary", label: t("programs.branches.literary") },
-            { value: "industrial", label: t("programs.branches.industrial") },
+            ...branchList.map((branch) => ({
+              value: String(branch.id),
+              label:
+                locale === "ar"
+                  ? branch.name_ar || branch.name_en || String(branch.id)
+                  : branch.name_en || branch.name_ar || String(branch.id),
+            })),
           ]}
           className="lg:col-span-2"
         />

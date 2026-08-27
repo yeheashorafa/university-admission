@@ -32,9 +32,9 @@ export function ApplicationStatusReport({ data }: ApplicationStatusReportProps) 
             <div key={item.key}>
               <div className="mb-2 flex items-center justify-between gap-4">
                 <div>
-                  <p className="font-semibold text-foreground">
-                    {t(`statusChart.${item.key}`)}
-                  </p>
+                <p className="font-semibold text-foreground">
+                  {item.label ?? t(`statusChart.${item.key}`)}
+                </p>
 
                   <p className="text-sm text-muted-foreground">
                     {item.value} {t("applications")}

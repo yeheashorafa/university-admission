@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import type {
   AcademicBranch,
   AdminProgram,
   AdminProgramStatus,
 } from "../data/admin-programs.data";
+import {
+  useAdminBranchesQuery,
+  useAdminDepartmentsQuery,
+  useAdminFacultiesQuery,
+} from "@/hooks/queries";
 
 type AdminProgramFormModalProps = {
   open: boolean;
@@ -16,8 +21,6 @@ type AdminProgramFormModalProps = {
   onClose: () => void;
   onSubmit: (program: AdminProgram) => void;
 };
-
-const branchOptions: AcademicBranch[] = ["scientific", "literary", "industrial"];
 
 export function AdminProgramFormModal({
   open,
@@ -53,24 +56,92 @@ function AdminProgramFormModalContent({
   onSubmit,
 }: AdminProgramFormModalContentProps) {
   const t = useTranslations("admin");
+  const locale = useLocale();
+  const { data: branchList = [] } = useAdminBranchesQuery();
+  const { data: facultyList = [] } = useAdminFacultiesQuery();
+  const { data: departmentList = [] } = useAdminDepartmentsQuery();
+
+  const branchOptions = branchList.map((branch) => ({
+    value: String(branch.id),
+    label:
+      locale === "ar"
+        ? branch.name_ar || branch.name_en || String(branch.id)
+        : branch.name_en || branch.name_ar || String(branch.id),
+  }));
+
+  const facultyOptions = facultyList.map((faculty) => ({
+    value: String(faculty.id),
+    label:
+      locale === "ar"
+        ? faculty.name_ar || faculty.name_en || String(faculty.id)
+        : faculty.name_en || faculty.name_ar || String(faculty.id),
+  }));
 
   const [title, setTitle] = useState(program?.title ?? "");
-  const [faculty, setFaculty] = useState(program?.faculty ?? "");
+  const [facultyId, setFacultyId] = useState(
+    program?.facultyId ? String(program.facultyId) : ""
+  );
+  const [departmentId, setDepartmentId] = useState(
+    program?.departmentId ? String(program.departmentId) : ""
+  );
   const [duration, setDuration] = useState(program?.duration ?? "4 years");
   const [minimumRate, setMinimumRate] = useState(program?.minimumRate ?? 70);
   const [capacity, setCapacity] = useState(program?.capacity ?? 100);
   const [status, setStatus] = useState<AdminProgramStatus>(
     program?.status ?? "active"
   );
-  const [branches, setBranches] = useState<AcademicBranch[]>(
-    program?.branches ?? ["scientific"]
+  const [branches, setBranches] = useState<string[]>(
+    (program?.branches as unknown as string[]) ?? []
   );
 
-  function toggleBranch(branch: AcademicBranch) {
+  const departmentOptions = departmentList
+    .filter(
+      (department) =>
+        !facultyId || String(department.faculty_id) === String(facultyId)
+    )
+    .map((department) => ({
+      value: String(department.id),
+      label:
+        locale === "ar"
+          ? department.name_ar || department.name_en || String(department.id)
+          : department.name_en || department.name_ar || String(department.id),
+    }));
+
+  useEffect(() => {
+    if (
+      mode === "edit" &&
+      program?.departmentId &&
+      !facultyId &&
+      departmentList.length > 0
+    ) {
+      const department = departmentList.find(
+        (item) => String(item.id) === String(program.departmentId)
+      );
+      if (department?.faculty_id) {
+        // One-time pre-fill of the cascading faculty select from the program's
+        // department once the reference data has loaded.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setFacultyId(String(department.faculty_id));
+      }
+    }
+  }, [mode, program, facultyId, departmentList]);
+
+  function handleFacultyChange(value: string) {
+    setFacultyId(value);
+    if (departmentId) {
+      const department = departmentList.find(
+        (item) => String(item.id) === String(departmentId)
+      );
+      if (department && String(department.faculty_id) !== String(value)) {
+        setDepartmentId("");
+      }
+    }
+  }
+
+  function toggleBranch(branch: string) {
     setBranches((current) => {
       if (current.includes(branch)) {
-        const next = current.filter((item) => item !== branch);
-        return next.length > 0 ? next : current;
+        return current.filter((item) => item !== branch);
       }
 
       return [...current, branch];
@@ -89,7 +160,7 @@ function AdminProgramFormModalContent({
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, ""),
       title,
-      faculty,
+      faculty: facultyOptions.find((item) => item.value === facultyId)?.label ?? "",
       degree: "Bachelor",
       duration,
       status,
@@ -97,7 +168,9 @@ function AdminProgramFormModalContent({
       capacity,
       applicationsCount: program?.applicationsCount ?? 0,
       acceptedCount: program?.acceptedCount ?? 0,
-      branches,
+      branches: branches as unknown as AcademicBranch[],
+      departmentId,
+      facultyId,
     };
 
     onSubmit(nextProgram);
@@ -140,11 +213,30 @@ function AdminProgramFormModalContent({
             </FormField>
 
             <FormField label={t("programs.form.faculty")}>
-              <input
+              <SelectField
                 required
-                value={faculty}
-                onChange={(event) => setFaculty(event.target.value)}
-                className="h-12 w-full rounded-lg border border-input bg-card px-4 text-base outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
+                value={facultyId}
+                onChange={handleFacultyChange}
+                options={facultyOptions}
+                placeholder={t("programs.form.selectFaculty")}
+                disabled={facultyList.length === 0}
+                emptyLabel={t("programs.form.selectFaculty")}
+              />
+            </FormField>
+
+            <FormField label={t("programs.form.department")}>
+              <SelectField
+                required
+                value={departmentId}
+                onChange={setDepartmentId}
+                options={departmentOptions}
+                placeholder={t("programs.form.selectDepartment")}
+                disabled={!facultyId || departmentList.length === 0}
+                emptyLabel={
+                  facultyId
+                    ? t("programs.form.noDepartments")
+                    : t("programs.form.selectFacultyFirst")
+                }
               />
             </FormField>
 
@@ -205,16 +297,16 @@ function AdminProgramFormModalContent({
             <div className="flex flex-wrap gap-3">
               {branchOptions.map((branch) => (
                 <label
-                  key={branch}
+                  key={branch.value}
                   className="flex cursor-pointer items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm font-bold text-foreground transition hover:bg-muted"
                 >
                   <input
                     type="checkbox"
-                    checked={branches.includes(branch)}
-                    onChange={() => toggleBranch(branch)}
+                    checked={branches.includes(branch.value)}
+                    onChange={() => toggleBranch(branch.value)}
                     className="size-4 rounded border-input text-primary focus:ring-primary"
                   />
-                  {t(`programs.branches.${branch}`)}
+                  {branch.label}
                 </label>
               ))}
             </div>
@@ -255,5 +347,47 @@ function FormField({ label, children }: FormFieldProps) {
       </span>
       {children}
     </label>
+  );
+}
+
+type SelectFieldProps = {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  emptyLabel?: string;
+  disabled?: boolean;
+  required?: boolean;
+};
+
+function SelectField({
+  value,
+  onChange,
+  options,
+  placeholder,
+  emptyLabel,
+  disabled,
+  required,
+}: SelectFieldProps) {
+  const defaultLabel = disabled ? (emptyLabel ?? placeholder ?? "") : (placeholder ?? "");
+  const hasOptions = options.length > 0;
+
+  return (
+    <select
+      required={required}
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      className="h-12 w-full rounded-lg border border-input bg-card px-4 text-base outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <option value="" disabled={hasOptions}>
+        {defaultLabel}
+      </option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }
