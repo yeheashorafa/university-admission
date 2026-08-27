@@ -208,6 +208,14 @@
     "didntReceiveCode": "لم تستلم الرمز؟",
     "resendCode": "إعادة إرسال الرمز",
     "otpRequired": "يرجى إدخال رمز التحقق.",
+    "otpInvalid": "رمز التحقق غير صحيح أو منتهٍ الصلاحية.",
+    "otpTooManyAttempts": "محاولات خاطئة كثيرة. يرجى طلب رمز جديد.",
+    "otpSentToEmail": "تم إرسال رمز التحقق إلى بريدك الإلكتروني.",
+    "otpSentToPhone": "تم إرسال رمز التحقق إلى جوالك.",
+    "accountAlreadyVerified": "حسابك مُفعّل مسبقاً.",
+    "sendOtpVia": "إرسال الرمز عبر",
+    "sendOtpEmail": "البريد الإلكتروني",
+    "sendOtpSms": "رسالة نصية",
     "otpVerified": "تم تأكيد رمز التحقق بنجاح.",
     "otpVerifiedDescription": "تم إنشاء حسابك وتأكيد هويتك. جاري توجيهك إلى لوحة التحكم...",
     "verificationSuccessful": "تم التحقق بنجاح",
@@ -2157,7 +2165,12 @@
         "status": "الحالة",
         "minimumRate": "معدل القبول الأدنى",
         "capacity": "السعة",
-        "branches": "الفروع المؤهلة"
+        "branches": "الفروع المؤهلة",
+      "selectFaculty": "اختر الكلية",
+      "department": "القسم",
+      "selectDepartment": "اختر القسم",
+      "selectFacultyFirst": "اختر الكلية أولاً",
+      "noDepartments": "لا توجد أقسام متاحة"
       }
     },
     "admissionCycles": {

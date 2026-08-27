@@ -22,7 +22,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useLocale, useTranslations } from "next-intl";
 import { SubmitHandler } from "@/lib/utils";
 import { getDashboardRouteByRole } from "@/constants/role-navigation";
-import type { RegisterPayload } from "@/services/auth.service";
+import { isUserVerified, type RegisterPayload } from "@/services/auth.service";
 
 type FieldErrors = {
   fullName?: string;
@@ -127,6 +127,11 @@ export function RegisterForm() {
       const user = await register(payload);
 
       toast.success(t("accountCreatedSuccessfully"));
+
+      if (!isUserVerified(user)) {
+        router.replace(withLocale(locale, routes.verifyOtp));
+        return;
+      }
 
       const targetRoute = getDashboardRouteByRole(user.role);
       router.replace(withLocale(locale, targetRoute));

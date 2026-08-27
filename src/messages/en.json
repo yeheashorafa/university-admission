@@ -206,6 +206,14 @@
     "didntReceiveCode": "Didn't receive the code?",
     "resendCode": "Resend Code",
     "otpRequired": "Please enter the verification code.",
+    "otpInvalid": "The verification code is invalid or has expired.",
+    "otpTooManyAttempts": "Too many incorrect attempts. Please request a new code.",
+    "otpSentToEmail": "A verification code has been sent to your email.",
+    "otpSentToPhone": "A verification code has been sent to your phone.",
+    "accountAlreadyVerified": "Your account is already verified.",
+    "sendOtpVia": "Send code via",
+    "sendOtpEmail": "Email",
+    "sendOtpSms": "SMS",
     "otpVerified": "OTP verified successfully.",
     "otpVerifiedDescription": "Your account has been created and your identity verified. You are being redirected to your control panel...",
     "forgotPasswordTitle": "Forgot Password",
@@ -2157,7 +2165,12 @@
         "status": "Status",
         "minimumRate": "Minimum rate",
         "capacity": "Capacity",
-        "branches": "Eligible branches"
+        "branches": "Eligible branches",
+      "selectFaculty": "Select faculty",
+      "department": "Department",
+      "selectDepartment": "Select department",
+      "selectFacultyFirst": "Select a faculty first",
+      "noDepartments": "No departments available"
       }
     },
     "admissionCycles": {

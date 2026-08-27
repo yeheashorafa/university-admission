@@ -66,6 +66,10 @@ export function extractApiError(error: unknown): ApiError {
       message = responseData?.message || "Requested resource was not found.";
     } else if (status === 422) {
       message = responseData?.message || "Validation failed. Please check your inputs.";
+    } else if (status === 429) {
+      message =
+        responseData?.message ||
+        "Too many requests. Please wait a moment and try again.";
     }
 
     return new ApiError(message, {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -11,33 +11,40 @@ import {
   LockKeyhole,
   RotateCcw,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { routes, withLocale } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { extractApiError, getApiErrorMessage } from "@/lib/api/api-error";
+import { sendOtp, verifyOtp } from "@/services/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
+import { getDashboardRouteByRole } from "@/constants/role-navigation";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 90;
+type OtpChannel = "email" | "sms";
 
 export function VerifyOtpForm() {
   const locale = useLocale();
-  const searchParams = useSearchParams();
+  const router = useRouter();
   const t = useTranslations("auth");
 
-  const phoneFromUrl = searchParams.get("phone");
+  const user = useAuthStore((state) => state.user);
+  const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
 
   const displayPhone = useMemo(() => {
-    if (!phoneFromUrl) return "+970 59-123-4567";
-
-    if (phoneFromUrl.startsWith("+")) return phoneFromUrl;
-
-    return `+${phoneFromUrl}`;
-  }, [phoneFromUrl]);
+    const phone = user?.phone;
+    if (!phone) return "+970 59-123-4567";
+    return phone.startsWith("+") ? phone : `+${phone}`;
+  }, [user?.phone]);
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
   const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [channel, setChannel] = useState<OtpChannel>("email");
 
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -57,6 +64,35 @@ export function VerifyOtpForm() {
 
     return () => window.clearInterval(interval);
   }, [secondsLeft]);
+
+  async function requestOtp(activeChannel: OtpChannel) {
+    setIsSending(true);
+    setError("");
+    try {
+      const result = await sendOtp({ channel: activeChannel });
+      if (result.alreadyVerified) {
+        toast.success(t("accountAlreadyVerified"));
+        completeVerification();
+        return;
+      }
+      toast.success(
+        activeChannel === "email"
+          ? t("otpSentToEmail")
+          : t("otpSentToPhone")
+      );
+      setSecondsLeft(RESEND_SECONDS);
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  useEffect(() => {
+    requestOtp("email");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const timerText = useMemo(() => {
     const minutes = Math.floor(secondsLeft / 60);
@@ -114,18 +150,25 @@ export function VerifyOtpForm() {
     inputRefs.current[nextFocusIndex]?.focus();
   }
 
-  function handleResend() {
-    if (!canResend) return;
+  async function handleResend() {
+    if (!canResend || isSending) return;
 
     setOtp(Array(OTP_LENGTH).fill(""));
-    setError("");
-    setSecondsLeft(RESEND_SECONDS);
     inputRefs.current[0]?.focus();
-
-    // Later: call resend OTP API here.
+    await requestOtp(channel);
   }
 
-  function handleVerify() {
+  async function completeVerification() {
+    try {
+      await fetchCurrentUser();
+    } catch {
+      // ignore — route anyway, guards will re-check
+    }
+    const updatedUser = useAuthStore.getState().user;
+    router.replace(withLocale(locale, getDashboardRouteByRole(updatedUser?.role)));
+  }
+
+  async function handleVerify() {
     if (!isComplete) {
       setError(t("otpRequired"));
       return;
@@ -134,11 +177,21 @@ export function VerifyOtpForm() {
     setError("");
     setIsVerifying(true);
 
-    // Temporary mock behavior until backend is ready.
-    window.setTimeout(() => {
-      setIsVerifying(false);
+    try {
+      await verifyOtp({ code: otp.join("") });
+      toast.success(t("verificationSuccessful"));
       setIsSuccess(true);
-    }, 700);
+      await completeVerification();
+    } catch (err) {
+      const apiError = extractApiError(err);
+      const message = apiError.status === 429
+        ? t("otpTooManyAttempts")
+        : apiError.message || t("otpInvalid");
+      setError(message);
+      toast.error(message);
+    } finally {
+      setIsVerifying(false);
+    }
   }
 
   if (isSuccess) {
@@ -187,6 +240,30 @@ export function VerifyOtpForm() {
               {displayPhone}
             </strong>
           </p>
+
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {t("sendOtpVia")}
+            </span>
+            <div className="inline-flex overflow-hidden rounded-lg border border-border">
+              {(["email", "sms"] as OtpChannel[]).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setChannel(value)}
+                  disabled={isSending}
+                  className={cn(
+                    "px-3 py-1.5 text-sm font-medium transition disabled:opacity-60",
+                    channel === value
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  {value === "email" ? t("sendOtpEmail") : t("sendOtpSms")}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -224,7 +301,7 @@ export function VerifyOtpForm() {
           <button
             type="button"
             onClick={handleVerify}
-            disabled={isVerifying}
+            disabled={isVerifying || isSending}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isVerifying ? (
@@ -250,7 +327,7 @@ export function VerifyOtpForm() {
             <button
               type="button"
               onClick={handleResend}
-              disabled={!canResend}
+              disabled={!canResend || isSending}
               className="inline-flex items-center gap-1 text-sm font-bold text-secondary transition hover:underline disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:no-underline"
             >
               <RotateCcw className="size-4" />

@@ -166,8 +166,8 @@ export async function getCurrentUser(): Promise<AuthUser> {
 
 export async function refreshToken(): Promise<string> {
   const response = await apiClient.post(ENDPOINTS.auth.refresh);
-  const dataPayload = response.data.data;
-  return dataPayload.access_token || dataPayload.token || "";
+  const dataPayload = response.data?.data ?? response.data;
+  return dataPayload?.access_token || dataPayload?.token || "";
 }
 
 export async function logout(): Promise<void> {
@@ -193,7 +193,18 @@ export async function resetPassword(payload: {
   return response.data;
 }
 
-export async function verifyOtp(payload: { email: string; otp: string }) {
-  const response = await apiClient.post("/auth/verify-otp", payload);
-  return response.data;
+export async function sendOtp(payload: { channel: "email" | "sms" }): Promise<{
+  alreadyVerified?: boolean;
+}> {
+  const response = await apiClient.post(ENDPOINTS.auth.sendOtp, payload);
+  const dataPayload = response.data?.data ?? response.data;
+  return {
+    alreadyVerified:
+      (response.data?.message as string)?.toLowerCase().includes("already verified") ||
+      Boolean(dataPayload?.already_verified),
+  };
+}
+
+export async function verifyOtp(payload: { code: string }): Promise<void> {
+  await apiClient.post(ENDPOINTS.auth.verifyOtp, payload);
 }

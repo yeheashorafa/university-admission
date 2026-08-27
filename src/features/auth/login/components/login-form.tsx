@@ -11,6 +11,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useLocale, useTranslations } from "next-intl";
 import { SubmitHandler } from "@/lib/utils";
 import { getDashboardRouteByRole } from "@/constants/role-navigation";
+import { isUserVerified } from "@/services/auth.service";
 
 
 export function LoginForm() {
@@ -53,6 +54,12 @@ export function LoginForm() {
       });
 
       toast.success(t("loggedInSuccessfully"));
+
+      if (!isUserVerified(user)) {
+        router.replace(withLocale(locale, routes.verifyOtp));
+        return;
+      }
+
       redirectByRole(user.role);
     } catch (error) {
       const apiError = extractApiError(error);
