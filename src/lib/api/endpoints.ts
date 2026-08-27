@@ -32,6 +32,7 @@ export const ENDPOINTS = {
       `/student/applications/${id}/document-checklist`,
     profile: "/student/profile",
     socialInformation: "/student/social-information",
+    secondarySchoolRecords: "/student/secondary_school_records",
     documents: "/student/documents",
     documentDetail: (id: string | number) => `/student/documents/${id}`,
     deleteDocument: (id: string | number) => `/student/documents/${id}`,

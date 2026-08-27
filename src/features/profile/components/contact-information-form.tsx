@@ -42,12 +42,25 @@ export function ContactInformationForm() {
     profile?.address ||
     "";
 
+  const firstAddress = (profile?.addresses?.[0] ?? null) as Record<string, string> | null;
+  const firstEmergency = (profile?.emergency_contacts?.[0] ?? null) as Record<string, string> | null;
+  const initialGovernorate = firstAddress?.governorate ?? "";
+  const initialAddressLine = firstAddress?.address_line ?? "";
+  const initialEmergencyName = firstEmergency?.name ?? "";
+  const initialEmergencyRelationship = firstEmergency?.relationship ?? "";
+  const initialEmergencyPhone = firstEmergency?.phone ?? "";
+
   const formValues = {
     email: initialEmail,
     phone: userEdits.phone ?? initialPhone,
     alternativePhone: userEdits.alternativePhone ?? initialAlternativePhone,
     city: userEdits.city ?? initialCity,
     address: userEdits.address ?? initialAddress,
+    governorate: userEdits.governorate ?? initialGovernorate,
+    addressLine: userEdits.addressLine ?? initialAddressLine,
+    emergencyName: userEdits.emergencyName ?? initialEmergencyName,
+    emergencyRelationship: userEdits.emergencyRelationship ?? initialEmergencyRelationship,
+    emergencyPhone: userEdits.emergencyPhone ?? initialEmergencyPhone,
   };
 
   function updateField(field: string, value: string) {
@@ -60,13 +73,47 @@ export function ContactInformationForm() {
   async function handleSave() {
     let hasChanges = false;
     try {
-      // 1. Check phone change for profile update
+      // 1. Build profile update payload (phone, addresses, emergency contacts)
+      const profilePayload: Record<string, unknown> = {};
       const trimmedPhone = formValues.phone.trim();
-      if (userEdits.phone !== undefined && trimmedPhone !== initialPhone.trim()) {
-        if (trimmedPhone) {
-          await updateProfileMutation.mutateAsync({ phone: trimmedPhone });
-          hasChanges = true;
+      if (userEdits.phone !== undefined && trimmedPhone !== initialPhone.trim() && trimmedPhone) {
+        profilePayload.phone = trimmedPhone;
+      }
+
+      const governorate = formValues.governorate.trim();
+      const addressLine = formValues.addressLine.trim();
+      const emergencyName = formValues.emergencyName.trim();
+      const emergencyRelationship = formValues.emergencyRelationship.trim();
+      const emergencyPhone = formValues.emergencyPhone.trim();
+
+      if (userEdits.governorate !== undefined || userEdits.addressLine !== undefined) {
+        if (governorate || addressLine) {
+          profilePayload.addresses = [
+            { type: "current", governorate, address_line: addressLine },
+          ];
         }
+      }
+
+      if (
+        userEdits.emergencyName !== undefined ||
+        userEdits.emergencyRelationship !== undefined ||
+        userEdits.emergencyPhone !== undefined
+      ) {
+        if (emergencyName && emergencyPhone) {
+          profilePayload.emergency_contacts = [
+            {
+              name: emergencyName,
+              relationship: emergencyRelationship,
+              phone: emergencyPhone,
+              is_primary: true,
+            },
+          ];
+        }
+      }
+
+      if (Object.keys(profilePayload).length > 0) {
+        await updateProfileMutation.mutateAsync(profilePayload);
+        hasChanges = true;
       }
 
       // 2. Build partial social update payload (only non-empty changed fields)
@@ -186,6 +233,48 @@ export function ContactInformationForm() {
             onChange={(event) => updateField("address", event.target.value)}
             className="min-h-[110px] w-full rounded-lg border border-input bg-card p-4 text-base outline-none transition focus:border-primary focus:ring-1 focus:ring-primary"
           />
+        </div>
+
+        <div className="md:col-span-2 mt-2 rounded-xl border border-dashed border-border bg-muted/30 p-5">
+          <h3 className="mb-4 text-sm font-bold text-foreground">{t("currentAddress")}</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <ProfileInput
+              id="governorate"
+              label={t("governorate")}
+              value={formValues.governorate}
+              onChange={(value) => updateField("governorate", value)}
+            />
+            <ProfileInput
+              id="address-line"
+              label={t("addressLine")}
+              value={formValues.addressLine}
+              onChange={(value) => updateField("addressLine", value)}
+            />
+          </div>
+        </div>
+
+        <div className="md:col-span-2 mt-2 rounded-xl border border-dashed border-border bg-muted/30 p-5">
+          <h3 className="mb-4 text-sm font-bold text-foreground">{t("emergencyContact")}</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <ProfileInput
+              id="emergency-name"
+              label={t("contactName")}
+              value={formValues.emergencyName}
+              onChange={(value) => updateField("emergencyName", value)}
+            />
+            <ProfileInput
+              id="emergency-relationship"
+              label={t("relationship")}
+              value={formValues.emergencyRelationship}
+              onChange={(value) => updateField("emergencyRelationship", value)}
+            />
+            <ProfileInput
+              id="emergency-phone"
+              label={t("contactPhone")}
+              value={formValues.emergencyPhone}
+              onChange={(value) => updateField("emergencyPhone", value)}
+            />
+          </div>
         </div>
       </div>
 

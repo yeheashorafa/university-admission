@@ -29,6 +29,7 @@ export const queryKeys = {
 
   profile: {
     myProfile: ["profile", "my-profile"] as const,
+    secondarySchoolRecord: ["profile", "secondary-school-record"] as const,
   },
 
   socialInformation: {
