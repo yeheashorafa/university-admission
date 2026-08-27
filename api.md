@@ -3,7 +3,7 @@
 > **Audience:** Frontend developers. No prior backend knowledge required.
 > **Base URL:** `https://your-api-host/api/v1`
 > **Version:** v1
-> **Last updated:** 2026-08-13
+> **Last updated:** 2026-08-26
 
 ---
 
@@ -27,7 +27,7 @@ This API uses **JWT bearer tokens** provided by `php-open-source-saver/jwt-auth`
 
 | Response type                     | Shape                                                                                          |
 | --------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Auth endpoints**                | `{ "data": { access_token, token_type, expires_in, verified, verification_method, user } }`    |
+| **Auth endpoints**                | `{ "success": ..., "message": ..., "data": { access_token, token_type, expires_in, verified, verification_method, user } }` |
 | **Non-auth endpoints**            | `{ "success": true/false, "message": string?, "data": T, "errors"?: array }`                   |
 | **Paginated list**                | `{ "success": true, "data": { "data": [...], "links": {...}, "meta": {...} } }`                |
 | **No content (204)**              | Raw `null` with no envelope body                                                               |
@@ -37,18 +37,23 @@ This API uses **JWT bearer tokens** provided by `php-open-source-saver/jwt-auth`
 | **Not found (404)**               | `{ "success": false, "message": "Not found.", "data": null, "errors": null }`                  |
 | **Server error (500)**            | `{ "success": false, "message": "Server error.", "data": null, "errors": null }`               |
 
-> **Note:** Auth endpoints (`register`, `login`, `refresh`, `logout`, `me`) return raw `JsonResource` instances, which Laravel wraps in `{ "data": ... }`. All other endpoints use `ApiResponse`, which returns `{ "success": true/false, "message": ..., "data": ... }`.
+> **Note:** **Every** response in this API uses the `ApiResponse` envelope `{ "success": bool, "message": string|null, "data": <payload>, "errors": object|null }`. This applies to the auth endpoints (`register`, `login`, `refresh`, `logout`, `me`) and the OTP endpoints (`send-otp`, `verify-otp`) as well as all other endpoints. For `register`/`login`/`refresh` the `data` payload is the Auth resource: `{ "message": null, "access_token", "token_type", "expires_in", "verified", "verification_method", "user" }` (the `message` field inside `data` is a redundant always-`null` artifact and can be ignored). For `me` the `data` payload is the user object. For `logout`, `send-otp`, and `verify-otp` the `data` payload is `null`.
 
 ### 1.4 Rate limiting
 
-| Group                                               | Limit            |
-| --------------------------------------------------- | ---------------- |
-| `POST /api/v1/auth/register`                        | 10/min           |
-| `POST /api/v1/auth/login`                           | 10/min           |
-| `POST /api/v1/auth/email/verification-notification` | 5/min            |
-| `POST /api/v1/auth/email/verify/{id}/{hash}`        | 5/min (IP-based) |
-| `GET /api/health`                                   | 60/min           |
-| All other authenticated endpoints                   | 60/min           |
+| Group                                                       | Limiter (max/min, by)        |
+| ----------------------------------------------------------- | ---------------------------- |
+| `POST /api/v1/auth/register`, `/auth/login`                 | `auth` — 10/min (IP)         |
+| `POST /api/v1/auth/forgot-password`, `/auth/reset-password` | `password-reset` — 5/min (IP)|
+| `POST /api/v1/auth/email/verification-notification`         | `verification` — 5/min (IP)  |
+| `POST /api/v1/auth/email/verify/{id}/{hash}`                | `email-verify` — 5/min (IP)  |
+| `POST /api/v1/auth/send-otp`, `/auth/verify-otp`           | `otp` — 5/min (user/IP)      |
+| `GET /api/v1/public/*` (catalog endpoints)                 | `public-catalog` — 60/min (IP)|
+| `POST /api/v1/student/documents`, admin imports            | `uploads` — 10/min (user/IP) |
+| `POST /api/v1/admin/*`                                      | `admin` — 30/min (user/IP)   |
+| `GET /api/health`                                           | `health` — 60/min (IP)       |
+| `GET /api/v1/sentry-test` (non-production only)            | `sentry-test` — 5/min (IP)   |
+| All other authenticated endpoints                           | `api` — 60/min (user/IP)     |
 
 Rate-limited responses return HTTP 429. Rate limiting is IP-based for unauthenticated endpoints and user/IP-based for authenticated endpoints.
 
@@ -86,7 +91,7 @@ All timestamps returned by the API are **ISO 8601** strings (e.g. `"2026-01-15T1
 ### 1.7 Security
 
 - **CORS:** Configured via `config/cors.php` with `CORS_ALLOWED_ORIGINS` environment variable. Only specified origins receive `Access-Control-Allow-Origin` headers. Wildcard (`*`) is not used in non-production environments where a specific origin is configured.
-- **Rate limiting:** 10 req/min on auth endpoints, 60 req/min on all other authenticated endpoints via `throttle` middleware.
+- **Rate limiting:** Per-endpoint throttle groups via the `throttle` middleware (see §1.4 for the full list — e.g. 10/min on auth, 5/min on OTP / email-verification / password-reset, 60/min on general authenticated & public catalog, 30/min on admin, 10/min on uploads).
 - **JWT:** HS256 algorithm with 1-hour TTL. Tokens expired or invalid return 401.
 - **Password hashing:** bcrypt with 12 rounds.
 
@@ -98,7 +103,7 @@ All timestamps returned by the API are **ISO 8601** strings (e.g. `"2026-01-15T1
 
 **Endpoint:** `POST /api/v1/auth/register`
 
-A new user is created with the `student` role automatically assigned. No email verification is performed.
+A new user is created with the `student` role automatically assigned and is left **unverified**. No verification email is sent on registration. The client must complete OTP verification (`POST /api/v1/auth/send-otp` → `POST /api/v1/auth/verify-otp`) before the account can access verified-only routes.
 
 **Request body:**
 
@@ -107,7 +112,8 @@ A new user is created with the `student` role automatically assigned. No email v
 | `name`                  | string | Yes      | required, string, max:255                    | Full name                                       |
 | `email`                 | string | Yes      | required, email, max:255, unique:users,email | Email address                                   |
 | `phone`                 | string | Yes      | required, string, max:20, unique:users,phone | Phone number (e.g. `+201234567890`)             |
-| `national_id`           | string | Yes      | required, string, max:20                     | National ID (used for Tawjihi matching)         |
+| `national_id`           | string | Conditional | required_without:passport_number, string, max:20 | National ID (used for Tawjihi matching)         |
+| `passport_number`       | string | Conditional | required_without:national_id, string, max:20     | Alternative ID for students without a national ID |
 | `password`              | string | Yes      | required, confirmed, min:8                   | Password (must include `password_confirmation`) |
 | `password_confirmation` | string | Yes      | required, string, min:8                      | Must match `password`                           |
 
@@ -118,6 +124,7 @@ A new user is created with the `student` role automatically assigned. No email v
     "name": "Ahmed Khaled",
     "email": "ahmed@example.com",
     "phone": "+201234567890",
+    "national_id": "1234567890123",
     "password": "securePass123",
     "password_confirmation": "securePass123"
 }
@@ -127,36 +134,39 @@ A new user is created with the `student` role automatically assigned. No email v
 
 ```json
 {
-    "data": {
-        "message": null,
-        "access_token": "eyJ0...",
-        "token_type": "Bearer",
-        "expires_in": 3600,
-        "verified": true,
-        "verification_method": "email",
-        "user": {
-            "id": 1,
-            "name": "Ahmed Khaled",
-            "email": "ahmed@example.com",
-            "phone": "+201234567890",
-            "is_verified": true,
-            "is_active": true,
-            "role": {
-                "id": 1,
-                "name": "student",
-                "guard_name": "web"
-            },
-            "personal_information": null,
-            "social_information": null,
-            "addresses": [],
-            "emergency_contacts": [],
-            "secondary_school_records": [],
-            "documents": [],
-            "created_at": "2026-01-15T10:00:00Z",
-            "updated_at": "2026-01-15T10:00:00Z"
-        }
-    }
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "message": null,
+    "access_token": "eyJ0...",
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "verified": true,
+    "verification_method": "email",
+    "user": {
+      "id": 1,
+      "name": "Ahmed Khaled",
+      "email": "ahmed@example.com",
+      "phone": "+201234567890",
+      "is_verified": true,
+      "is_active": true,
+      "role": {
+        "id": 1,
+        "name": "student",
+        "guard_name": "web" },
+      "personal_information": null,
+      "social_information": null,
+      "addresses": [
+      ],
+      "emergency_contacts": [
+      ],
+      "secondary_school_records": [
+      ],
+      "documents": [
+      ],
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z" }  },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -184,7 +194,7 @@ A new user is created with the `student` role automatically assigned. No email v
 }
 ```
 
-**Success response (200):** Same shape as register, wrapped in `{ "data": ... }`.
+**Success response (200):** Same full `ApiResponse` envelope as register (e.g. `{ "success": true, "message": "Login successful.", "data": { "message": null, "access_token": "...", ... } }`). For a verified user `verified` is `true` and `verification_method` reflects the method used (e.g. `"email"` or `"phone"`).
 
 **Error responses:**
 
@@ -201,6 +211,8 @@ Requires a valid bearer token.
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "name": "Ahmed Khaled",
@@ -211,18 +223,22 @@ Requires a valid bearer token.
     "role": {
       "id": 1,
       "name": "student",
-      "guard_name": "web"
-    },
-    "personal_information": { ... },
-    "social_information": { ... },
-    "addresses": [],
-    "emergency_contacts": [],
-    "secondary_school_records": [],
-    "documents": [],
+      "guard_name": "web" },
+    "personal_information": {
+      ... },
+    "social_information": {
+      ... },
+    "addresses": [
+    ],
+    "emergency_contacts": [
+    ],
+    "secondary_school_records": [
+    ],
+    "documents": [
+    ],
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-  }
-}
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 Note: `personal_information`, `social_information`, `addresses`, `emergency_contacts`, `secondary_school_records`, and `documents` are only populated if the controller explicitly loaded them. The `me` endpoint always loads all of these.
@@ -237,11 +253,12 @@ Note: `personal_information`, `social_information`, `addresses`, `emergency_cont
 
 Requires a valid (non-revoked) bearer token. Returns a new token with a fresh expiry.
 
-**Success response (200):** Same shape as register/login, wrapped in `{ "data": ... }`.
+**Success response (200):** Same full `ApiResponse` envelope as register/login (e.g. `{ "success": true, "message": "Token refreshed successfully.", "data": { ... } }`).
 
 **Error responses:**
 
 - `401` — token expired or already revoked
+- `403` — account inactive or unverified (complete OTP verification first)
 
 ### 2.5 Logout
 
@@ -253,15 +270,10 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": {
-        "message": "Successfully logged out.",
-        "access_token": null,
-        "token_type": null,
-        "expires_in": null,
-        "verified": false,
-        "verification_method": null,
-        "user": null
-    }
+  "success": true,
+  "message": "Successfully logged out.",
+  "data": null,
+  "errors": null
 }
 ```
 
@@ -271,12 +283,14 @@ Invalidates the current JWT token on the server side.
 
 ### 2.6 Typical frontend flow
 
-1. User enters credentials → call `POST /api/v1/auth/login`.
-2. Store `access_token` in secure storage (e.g. httpOnly cookie or secure storage).
-3. On app load, if a token exists, call `GET /api/v1/auth/me` to validate it and retrieve the user's `role`.
-4. Route to the correct dashboard based on `role`.
-5. Before the token expires, call `POST /api/v1/auth/refresh` to extend the session.
-6. On logout, call `POST /api/v1/auth/logout` and clear stored token.
+1. **Register** (new users): call `POST /api/v1/auth/register`. The account is created **unverified** — store the returned `access_token`.
+2. **Verify** the account: call `POST /api/v1/auth/send-otp` (channel `email` or `sms`) then `POST /api/v1/auth/verify-otp` with the 6-digit code. Until verified, student-only routes return `403`.
+3. **Login** (returning users): call `POST /api/v1/auth/login` and store the `access_token`.
+4. Store `access_token` in secure storage (e.g. httpOnly cookie or secure storage).
+5. On app load, if a token exists, call `GET /api/v1/auth/me` to validate it and read `is_verified`, `verification_method`, and `role`.
+6. Route to the correct dashboard based on `role`. If `is_verified` is `false`, send the user to the OTP verification screen.
+7. Before the token expires, call `POST /api/v1/auth/refresh` to extend the session (refresh returns `403` while the account is unverified).
+8. On logout, call `POST /api/v1/auth/logout` and clear stored token.
 
 ---
 
@@ -302,20 +316,20 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "name": "Fall 2026",
-            "academic_year": "2026-2027",
-            "semester": "first",
-            "starts_at": "2026-09-01",
-            "ends_at": "2027-01-31",
-            "is_active": true,
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "name": "Fall 2026",
+      "academic_year": "2026-2027",
+      "semester": "first",
+      "starts_at": "2026-09-01",
+      "ends_at": "2027-01-31",
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" }  ],
+  "errors": null}
 ```
 
 **Notes:** Cached for 1 hour (`public.admission_cycles`). By default only returns active cycles whose date range includes today.
@@ -334,19 +348,19 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "name_en": "Engineering",
-            "name_ar": "الهندسة",
-            "description_en": "Faculty of Engineering",
-            "description_ar": "كلية الهندسة",
-            "is_active": true,
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "name_en": "Engineering",
+      "name_ar": "الهندسة",
+      "description_en": "Faculty of Engineering",
+      "description_ar": "كلية الهندسة",
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" }  ],
+  "errors": null}
 ```
 
 **Notes:** Cached for 1 hour (`public.faculties`). Only active faculties.
@@ -371,21 +385,22 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "faculty_id": 1,
-            "name_en": "Computer Science",
-            "name_ar": "علوم الحاسوب",
-            "description_en": "Department of Computer Science",
-            "description_ar": "قسم علوم الحاسوب",
-            "is_active": true,
-            "programs": [],
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "faculty_id": 1,
+      "name_en": "Computer Science",
+      "name_ar": "علوم الحاسوب",
+      "description_en": "Department of Computer Science",
+      "description_ar": "قسم علوم الحاسوب",
+      "is_active": true,
+      "programs": [
+      ],
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" }  ],
+  "errors": null}
 ```
 
 **Notes:** Cached for 1 hour. Only active departments.
@@ -410,22 +425,23 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "department_id": 1,
-            "name_en": "Computer Science",
-            "name_ar": "علوم الحاسوب",
-            "description_en": null,
-            "description_ar": "برنامج أكاديمي",
-            "minimum_average": 70.0,
-            "is_active": true,
-            "branches": [],
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "department_id": 1,
+      "name_en": "Computer Science",
+      "name_ar": "علوم الحاسوب",
+      "description_en": null,
+      "description_ar": "برنامج أكاديمي",
+      "minimum_average": 70.0,
+      "is_active": true,
+      "branches": [
+      ],
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" }  ],
+  "errors": null}
 ```
 
 **Notes:** Cached for 1 hour. Only active programs.
@@ -450,30 +466,29 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "id": 1,
+    "department_id": 1,
+    "name_en": "Computer Science",
+    "name_ar": "علوم الحاسوب",
+    "description_en": null,
+    "description_ar": "برنامج أكاديمي",
+    "minimum_average": 70.0,
+    "is_active": true,
+    "branches": [
+      {
         "id": 1,
-        "department_id": 1,
-        "name_en": "Computer Science",
-        "name_ar": "علوم الحاسوب",
-        "description_en": null,
-        "description_ar": "برنامج أكاديمي",
-        "minimum_average": 70.0,
+        "name": "Scientific",
+        "name_en": "Scientific",
+        "name_ar": "العلمي",
         "is_active": true,
-        "branches": [
-            {
-                "id": 1,
-                "name": "Scientific",
-                "name_en": "Scientific",
-                "name_ar": "العلمي",
-                "is_active": true,
-                "created_at": "2026-01-01T00:00:00Z",
-                "updated_at": "2026-01-01T00:00:00Z"
-            }
-        ],
         "created_at": "2026-01-01T00:00:00Z",
-        "updated_at": "2026-01-01T00:00:00Z"
-    }
-}
+        "updated_at": "2026-01-01T00:00:00Z" }    ],
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z" },
+  "errors": null}
 ```
 
 ---
@@ -490,19 +505,19 @@ Invalidates the current JWT token on the server side.
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "name": "transcript",
-            "display_name_en": "Academic Transcript",
-            "display_name_ar": "كشف الدرجات",
-            "description": null,
-            "is_required": true,
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "name": "transcript",
+      "display_name_en": "Academic Transcript",
+      "display_name_ar": "كشف الدرجات",
+      "description": null,
+      "is_required": true,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" }  ],
+  "errors": null}
 ```
 
 **Notes:** Cached for 1 hour (`public.document_types`).
@@ -573,9 +588,77 @@ See section 2.5 for full details.
 
 ---
 
+#### 3.2.6 Send OTP (verification code) `POST /api/v1/auth/send-otp`
+
+| Property          | Value                            |
+| ----------------- | -------------------------------- |
+| **Method + URL**  | `POST /api/v1/auth/send-otp`     |
+| **Route name**    | `v1.auth.send-otp`              |
+| **Auth required** | Yes (any authenticated user, typically unverified) |
+| **Rate limit**    | 5/min (user/IP)                  |
+
+Sends a one-time verification code to the authenticated user via the requested channel (`email` or `sms`). This is the **primary** account-verification path; the legacy email-link flow remains as a fallback. The code is valid for 10 minutes and a new request invalidates any previous code. For SMS, the provider is `LogSmsProvider` by default (logs only) — wire a real gateway in `AppServiceProvider::bindSmsProvider()` for production.
+
+**Request body:**
+
+| Field     | Type   | Required | Rules            | Example    |
+| --------- | ------ | -------- | ---------------- | ---------- |
+| `channel` | string | Yes      | `email` or `sms` | `"email"`  |
+
+**Success response (200):**
+```json
+{
+  "success": true,
+  "message": "A verification code has been sent.",
+  "data": null,
+  "errors": null
+}
+```
+
+**Error responses:**
+- `401` — missing or invalid token
+- `200` — if the account is already verified, returns `{"success": true, "message": "Account already verified.", "data": null, "errors": null}` (idempotent; no code is sent)
+- `422` — invalid channel (`{"success": false, "message": "Validation failed.", "data": null, "errors": {"channel": ["The selected channel is invalid."]}}`)
+- `429` — too many OTP send attempts
+
+#### 3.2.7 Verify OTP (verification code) `POST /api/v1/auth/verify-otp`
+
+| Property          | Value                             |
+| ----------------- | --------------------------------- |
+| **Method + URL**  | `POST /api/v1/auth/verify-otp`    |
+| **Route name**    | `v1.auth.verify-otp`             |
+| **Auth required** | Yes (any authenticated user, typically unverified) |
+| **Rate limit**    | 5/min (user/IP)                   |
+
+Verifies the submitted 6-digit code. On success the account is marked verified via the shared verification mechanism and a success response is returned. After 5 incorrect attempts the code is invalidated (locked out) until a new one is requested.
+
+**Request body:**
+
+| Field  | Type   | Required | Rules    | Example    |
+| ------ | ------ | -------- | -------- | ---------- |
+| `code` | string | Yes      | 6 digits | `"123456"` |
+
+**Success response (200):**
+```json
+{
+  "success": true,
+  "message": "Account verified successfully.",
+  "data": null,
+  "errors": null
+}
+```
+
+**Error responses:**
+- `401` — missing or invalid token
+- `200` — if the account is already verified, returns `{"success": true, "message": "Account already verified.", "data": null, "errors": null}` (idempotent)
+- `422` — invalid or expired code (`{"success": false, "message": "Invalid or expired verification code.", "data": null, "errors": null}`)
+- `429` — too many incorrect attempts (`{"success": false, "message": "Too many incorrect attempts. Request a new code.", "data": null, "errors": null}`)
+
+---
+
 ### 3.3 Student
 
-All student endpoints require the `auth:api` and `active` middleware. The route middleware enforces `role:student`. Additionally, the underlying policies restrict access to the student's own records.
+All student endpoints require the `auth:api`, `active`, and `verified` middleware, plus the `role:student` middleware. A freshly registered account is **unverified** until it completes OTP verification (`send-otp` → `verify-otp`); calling any student endpoint before that returns **403** with body `{"message": "Please verify your account."}` (note: this middleware response is not wrapped in the `ApiResponse` envelope). Policies additionally restrict access to the student's own records.
 
 #### 3.3.1 Dashboard
 
@@ -589,40 +672,49 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-  "user": {
-    "id": 1,
-    "name": "Ahmed Khaled",
-    "email": "ahmed@example.com",
-    "phone": "+201234567890",
-    "is_verified": true,
-    "is_active": true,
-    "role": {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "user": {
       "id": 1,
-      "name": "student",
-      "guard_name": "web"
-    },
-    "personal_information": { ... },
-    "social_information": { ... },
-    "addresses": [],
-    "emergency_contacts": [],
-    "secondary_school_records": [],
-    "documents": [],
-    "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-  },
-  "statistics": {
-    "total_applications": 2,
-    "total_documents": 3,
-    "pending_applications": 1,
-    "under_review_applications": 1,
-    "returned_for_revision_applications": 0,
-    "accepted_applications": 0,
-    "rejected_applications": 1
-  },
-  "applications": [],
-  "documents": [],
-  "admission_cycles": []
-}
+      "name": "Ahmed Khaled",
+      "email": "ahmed@example.com",
+      "phone": "+201234567890",
+      "is_verified": true,
+      "is_active": true,
+      "role": {
+        "id": 1,
+        "name": "student",
+        "guard_name": "web" },
+      "personal_information": {
+        ... },
+      "social_information": {
+        ... },
+      "addresses": [
+      ],
+      "emergency_contacts": [
+      ],
+      "secondary_school_records": [
+      ],
+      "documents": [
+      ],
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z" },
+    "statistics": {
+      "total_applications": 2,
+      "total_documents": 3,
+      "pending_applications": 1,
+      "under_review_applications": 1,
+      "returned_for_revision_applications": 0,
+      "accepted_applications": 0,
+      "rejected_applications": 1 },
+    "applications": [
+    ],
+    "documents": [
+    ],
+    "admission_cycles": [
+    ] },
+  "errors": null}
 ```
 
 **Notes:** The `statistics` object only contains student-scoped counts. System-wide fields like `total_users`, `total_programs`, etc. are intentionally excluded.
@@ -641,25 +733,27 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "type": "application_status",
-      "message": "Application Submitted",
-      "data": {
-        "application_id": 1,
-        "old_status": "draft",
-        "new_status": "submitted",
-        "body": "Your application #APP-00000001 status has changed from draft to submitted."
-      },
-      "read_at": null,
-      "created_at": "2026-01-15T10:00:00Z",
-      "updated_at": "2026-01-15T10:00:00Z"
-    }
-  ],
-  "links": { ... },
-  "meta": { ... }
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "data": [
+      {
+        "id": 1,
+        "type": "application_status",
+        "message": "Application Submitted",
+        "data": {
+          "application_id": 1,
+          "old_status": "draft",
+          "new_status": "submitted",
+          "body": "Your application #APP-00000001 status has changed from draft to submitted." },
+        "read_at": null,
+        "created_at": "2026-01-15T10:00:00Z",
+        "updated_at": "2026-01-15T10:00:00Z" }    ],
+    "links": {
+      ... },
+    "meta": {
+      ... }  },
+  "errors": null}
 ```
 
 ---
@@ -682,14 +776,11 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-  "id": 1,
-  "type": "application_status",
-  "message": "Application Submitted",
-  "data": { ... },
-  "read_at": "2026-01-15T10:05:00Z",
-  "created_at": "2026-01-15T10:00:00Z",
-  "updated_at": "2026-01-15T10:05:00Z"
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    ... },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -711,8 +802,11 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-    "message": "All notifications marked as read."
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "message": "All notifications marked as read." },
+  "errors": null}
 ```
 
 ---
@@ -752,6 +846,9 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
     "id": 1,
     "name": "Ahmed Khaled",
     "email": "ahmed@example.com",
@@ -759,72 +856,68 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
     "is_verified": true,
     "is_active": true,
     "role": {
-        "id": 1,
-        "name": "student",
-        "guard_name": "web"
-    },
+      "id": 1,
+      "name": "student",
+      "guard_name": "web" },
     "personal_information": {
-        "national_id": "1234567890123",
-        "first_name_ar": "أحمد",
-        "father_name_ar": "محمد",
-        "grandfather_name_ar": "علي",
-        "family_name_ar": "خليل",
-        "gender": "male",
-        "nationality": "Palestinian",
-        "created_at": "2026-01-01T00:00:00Z",
-        "updated_at": "2026-01-01T00:00:00Z"
-    },
+      "national_id": "1234567890123",
+      "first_name_ar": "أحمد",
+      "father_name_ar": "محمد",
+      "grandfather_name_ar": "علي",
+      "family_name_ar": "خليل",
+      "gender": "male",
+      "nationality": "Palestinian",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" },
     "social_information": {
-        "birth_place": "inside_palestine",
-        "birth_date": "2000-01-01",
-        "first_name_en": "Ahmed",
-        "father_name_en": "Mohamed",
-        "grandfather_name_en": "Ali",
-        "family_name_en": "Khalil",
-        "guardian_name": "محمد محمود الخطيب",
-        "guardian_national_id": "1234567890123",
-        "guardian_relationship": "father",
-        "guardian_profession": "teacher",
-        "guardian_workplace": "unrwa",
-        "guardian_phone": "0597653447",
-        "governorate": "Ramallah",
-        "city": "Ramallah",
-        "neighborhood": "Center",
-        "street": "Main Street",
-        "phone_landline": "021234567",
-        "father_status": "alive",
-        "father_is_working": true,
-        "mother_is_working": false,
-        "created_at": "2026-01-01T00:00:00Z",
-        "updated_at": "2026-01-01T00:00:00Z"
-    },
+      "birth_place": "inside_palestine",
+      "birth_date": "2000-01-01",
+      "first_name_en": "Ahmed",
+      "father_name_en": "Mohamed",
+      "grandfather_name_en": "Ali",
+      "family_name_en": "Khalil",
+      "guardian_name": "محمد محمود الخطيب",
+      "guardian_national_id": "1234567890123",
+      "guardian_relationship": "father",
+      "guardian_profession": "teacher",
+      "guardian_workplace": "unrwa",
+      "guardian_phone": "0597653447",
+      "governorate": "Ramallah",
+      "city": "Ramallah",
+      "neighborhood": "Center",
+      "street": "Main Street",
+      "phone_landline": "021234567",
+      "father_status": "alive",
+      "father_is_working": true,
+      "mother_is_working": false,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" },
     "addresses": [
-        {
-            "id": 1,
-            "type": "current",
-            "governorate": "Ramallah",
-            "address_line": "Main Street 123",
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ],
+      {
+        "id": 1,
+        "type": "current",
+        "governorate": "Ramallah",
+        "address_line": "Main Street 123",
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z" }    ],
     "emergency_contacts": [
-        {
-            "id": 1,
-            "name": "Mohamed Khaled",
-            "relationship": "Father",
-            "phone": "+201234567890",
-            "is_primary": true,
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
+      {
+        "id": 1,
+        "name": "Mohamed Khaled",
+        "relationship": "Father",
+        "phone": "+201234567890",
+        "is_primary": true,
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z" }    ],
+    "secondary_school_records": [
     ],
-    "secondary_school_records": [],
-    "documents": [],
-    "applications": [],
+    "documents": [
+    ],
+    "applications": [
+    ],
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-}
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -919,6 +1012,9 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
     "birth_place": "inside_palestine",
     "birth_date": "2000-01-01",
     "first_name_en": "Ahmed",
@@ -940,8 +1036,8 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
     "father_is_working": true,
     "mother_is_working": false,
     "created_at": "2026-01-01T00:00:00Z",
-    "updated_at": "2026-01-01T00:00:00Z"
-}
+    "updated_at": "2026-01-01T00:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1028,62 +1124,63 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "user_id": 1,
-            "admission_cycle_id": 1,
-            "program_id": 1,
-            "application_number": "APP-00000001",
-            "status": "draft",
-            "student_notes": null,
-            "decision_reason": null,
-            "assigned_reviewer_id": null,
-            "reviewed_by": null,
-            "submitted_at": null,
-            "reviewed_at": null,
-            "applicant": {
-                "id": 1,
-                "name": "Ahmed Khaled",
-                "email": "ahmed@example.com",
-                "phone": "+201234567890",
-                "is_verified": true,
-                "is_active": true,
-                "role": { "id": 1, "name": "student", "guard_name": "web" },
-                "created_at": "2026-01-15T10:00:00Z",
-                "updated_at": "2026-01-15T10:00:00Z"
-            },
-            "admission_cycle": {
-                "id": 1,
-                "name": "Fall 2026",
-                "academic_year": "2026-2027",
-                "semester": "first",
-                "starts_at": "2026-09-01",
-                "ends_at": "2027-01-31",
-                "is_active": true,
-                "created_at": "2026-01-01T00:00:00Z",
-                "updated_at": "2026-01-01T00:00:00Z"
-            },
-            "program": {
-                "id": 1,
-                "department_id": 1,
-                "name_en": "Computer Science",
-                "name_ar": "علوم الحاسوب",
-                "description_en": null,
-                "description_ar": "برنامج أكاديمي",
-                "minimum_average": 70.0,
-                "is_active": true,
-                "branches": [],
-                "created_at": "2026-01-01T00:00:00Z",
-                "updated_at": "2026-01-01T00:00:00Z"
-            },
-            "assigned_reviewer": null,
-            "reviewer": null,
-            "created_at": "2026-01-15T10:00:00Z",
-            "updated_at": "2026-01-15T10:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "admission_cycle_id": 1,
+      "program_id": 1,
+      "application_number": "APP-00000001",
+      "status": "draft",
+      "student_notes": null,
+      "decision_reason": null,
+      "assigned_reviewer_id": null,
+      "reviewed_by": null,
+      "submitted_at": null,
+      "reviewed_at": null,
+      "applicant": {
+        "id": 1,
+        "name": "Ahmed Khaled",
+        "email": "ahmed@example.com",
+        "phone": "+201234567890",
+        "is_verified": true,
+        "is_active": true,
+        "role": {
+          "id": 1,
+          "name": "student",
+          "guard_name": "web" },
+        "created_at": "2026-01-15T10:00:00Z",
+        "updated_at": "2026-01-15T10:00:00Z" },
+      "admission_cycle": {
+        "id": 1,
+        "name": "Fall 2026",
+        "academic_year": "2026-2027",
+        "semester": "first",
+        "starts_at": "2026-09-01",
+        "ends_at": "2027-01-31",
+        "is_active": true,
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z" },
+      "program": {
+        "id": 1,
+        "department_id": 1,
+        "name_en": "Computer Science",
+        "name_ar": "علوم الحاسوب",
+        "description_en": null,
+        "description_ar": "برنامج أكاديمي",
+        "minimum_average": 70.0,
+        "is_active": true,
+        "branches": [
+        ],
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z" },
+      "assigned_reviewer": null,
+      "reviewer": null,
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z" }  ],
+  "errors": null}
 ```
 
 **Notes:** Returns all applications belonging to the authenticated student. Paginated (default 20 per page).
@@ -1122,6 +1219,8 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "user_id": 1,
@@ -1135,15 +1234,17 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
     "reviewed_by": null,
     "submitted_at": null,
     "reviewed_at": null,
-    "applicant": { ... },
-    "admission_cycle": { ... },
-    "program": { ... },
+    "applicant": {
+      ... },
+    "admission_cycle": {
+      ... },
+    "program": {
+      ... },
     "assigned_reviewer": null,
     "reviewer": null,
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-  }
-}
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1172,6 +1273,8 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "application_number": "APP-00000001",
@@ -1187,27 +1290,39 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
       "phone": "+201234567890",
       "is_verified": true,
       "is_active": true,
-      "role": { "id": 1, "name": "student", "guard_name": "web" },
-      "personal_information": { ... },
-      "social_information": { ... },
-      "addresses": [],
-      "emergency_contacts": [],
-      "secondary_school_records": [],
-      "documents": [],
-      "applications": [],
+      "role": {
+        "id": 1,
+        "name": "student",
+        "guard_name": "web" },
+      "personal_information": {
+        ... },
+      "social_information": {
+        ... },
+      "addresses": [
+      ],
+      "emergency_contacts": [
+      ],
+      "secondary_school_records": [
+      ],
+      "documents": [
+      ],
+      "applications": [
+      ],
       "created_at": "2026-01-15T10:00:00Z",
-      "updated_at": "2026-01-15T10:00:00Z"
-    },
-    "admission_cycle": { ... },
-    "selected_program": { ... },
+      "updated_at": "2026-01-15T10:00:00Z" },
+    "admission_cycle": {
+      ... },
+    "selected_program": {
+      ... },
     "assigned_reviewer": null,
     "reviewer": null,
-    "uploaded_documents": [],
-    "secondary_school_records": [],
+    "uploaded_documents": [
+    ],
+    "secondary_school_records": [
+    ],
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-  }
-}
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1279,6 +1394,8 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "user_id": 1,
@@ -1292,15 +1409,17 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
     "reviewed_by": null,
     "submitted_at": "2026-01-15T10:30:00Z",
     "reviewed_at": null,
-    "applicant": { ... },
-    "admission_cycle": { ... },
-    "program": { ... },
+    "applicant": {
+      ... },
+    "admission_cycle": {
+      ... },
+    "program": {
+      ... },
     "assigned_reviewer": null,
     "reviewer": null,
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:30:00Z"
-  }
-}
+    "updated_at": "2026-01-15T10:30:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1337,27 +1456,25 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "name": "transcript",
-            "is_required": true,
-            "satisfied": false
-        },
-        {
-            "id": 2,
-            "name": "id_copy",
-            "is_required": true,
-            "satisfied": true
-        },
-        {
-            "id": 3,
-            "name": "recommendation_letter",
-            "is_required": false,
-            "satisfied": true
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "name": "transcript",
+      "is_required": true,
+      "satisfied": false },
+    {
+      "id": 2,
+      "name": "id_copy",
+      "is_required": true,
+      "satisfied": true },
+    {
+      "id": 3,
+      "name": "recommendation_letter",
+      "is_required": false,
+      "satisfied": true }  ],
+  "errors": null}
 ```
 
 **Notes:** `satisfied` is `true` when the application has at least one attached document of that type whose `status` is not `rejected`.
@@ -1397,8 +1514,11 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-    "message": "Preferences updated successfully."
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "message": "Preferences updated successfully." },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1421,44 +1541,45 @@ All student endpoints require the `auth:api` and `active` middleware. The route 
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "user_id": 1,
-            "document_type_id": 1,
-            "status": "pending",
-            "ai_check_status": "pending",
-            "ai_check_notes": null,
-            "notes": null,
-            "review_notes": null,
-            "verified_at": null,
-            "document_type": {
-                "id": 1,
-                "name": "transcript",
-                "display_name_en": "Academic Transcript",
-                "display_name_ar": "كشف الدرجات",
-                "description": null,
-                "is_required": true,
-                "created_at": "2026-01-01T00:00:00Z",
-                "updated_at": "2026-01-01T00:00:00Z"
-            },
-            "user": {
-                "id": 1,
-                "name": "Ahmed Khaled",
-                "email": "ahmed@example.com",
-                "phone": "+201234567890",
-                "is_verified": true,
-                "is_active": true,
-                "role": { "id": 1, "name": "student", "guard_name": "web" },
-                "created_at": "2026-01-15T10:00:00Z",
-                "updated_at": "2026-01-15T10:00:00Z"
-            },
-            "verifier": null,
-            "created_at": "2026-01-15T10:00:00Z",
-            "updated_at": "2026-01-15T10:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "document_type_id": 1,
+      "status": "pending",
+      "ai_check_status": "pending",
+      "ai_check_notes": null,
+      "notes": null,
+      "review_notes": null,
+      "verified_at": null,
+      "document_type": {
+        "id": 1,
+        "name": "transcript",
+        "display_name_en": "Academic Transcript",
+        "display_name_ar": "كشف الدرجات",
+        "description": null,
+        "is_required": true,
+        "created_at": "2026-01-01T00:00:00Z",
+        "updated_at": "2026-01-01T00:00:00Z" },
+      "user": {
+        "id": 1,
+        "name": "Ahmed Khaled",
+        "email": "ahmed@example.com",
+        "phone": "+201234567890",
+        "is_verified": true,
+        "is_active": true,
+        "role": {
+          "id": 1,
+          "name": "student",
+          "guard_name": "web" },
+        "created_at": "2026-01-15T10:00:00Z",
+        "updated_at": "2026-01-15T10:00:00Z" },
+      "verifier": null,
+      "created_at": "2026-01-15T10:00:00Z",
+      "updated_at": "2026-01-15T10:00:00Z" }  ],
+  "errors": null}
 ```
 
 ---
@@ -1493,21 +1614,26 @@ curl -X POST /api/v1/student/documents \
 
 ```json
 {
-  "id": 1,
-  "user_id": 1,
-  "document_type_id": 1,
-  "status": "pending",
-  "ai_check_status": "pending",
-  "ai_check_notes": null,
-  "notes": null,
-  "review_notes": null,
-  "verified_at": null,
-  "document_type": { ... },
-  "user": { ... },
-  "verifier": null,
-  "created_at": "2026-01-15T10:00:00Z",
-  "updated_at": "2026-01-15T10:00:00Z"
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "id": 1,
+    "user_id": 1,
+    "document_type_id": 1,
+    "status": "pending",
+    "ai_check_status": "pending",
+    "ai_check_notes": null,
+    "notes": null,
+    "review_notes": null,
+    "verified_at": null,
+    "document_type": {
+      ... },
+    "user": {
+      ... },
+    "verifier": null,
+    "created_at": "2026-01-15T10:00:00Z",
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 **Notes:** After creation, a queued job (`VerifyDocumentJob`) runs document checks asynchronously. No AI provider is configured yet, so the `ai_check_status` will update from `pending` to `pending_manual_review` (awaiting human review) rather than claiming an automated `verified` result. On a processing error it updates to `failed`.
@@ -1532,6 +1658,8 @@ curl -X POST /api/v1/student/documents \
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "document": {
       "id": 1,
@@ -1543,15 +1671,15 @@ curl -X POST /api/v1/student/documents \
       "notes": null,
       "review_notes": null,
       "verified_at": null,
-      "document_type": { ... },
-      "user": { ... },
+      "document_type": {
+        ... },
+      "user": {
+        ... },
       "verifier": null,
       "created_at": "2026-01-15T10:00:00Z",
-      "updated_at": "2026-01-15T10:00:00Z"
-    },
-    "download_url": "https://app.example.com/storage/documents/1/transcript.pdf?expires=1786607760&signature=..."
-  }
-}
+      "updated_at": "2026-01-15T10:00:00Z" },
+    "download_url": "https://app.example.com/storage/documents/1/transcript.pdf?expires=1786607760&signature=..." },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1632,17 +1760,17 @@ curl -X POST /api/v1/student/documents \
 
 ```json
 {
-    "data": [
-        {
-            "id": 1,
-            "student_school_id": "SCH-001",
-            "graduation_year": 2022,
-            "average": 88.5,
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "id": 1,
+      "student_school_id": "SCH-001",
+      "graduation_year": 2022,
+      "average": 88.5,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" }  ],
+  "errors": null}
 ```
 
 ---
@@ -1683,13 +1811,16 @@ curl -X POST /api/v1/student/documents \
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
     "id": 1,
     "student_school_id": "SCH-001",
     "graduation_year": 2022,
     "average": 88.5,
     "created_at": "2026-01-01T00:00:00Z",
-    "updated_at": "2026-01-15T11:00:00Z"
-}
+    "updated_at": "2026-01-15T11:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -1800,6 +1931,8 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "user_id": 1,
@@ -1813,15 +1946,19 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
     "reviewed_by": 2,
     "submitted_at": "2026-01-15T10:00:00Z",
     "reviewed_at": "2026-01-16T09:00:00Z",
-    "applicant": { ... },
-    "admission_cycle": { ... },
-    "program": { ... },
-    "assigned_reviewer": { ... },
-    "reviewer": { ... },
+    "applicant": {
+      ... },
+    "admission_cycle": {
+      ... },
+    "program": {
+      ... },
+    "assigned_reviewer": {
+      ... },
+    "reviewer": {
+      ... },
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-16T09:00:00Z"
-  }
-}
+    "updated_at": "2026-01-16T09:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -2021,28 +2158,27 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ```json
 {
-    "data": {
-        "id": 1,
-        "comment": "Transcript looks authentic. Proceeding to next stage.",
-        "user": {
-            "id": 2,
-            "name": "Admission Officer",
-            "email": "officer@example.com",
-            "phone": "+201234567891",
-            "is_verified": true,
-            "is_active": true,
-            "role": {
-                "id": 2,
-                "name": "admission_employee",
-                "guard_name": "web"
-            },
-            "created_at": "2026-01-01T00:00:00Z",
-            "updated_at": "2026-01-01T00:00:00Z"
-        },
-        "created_at": "2026-01-16T10:00:00Z",
-        "updated_at": "2026-01-16T10:00:00Z"
-    }
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "id": 1,
+    "comment": "Transcript looks authentic. Proceeding to next stage.",
+    "user": {
+      "id": 2,
+      "name": "Admission Officer",
+      "email": "officer@example.com",
+      "phone": "+201234567891",
+      "is_verified": true,
+      "is_active": true,
+      "role": {
+        "id": 2,
+        "name": "admission_employee",
+        "guard_name": "web" },
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z" },
+    "created_at": "2026-01-16T10:00:00Z",
+    "updated_at": "2026-01-16T10:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -2159,24 +2295,26 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
     "data": [
-        {
-            "id": 1,
-            "type": "staff",
-            "message": "A new application has been assigned to you for review.",
-            "data": {
-                "application_id": 5,
-                "old_status": "submitted",
-                "new_status": "under_review"
-            },
-            "read_at": null,
-            "created_at": "2026-08-07T06:00:00Z",
-            "updated_at": "2026-08-07T06:00:00Z"
-        }
-    ],
-    "links": { ... },
-    "meta": { ... }
-}
+      {
+        "id": 1,
+        "type": "staff",
+        "message": "A new application has been assigned to you for review.",
+        "data": {
+          "application_id": 5,
+          "old_status": "submitted",
+          "new_status": "under_review" },
+        "read_at": null,
+        "created_at": "2026-08-07T06:00:00Z",
+        "updated_at": "2026-08-07T06:00:00Z" }    ],
+    "links": {
+      ... },
+    "meta": {
+      ... }  },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -2220,10 +2358,10 @@ All admission employee endpoints require `auth:api`, `active`, and `role:admissi
 
 ```json
 {
-    "success": true,
-    "message": "All notifications marked as read.",
-    "data": null
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": null,
+  "errors": null}
 ```
 
 **Error responses:**
@@ -2378,24 +2516,26 @@ All department head endpoints require `auth:api`, `active`, and `role:department
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
     "data": [
-        {
-            "id": 1,
-            "type": "staff",
-            "message": "A new application has been forwarded to you for review.",
-            "data": {
-                "application_id": 5,
-                "old_status": "under_review",
-                "new_status": "forwarded_to_department_head"
-            },
-            "read_at": null,
-            "created_at": "2026-08-07T06:00:00Z",
-            "updated_at": "2026-08-07T06:00:00Z"
-        }
-    ],
-    "links": { ... },
-    "meta": { ... }
-}
+      {
+        "id": 1,
+        "type": "staff",
+        "message": "A new application has been forwarded to you for review.",
+        "data": {
+          "application_id": 5,
+          "old_status": "under_review",
+          "new_status": "forwarded_to_department_head" },
+        "read_at": null,
+        "created_at": "2026-08-07T06:00:00Z",
+        "updated_at": "2026-08-07T06:00:00Z" }    ],
+    "links": {
+      ... },
+    "meta": {
+      ... }  },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -2439,10 +2579,10 @@ All department head endpoints require `auth:api`, `active`, and `role:department
 
 ```json
 {
-    "success": true,
-    "message": "All notifications marked as read.",
-    "data": null
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": null,
+  "errors": null}
 ```
 
 **Error responses:**
@@ -2493,14 +2633,19 @@ All department head endpoints require `auth:api`, `active`, and `role:department
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "submitted", "count": 12},
-        {"label": "under_review", "count": 5},
-        {"label": "forwarded_to_department_head", "count": 3}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "submitted",
+      "count": 12 },
+    {
+      "label": "under_review",
+      "count": 5 },
+    {
+      "label": "forwarded_to_department_head",
+      "count": 3 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2530,14 +2675,19 @@ All department head endpoints require `auth:api`, `active`, and `role:department
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"date": "2026-08-01", "count": 3},
-        {"date": "2026-08-02", "count": 1},
-        {"date": "2026-08-03", "count": 4}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "date": "2026-08-01",
+      "count": 3 },
+    {
+      "date": "2026-08-02",
+      "count": 1 },
+    {
+      "date": "2026-08-03",
+      "count": 4 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2567,14 +2717,19 @@ All department head endpoints require `auth:api`, `active`, and `role:department
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "average_seconds", "value": 172800.0},
-        {"label": "average_minutes", "value": 2880.0},
-        {"label": "total_decisions", "value": 15}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "average_seconds",
+      "value": 172800.0 },
+    {
+      "label": "average_minutes",
+      "value": 2880.0 },
+    {
+      "label": "total_decisions",
+      "value": 15 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2604,18 +2759,16 @@ All department head endpoints require `auth:api`, `active`, and `role:department
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {
-            "label": "Computer Science BSc",
-            "accepted": 2,
-            "rejected": 1,
-            "total": 3,
-            "rate": 66.7
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science BSc",
+      "accepted": 2,
+      "rejected": 1,
+      "total": 3,
+      "rate": 66.7 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2642,22 +2795,24 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
     "statistics": {
-        "total_users": 150,
-        "total_students": 100,
-        "total_applications": 500,
-        "total_documents": 1200,
-        "total_programs": 30,
-        "total_departments": 15,
-        "total_faculties": 5,
-        "total_admission_cycles": 3,
-        "pending_applications": 50,
-        "under_review_applications": 30,
-        "returned_for_revision_applications": 10,
-        "accepted_applications": 150,
-        "rejected_applications": 100
-    }
-}
+      "total_users": 150,
+      "total_students": 100,
+      "total_applications": 500,
+      "total_documents": 1200,
+      "total_programs": 30,
+      "total_departments": 15,
+      "total_faculties": 5,
+      "total_admission_cycles": 3,
+      "pending_applications": 50,
+      "under_review_applications": 30,
+      "returned_for_revision_applications": 10,
+      "accepted_applications": 150,
+      "rejected_applications": 100 }  },
+  "errors": null}
 ```
 
 **Notes:** Read-only. The `user` field in the DashboardResource is set to `null` for the dean dashboard. System-wide counts only; no per-user scoping.
@@ -2683,15 +2838,22 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "submitted", "count": 120},
-        {"label": "under_review", "count": 45},
-        {"label": "accepted", "count": 200},
-        {"label": "rejected", "count": 30}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "submitted",
+      "count": 120 },
+    {
+      "label": "under_review",
+      "count": 45 },
+    {
+      "label": "accepted",
+      "count": 200 },
+    {
+      "label": "rejected",
+      "count": 30 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2717,14 +2879,19 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "Engineering", "count": 85},
-        {"label": "Medicine", "count": 40},
-        {"label": "Science", "count": 60}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Engineering",
+      "count": 85 },
+    {
+      "label": "Medicine",
+      "count": 40 },
+    {
+      "label": "Science",
+      "count": 60 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2754,14 +2921,19 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "Computer Science", "count": 45},
-        {"label": "Mechanical Engineering", "count": 30},
-        {"label": "Medicine", "count": 40}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science",
+      "count": 45 },
+    {
+      "label": "Mechanical Engineering",
+      "count": 30 },
+    {
+      "label": "Medicine",
+      "count": 40 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2791,14 +2963,19 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "Computer Science BSc", "count": 45},
-        {"label": "Software Engineering BSc", "count": 30},
-        {"label": "Medicine MD", "count": 40}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science BSc",
+      "count": 45 },
+    {
+      "label": "Software Engineering BSc",
+      "count": 30 },
+    {
+      "label": "Medicine MD",
+      "count": 40 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2828,21 +3005,18 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {
-            "label": "under_review",
-            "average_seconds": 86400.0,
-            "average_minutes": 1440.0
-        },
-        {
-            "label": "forwarded_to_department_head",
-            "average_seconds": 172800.0,
-            "average_minutes": 2880.0
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "under_review",
+      "average_seconds": 86400.0,
+      "average_minutes": 1440.0 },
+    {
+      "label": "forwarded_to_department_head",
+      "average_seconds": 172800.0,
+      "average_minutes": 2880.0 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2872,14 +3046,19 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"date": "2026-08-01", "count": 12},
-        {"date": "2026-08-02", "count": 8},
-        {"date": "2026-08-03", "count": 15}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "date": "2026-08-01",
+      "count": 12 },
+    {
+      "date": "2026-08-02",
+      "count": 8 },
+    {
+      "date": "2026-08-03",
+      "count": 15 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2908,25 +3087,22 @@ All admission dean endpoints require `auth:api`, `active`, and `role:admission_d
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {
-            "label": "Computer Science BSc",
-            "accepted": 25,
-            "rejected": 10,
-            "total": 35,
-            "rate": 71.4
-        },
-        {
-            "label": "Medicine MD",
-            "accepted": 40,
-            "rejected": 5,
-            "total": 45,
-            "rate": 88.9
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science BSc",
+      "accepted": 25,
+      "rejected": 10,
+      "total": 35,
+      "rate": 71.4 },
+    {
+      "label": "Medicine MD",
+      "accepted": 40,
+      "rejected": 5,
+      "total": 45,
+      "rate": 88.9 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -2955,42 +3131,49 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "user_id": 1,
-      "admission_cycle_id": 1,
-      "program_id": 3,
-      "application_number": "APP-00000001",
-      "status": "submitted",
-      "student_notes": null,
-      "decision_reason": null,
-      "assigned_reviewer_id": null,
-      "reviewed_by": null,
-      "submitted_at": "2026-01-15T10:00:00Z",
-      "reviewed_at": null,
-      "applicant": {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "data": [
+      {
         "id": 1,
-        "name": "Ahmed Khaled",
-        "email": "ahmed@example.com",
-        "phone": "+201234567890",
-        "is_verified": true,
-        "is_active": true,
-        "role": { "id": 1, "name": "student", "guard_name": "web" },
+        "user_id": 1,
+        "admission_cycle_id": 1,
+        "program_id": 3,
+        "application_number": "APP-00000001",
+        "status": "submitted",
+        "student_notes": null,
+        "decision_reason": null,
+        "assigned_reviewer_id": null,
+        "reviewed_by": null,
+        "submitted_at": "2026-01-15T10:00:00Z",
+        "reviewed_at": null,
+        "applicant": {
+          "id": 1,
+          "name": "Ahmed Khaled",
+          "email": "ahmed@example.com",
+          "phone": "+201234567890",
+          "is_verified": true,
+          "is_active": true,
+          "role": {
+            "id": 1,
+            "name": "student",
+            "guard_name": "web" },
+          "created_at": "2026-01-15T10:00:00Z",
+          "updated_at": "2026-01-15T10:00:00Z" },
+        "admission_cycle": {
+          ... },
+        "program": {
+          ... },
+        "assigned_reviewer": null,
+        "reviewer": null,
         "created_at": "2026-01-15T10:00:00Z",
-        "updated_at": "2026-01-15T10:00:00Z"
-      },
-      "admission_cycle": { ... },
-      "program": { ... },
-      "assigned_reviewer": null,
-      "reviewer": null,
-      "created_at": "2026-01-15T10:00:00Z",
-      "updated_at": "2026-01-15T10:00:00Z"
-    }
-  ],
-  "links": { ... },
-  "meta": { ... }
-}
+        "updated_at": "2026-01-15T10:00:00Z" }    ],
+    "links": {
+      ... },
+    "meta": {
+      ... }  },
+  "errors": null}
 ```
 
 ---
@@ -3075,22 +3258,28 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "name": "Ahmed Khaled",
-      "email": "ahmed@example.com",
-      "phone": "+201234567890",
-      "is_verified": true,
-      "is_active": true,
-      "role": { "id": 1, "name": "student", "guard_name": "web" },
-      "created_at": "2026-01-15T10:00:00Z",
-      "updated_at": "2026-01-15T10:00:00Z"
-    }
-  ],
-  "links": { ... },
-  "meta": { ... }
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "data": [
+      {
+        "id": 1,
+        "name": "Ahmed Khaled",
+        "email": "ahmed@example.com",
+        "phone": "+201234567890",
+        "is_verified": true,
+        "is_active": true,
+        "role": {
+          "id": 1,
+          "name": "student",
+          "guard_name": "web" },
+        "created_at": "2026-01-15T10:00:00Z",
+        "updated_at": "2026-01-15T10:00:00Z" }    ],
+    "links": {
+      ... },
+    "meta": {
+      ... }  },
+  "errors": null}
 ```
 
 ---
@@ -3131,18 +3320,22 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ```json
 {
-    "data": {
-        "id": 2,
-        "name": "New Employee",
-        "email": "employee@example.com",
-        "phone": "+201234567892",
-        "is_verified": true,
-        "is_active": true,
-        "role": { "id": 2, "name": "admission_employee", "guard_name": "web" },
-        "created_at": "2026-01-15T10:00:00Z",
-        "updated_at": "2026-01-15T10:00:00Z"
-    }
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "id": 2,
+    "name": "New Employee",
+    "email": "employee@example.com",
+    "phone": "+201234567892",
+    "is_verified": true,
+    "is_active": true,
+    "role": {
+      "id": 2,
+      "name": "admission_employee",
+      "guard_name": "web" },
+    "created_at": "2026-01-15T10:00:00Z",
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 **Error responses:**
@@ -3177,6 +3370,8 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "name": "Ahmed Khaled",
@@ -3184,15 +3379,21 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
     "phone": "+201234567890",
     "is_verified": true,
     "is_active": true,
-    "role": { "id": 1, "name": "student", "guard_name": "web" },
-    "personal_information": { ... },
-    "addresses": [],
-    "emergency_contacts": [],
-    "social_information": { ... },
+    "role": {
+      "id": 1,
+      "name": "student",
+      "guard_name": "web" },
+    "personal_information": {
+      ... },
+    "addresses": [
+    ],
+    "emergency_contacts": [
+    ],
+    "social_information": {
+      ... },
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-  }
-}
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 ---
@@ -3242,31 +3443,34 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "department_id": 1,
-      "name_en": "Computer Science",
-      "name_ar": "علوم الحاسوب",
-      "description_en": null,
-      "description_ar": "برنامج أكاديمي",
-      "minimum_average": 70.0,
-      "is_active": true,
-      "department": {
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "data": [
+      {
         "id": 1,
+        "department_id": 1,
         "name_en": "Computer Science",
         "name_ar": "علوم الحاسوب",
+        "description_en": null,
+        "description_ar": "برنامج أكاديمي",
+        "minimum_average": 70.0,
+        "is_active": true,
+        "department": {
+          "id": 1,
+          "name_en": "Computer Science",
+          "name_ar": "علوم الحاسوب",
+          "created_at": "2026-01-01T00:00:00Z",
+          "updated_at": "2026-01-01T00:00:00Z" },
+        "branches": [
+        ],
         "created_at": "2026-01-01T00:00:00Z",
-        "updated_at": "2026-01-01T00:00:00Z"
-      },
-      "branches": [],
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  ],
-  "links": { ... },
-  "meta": { ... }
-}
+        "updated_at": "2026-01-01T00:00:00Z" }    ],
+    "links": {
+      ... },
+    "meta": {
+      ... }  },
+  "errors": null}
 ```
 
 ---
@@ -3309,6 +3513,8 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 
 ```json
 {
+  "success": true,
+  "message": "Operation completed successfully.",
   "data": {
     "id": 1,
     "department_id": 1,
@@ -3318,12 +3524,13 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
     "description_ar": "بكالوريوس هندسة البرمجيات",
     "minimum_average": 75.0,
     "is_active": true,
-    "department": { ... },
-    "branches": [],
+    "department": {
+      ... },
+    "branches": [
+    ],
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-01-15T10:00:00Z"
-  }
-}
+    "updated_at": "2026-01-15T10:00:00Z" },
+  "errors": null}
 ```
 
 ---
@@ -3529,12 +3736,11 @@ All admin endpoints require `auth:api`, `active`, and `admin` middleware. Polici
 ```json
 {
   "success": true,
-  "message": "Import job dispatched.",
+  "message": "Operation completed successfully.",
   "data": {
     "job_id": "...",
-    "status": "queued"
-  }
-}
+    "status": "queued" },
+  "errors": null}
 ```
 
 **Error responses:** `401`, `403`, `422` (invalid file).
@@ -3586,15 +3792,22 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "submitted", "count": 120},
-        {"label": "under_review", "count": 45},
-        {"label": "accepted", "count": 200},
-        {"label": "rejected", "count": 30}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "submitted",
+      "count": 120 },
+    {
+      "label": "under_review",
+      "count": 45 },
+    {
+      "label": "accepted",
+      "count": 200 },
+    {
+      "label": "rejected",
+      "count": 30 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -3620,14 +3833,19 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "Engineering", "count": 85},
-        {"label": "Medicine", "count": 40},
-        {"label": "Science", "count": 60}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Engineering",
+      "count": 85 },
+    {
+      "label": "Medicine",
+      "count": 40 },
+    {
+      "label": "Science",
+      "count": 60 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -3657,14 +3875,19 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "Computer Science", "count": 45},
-        {"label": "Mechanical Engineering", "count": 30},
-        {"label": "Medicine", "count": 40}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science",
+      "count": 45 },
+    {
+      "label": "Mechanical Engineering",
+      "count": 30 },
+    {
+      "label": "Medicine",
+      "count": 40 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -3694,14 +3917,19 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"label": "Computer Science BSc", "count": 45},
-        {"label": "Software Engineering BSc", "count": 30},
-        {"label": "Medicine MD", "count": 40}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science BSc",
+      "count": 45 },
+    {
+      "label": "Software Engineering BSc",
+      "count": 30 },
+    {
+      "label": "Medicine MD",
+      "count": 40 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -3731,21 +3959,18 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {
-            "label": "under_review",
-            "average_seconds": 86400.0,
-            "average_minutes": 1440.0
-        },
-        {
-            "label": "forwarded_to_department_head",
-            "average_seconds": 172800.0,
-            "average_minutes": 2880.0
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "under_review",
+      "average_seconds": 86400.0,
+      "average_minutes": 1440.0 },
+    {
+      "label": "forwarded_to_department_head",
+      "average_seconds": 172800.0,
+      "average_minutes": 2880.0 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -3775,14 +4000,19 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {"date": "2026-08-01", "count": 12},
-        {"date": "2026-08-02", "count": 8},
-        {"date": "2026-08-03", "count": 15}
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "date": "2026-08-01",
+      "count": 12 },
+    {
+      "date": "2026-08-02",
+      "count": 8 },
+    {
+      "date": "2026-08-03",
+      "count": 15 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -3811,25 +4041,22 @@ Full CRUD is available:
 
 ```json
 {
-    "success": true,
-    "message": null,
-    "data": [
-        {
-            "label": "Computer Science BSc",
-            "accepted": 25,
-            "rejected": 10,
-            "total": 35,
-            "rate": 71.4
-        },
-        {
-            "label": "Medicine MD",
-            "accepted": 40,
-            "rejected": 5,
-            "total": 45,
-            "rate": 88.9
-        }
-    ]
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": [
+    {
+      "label": "Computer Science BSc",
+      "accepted": 25,
+      "rejected": 10,
+      "total": 35,
+      "rate": 71.4 },
+    {
+      "label": "Medicine MD",
+      "accepted": 40,
+      "rejected": 5,
+      "total": 45,
+      "rate": 88.9 }  ],
+  "errors": null}
 ```
 
 **Error responses:** 401, 403.
@@ -4039,8 +4266,11 @@ Only available in non-production environments. Throws an exception to verify Sen
 
 ```json
 {
-    "message": "Server Error"
-}
+  "success": true,
+  "message": "Operation completed successfully.",
+  "data": {
+    "message": "Server Error" },
+  "errors": null}
 ```
 
 **Note:** Requires `SENTRY_LARAVEL_DSN` to be set in `.env` for Sentry to capture the error. When DSN is unset, the error is still returned as 500 but not reported to Sentry.

@@ -170,3 +170,28 @@ src/
 
   types/
     api.ts
+
+---
+
+## Known Backend Integration Gaps
+
+The following endpoints are referenced by the frontend but are **not documented** in
+`api.md` / `# University Admission API Documentation.md`. They are flagged in code with
+`PENDING_BACKEND_API` / `Backend Gap` comments and currently have no verified contract:
+
+- **`POST /auth/verify-otp`** (`src/services/auth.service.ts`) — the documented auth flow
+  uses email verification, not OTP. Confirm whether this endpoint exists before wiring the
+  verify-OTP page.
+- **`POST /student/profile/password`** (`src/services/profile.service.ts`) — the change
+  password endpoint path is not in the docs; verify the exact route.
+- **`GET /public/application-types`** (`src/lib/api/endpoints.ts`,
+  `src/services/public-catalog.service.ts`) — there is no public route documented; only
+  `GET /admin/application-types` exists. The public catalog call is currently disabled.
+- **Payment endpoints** (`src/services/payment.service.ts`) — payment flows are not covered
+  by the API docs and are treated as mock/unverified.
+- **Reports export (PDF/Excel)** — `RecentExportsCard` is static mock data; no export
+  endpoint is documented.
+
+When the backend confirms these routes, replace the `PENDING_BACKEND_API` stubs with the
+real calls following the patterns in `src/services/admin.service.ts` and
+`src/hooks/queries/use-admin-queries.ts`.

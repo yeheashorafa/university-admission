@@ -108,6 +108,12 @@
                                                                                 <li class="tocify-item level-2" data-unique="auth-POSTapi-v1-auth-logout">
                                 <a href="#auth-POSTapi-v1-auth-logout">Logout the authenticated user.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="auth-POSTapi-v1-auth-send-otp">
+                                <a href="#auth-POSTapi-v1-auth-send-otp">Send an OTP verification code to the authenticated (unverified) user.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="auth-POSTapi-v1-auth-verify-otp">
+                                <a href="#auth-POSTapi-v1-auth-verify-otp">Verify the OTP code submitted by the authenticated (unverified) user.</a>
+                            </li>
                                                                         </ul>
                             </ul>
                     <ul id="tocify-header-public" class="tocify-header">
@@ -528,7 +534,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: August 24, 2026</li>
+        <li>Last updated: August 26, 2026</li>
     </ul>
 </div>
 
@@ -697,8 +703,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>
 </p>
 
-<p>Creates a new student account and returns a JWT bearer token. The account is verified on
-creation, so no verification link is sent and the student can use the portal immediately.</p>
+<p>Creates a new student account and returns a JWT bearer token. The account is left unverified
+so the student must complete OTP verification (send-otp / verify-otp) before accessing
+verified-only routes. The legacy email-link verification flow remains available as a fallback.</p>
 
 <span id="example-requests-POSTapi-v1-auth-register">
 <blockquote>Example request:</blockquote>
@@ -714,6 +721,7 @@ creation, so no verification link is sent and the student can use the portal imm
     \"email\": \"student@example.com\",
     \"phone\": \"+201234567890\",
     \"national_id\": \"1234567890123\",
+    \"passport_number\": \"A1234567\",
     \"password\": \"password123\",
     \"password_confirmation\": \"password123\"
 }"
@@ -735,6 +743,7 @@ let body = {
     "email": "student@example.com",
     "phone": "+201234567890",
     "national_id": "1234567890123",
+    "passport_number": "A1234567",
     "password": "password123",
     "password_confirmation": "password123"
 };
@@ -760,8 +769,8 @@ fetch(url, {
         &quot;access_token&quot;: &quot;eyJ0...&quot;,
         &quot;token_type&quot;: &quot;Bearer&quot;,
         &quot;expires_in&quot;: 3600,
-        &quot;verified&quot;: true,
-        &quot;verification_method&quot;: &quot;admin&quot;,
+        &quot;verified&quot;: false,
+        &quot;verification_method&quot;: null,
         &quot;user&quot;: {
             &quot;id&quot;: 1,
             &quot;name&quot;: &quot;Ahmed Khaled&quot;,
@@ -900,14 +909,26 @@ You can check the Dev Tools console for debugging information.</code></pre>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>national_id</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
- &nbsp;
+<i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="national_id"                data-endpoint="POSTapi-v1-auth-register"
                value="1234567890123"
                data-component="body">
     <br>
-<p>The user's national ID. Used to match official secondary school (Tawjihi) results. Example: <code>1234567890123</code></p>
+<p>required_without:passport_number The user's national ID. Used to match official secondary school (Tawjihi) results. Example: <code>1234567890123</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>passport_number</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="passport_number"                data-endpoint="POSTapi-v1-auth-register"
+               value="A1234567"
+               data-component="body">
+    <br>
+<p>required_without:national_id Alternative identity for students without a national ID. Example: <code>A1234567</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -1554,17 +1575,17 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Invalid verification link.&quot;
+    &quot;message&quot;: &quot;Invalid signature.&quot;
 }</code>
  </pre>
             <blockquote>
-            <p>Example response (410):</p>
+            <p>Example response (403):</p>
         </blockquote>
                 <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Verification link expired.&quot;
+    &quot;message&quot;: &quot;Invalid verification link.&quot;
 }</code>
  </pre>
     </span>
@@ -2319,6 +2340,377 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="auth-POSTapi-v1-auth-send-otp">Send an OTP verification code to the authenticated (unverified) user.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>The channel ("email" or "sms") is chosen by the client. This is the primary
+verification path; the legacy email-link flow remains available as a fallback.</p>
+
+<span id="example-requests-POSTapi-v1-auth-send-otp">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/auth/send-otp" \
+    --header "Authorization: Bearer {YOUR_JWT_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"channel\": \"email\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/auth/send-otp"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_JWT_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "channel": "email"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-auth-send-otp">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;A verification code has been sent.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (409):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Account already verified.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Validation failed.&quot;,
+    &quot;errors&quot;: {
+        &quot;channel&quot;: [
+            &quot;The selected channel is invalid.&quot;
+        ]
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-v1-auth-send-otp" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-auth-send-otp"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-auth-send-otp"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-auth-send-otp" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-auth-send-otp">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-auth-send-otp" data-method="POST"
+      data-path="api/v1/auth/send-otp"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-auth-send-otp', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-auth-send-otp"
+                    onclick="tryItOut('POSTapi-v1-auth-send-otp');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-auth-send-otp"
+                    onclick="cancelTryOut('POSTapi-v1-auth-send-otp');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-auth-send-otp"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/auth/send-otp</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-auth-send-otp"
+               value="Bearer {YOUR_JWT_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_JWT_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-auth-send-otp"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-auth-send-otp"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>channel</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="channel"                data-endpoint="POSTapi-v1-auth-send-otp"
+               value="email"
+               data-component="body">
+    <br>
+<p>The delivery channel for the code. Example: <code>email</code></p>
+        </div>
+        </form>
+
+                    <h2 id="auth-POSTapi-v1-auth-verify-otp">Verify the OTP code submitted by the authenticated (unverified) user.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>On success the account is marked verified through the shared verification
+mechanism and a success response is returned.</p>
+
+<span id="example-requests-POSTapi-v1-auth-verify-otp">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/auth/verify-otp" \
+    --header "Authorization: Bearer {YOUR_JWT_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"code\": \"123456\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/auth/verify-otp"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_JWT_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "code": "123456"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-auth-verify-otp">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Account verified successfully.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (409):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Account already verified.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Invalid or expired verification code.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (429):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Too many incorrect attempts. Request a new code.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-v1-auth-verify-otp" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-auth-verify-otp"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-auth-verify-otp"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-auth-verify-otp" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-auth-verify-otp">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-auth-verify-otp" data-method="POST"
+      data-path="api/v1/auth/verify-otp"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-auth-verify-otp', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-auth-verify-otp"
+                    onclick="tryItOut('POSTapi-v1-auth-verify-otp');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-auth-verify-otp"
+                    onclick="cancelTryOut('POSTapi-v1-auth-verify-otp');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-auth-verify-otp"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/auth/verify-otp</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-auth-verify-otp"
+               value="Bearer {YOUR_JWT_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_JWT_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-auth-verify-otp"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-auth-verify-otp"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>code</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="code"                data-endpoint="POSTapi-v1-auth-verify-otp"
+               value="123456"
+               data-component="body">
+    <br>
+<p>The 6-digit verification code. Example: <code>123456</code></p>
+        </div>
+        </form>
+
                 <h1 id="public">Public</h1>
 
     <p>Public catalog endpoints for admission information. No authentication required.</p>
@@ -2336,7 +2728,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/public/admission-cycles?all=&amp;per_page=20&amp;page=1" \
+    --get "http://localhost/api/v1/public/admission-cycles?per_page=20&amp;page=1" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -2347,7 +2739,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const params = {
-    "all": "0",
     "per_page": "20",
     "page": "1",
 };
@@ -2462,28 +2853,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
-                                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>all</code></b>&nbsp;&nbsp;
-<small>boolean</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <label data-endpoint="GETapi-v1-public-admission-cycles" style="display: none">
-            <input type="radio" name="all"
-                   value="1"
-                   data-endpoint="GETapi-v1-public-admission-cycles"
-                   data-component="query"             >
-            <code>true</code>
-        </label>
-        <label data-endpoint="GETapi-v1-public-admission-cycles" style="display: none">
-            <input type="radio" name="all"
-                   value="0"
-                   data-endpoint="GETapi-v1-public-admission-cycles"
-                   data-component="query"             >
-            <code>false</code>
-        </label>
-    <br>
-<p>If true, returns all cycles including inactive ones. Default: false. Example: <code>false</code></p>
-            </div>
                                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
@@ -2684,14 +3053,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/public/faculties/2/departments?per_page=20&amp;page=1" \
+    --get "http://localhost/api/v1/public/faculties/1/departments?per_page=20&amp;page=1" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/public/faculties/2/departments"
+    "http://localhost/api/v1/public/faculties/1/departments"
 );
 
 const params = {
@@ -2813,10 +3182,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="faculty_id"                data-endpoint="GETapi-v1-public-faculties--faculty_id--departments"
-               value="2"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the faculty. Example: <code>2</code></p>
+<p>The ID of the faculty. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>faculty</code></b>&nbsp;&nbsp;
@@ -4341,7 +4710,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"name\": \"Ahmed Khaled\",
     \"phone\": \"+201234567890\",
     \"personal_information\": {
-        \"national_id\": \"1234567890123\",
+        \"passport_number\": \"A1234567\",
         \"first_name_ar\": \"أحمد\",
         \"father_name_ar\": \"خالد\",
         \"grandfather_name_ar\": \"محمد\",
@@ -4354,7 +4723,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
         \"family_name_en\": \"Ali\",
         \"date_of_birth\": \"2005-04-12\",
         \"place_of_birth\": \"Gaza\",
-        \"official_address\": \"Gaza, Al-Rimal\"
+        \"official_address\": \"Gaza, Al-Rimal\",
+        \"national_id\": \"1234567890123\"
     },
     \"addresses\": [
         \"architecto\"
@@ -4381,7 +4751,7 @@ let body = {
     "name": "Ahmed Khaled",
     "phone": "+201234567890",
     "personal_information": {
-        "national_id": "1234567890123",
+        "passport_number": "A1234567",
         "first_name_ar": "أحمد",
         "father_name_ar": "خالد",
         "grandfather_name_ar": "محمد",
@@ -4394,7 +4764,8 @@ let body = {
         "family_name_en": "Ali",
         "date_of_birth": "2005-04-12",
         "place_of_birth": "Gaza",
-        "official_address": "Gaza, Al-Rimal"
+        "official_address": "Gaza, Al-Rimal",
+        "national_id": "1234567890123"
     },
     "addresses": [
         "architecto"
@@ -4575,16 +4946,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>nullable Personal information. All fields below are required the first time this object is sent; once the record exists any subset may be sent and omitted fields keep their stored value.</p>
             </summary>
                                                 <div style="margin-left: 14px; clear: unset;">
-                        <b style="line-height: 2;"><code>national_id</code></b>&nbsp;&nbsp;
+                        <b style="line-height: 2;"><code>passport_number</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="personal_information.national_id"                data-endpoint="PUTapi-v1-student-profile"
-               value="1234567890123"
+                              name="personal_information.passport_number"                data-endpoint="PUTapi-v1-student-profile"
+               value="A1234567"
                data-component="body">
     <br>
-<p>National ID number, unique across users. Example: <code>1234567890123</code></p>
+<p>Passport number, unique across users. Required unless national_id is provided. Example: <code>A1234567</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>first_name_ar</code></b>&nbsp;&nbsp;
@@ -4741,6 +5112,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must not be greater than 2000 characters. Example: <code>Gaza, Al-Rimal</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>national_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="personal_information.national_id"                data-endpoint="PUTapi-v1-student-profile"
+               value="1234567890123"
+               data-component="body">
+    <br>
+<p>National ID number, unique across users. Required unless passport_number is provided. Example: <code>1234567890123</code></p>
                     </div>
                                     </details>
         </div>
@@ -5040,6 +5423,17 @@ fetch(url, {
         &quot;father_is_working&quot;: true,
         &quot;mother_is_working&quot;: false
     }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: null,
+    &quot;data&quot;: null
 }</code>
  </pre>
     </span>
@@ -7115,7 +7509,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "document_type_id=1"\
     --form "notes=Please review"\
-    --form "file=@/tmp/phpevpoe711hk3beqSSO8M" </code></pre></div>
+    --form "file=@/tmp/php3uad8vsjh5ffcKr0Z8k" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -7268,7 +7662,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>The document file (max 51200KB, mimes: pdf, jpeg, png). Example: <code>/tmp/phpevpoe711hk3beqSSO8M</code></p>
+<p>The document file (max 51200KB, mimes: pdf, jpeg, png). Example: <code>/tmp/php3uad8vsjh5ffcKr0Z8k</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>document_type_id</code></b>&nbsp;&nbsp;
@@ -8025,7 +8419,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/v1/student/applications/1/documents/2/attach" \
+    "http://localhost/api/v1/student/applications/1/documents/1/attach" \
     --header "Authorization: Bearer {YOUR_JWT_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -8033,7 +8427,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/student/applications/1/documents/2/attach"
+    "http://localhost/api/v1/student/applications/1/documents/1/attach"
 );
 
 const headers = {
@@ -8182,10 +8576,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="document_id"                data-endpoint="POSTapi-v1-student-applications--application_id--documents--document_id--attach"
-               value="2"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the document. Example: <code>2</code></p>
+<p>The ID of the document. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>application</code></b>&nbsp;&nbsp;
@@ -9365,7 +9759,7 @@ fetch(url, {
     &quot;message&quot;: &quot;AI verification completed.&quot;,
     &quot;data&quot;: {
         &quot;id&quot;: 1,
-        &quot;status&quot;: &quot;accepted&quot;,
+        &quot;status&quot;: &quot;forwarded_to_department_head&quot;,
         &quot;ai_verification_score&quot;: 85,
         &quot;ai_verification_notes&quot;: &quot;AI verification score: 85&quot;
     }
@@ -10166,7 +10560,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/v1/admission_employee/documents/2/verify" \
+    "http://localhost/api/v1/admission_employee/documents/1/verify" \
     --header "Authorization: Bearer {YOUR_JWT_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -10179,7 +10573,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/admission_employee/documents/2/verify"
+    "http://localhost/api/v1/admission_employee/documents/1/verify"
 );
 
 const headers = {
@@ -10336,10 +10730,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="document_id"                data-endpoint="POSTapi-v1-admission_employee-documents--document_id--verify"
-               value="2"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the document. Example: <code>2</code></p>
+<p>The ID of the document. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
@@ -16084,7 +16478,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"phone\": \"+201234567890\",
     \"is_active\": true,
     \"roles\": [
-        \"student\"
+        \"admission_employee\"
     ]
 }"
 </code></pre></div>
@@ -16107,7 +16501,7 @@ let body = {
     "phone": "+201234567890",
     "is_active": true,
     "roles": [
-        "student"
+        "admission_employee"
     ]
 };
 
@@ -19442,7 +19836,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"name\": \"Fall 2026\",
+    \"name_ar\": \"b\",
     \"academic_year\": \"2026-2027\",
+    \"academic_year_ar\": \"n\",
     \"semester\": \"first\",
     \"starts_at\": \"2026-09-01\",
     \"ends_at\": \"2027-01-31\",
@@ -19464,7 +19860,9 @@ const headers = {
 
 let body = {
     "name": "Fall 2026",
+    "name_ar": "b",
     "academic_year": "2026-2027",
+    "academic_year_ar": "n",
     "semester": "first",
     "starts_at": "2026-09-01",
     "ends_at": "2027-01-31",
@@ -19595,6 +19993,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>The cycle name. Example: <code>Fall 2026</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name_ar</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name_ar"                data-endpoint="POSTapi-v1-admin-admission-cycles"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>academic_year</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
@@ -19605,6 +20015,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>The academic year. Example: <code>2026-2027</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>academic_year_ar</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="academic_year_ar"                data-endpoint="POSTapi-v1-admin-admission-cycles"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>semester</code></b>&nbsp;&nbsp;
@@ -19842,7 +20264,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"name\": \"Fall 2026\",
+    \"name_ar\": \"b\",
     \"academic_year\": \"2026-2027\",
+    \"academic_year_ar\": \"n\",
     \"semester\": \"first\",
     \"starts_at\": \"2026-09-01\",
     \"ends_at\": \"2027-01-31\",
@@ -19864,7 +20288,9 @@ const headers = {
 
 let body = {
     "name": "Fall 2026",
+    "name_ar": "b",
     "academic_year": "2026-2027",
+    "academic_year_ar": "n",
     "semester": "first",
     "starts_at": "2026-09-01",
     "ends_at": "2027-01-31",
@@ -20010,6 +20436,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Optional updated cycle name. Must not be greater than 255 characters. Example: <code>Fall 2026</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name_ar</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name_ar"                data-endpoint="PUTapi-v1-admin-admission-cycles--id-"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>academic_year</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -20020,6 +20458,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Optional updated academic year. Must not be greater than 255 characters. Example: <code>2026-2027</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>academic_year_ar</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="academic_year_ar"                data-endpoint="PUTapi-v1-admin-admission-cycles--id-"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>semester</code></b>&nbsp;&nbsp;
@@ -22003,7 +22453,7 @@ once it completes.</p>
     --header "Authorization: Bearer {YOUR_JWT_TOKEN}" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "file=@/tmp/php34ibe0vvqica7NrtUxu" </code></pre></div>
+    --form "file=@/tmp/php58vdns5dp91id5t9LkM" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -22161,7 +22611,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Official Tawjihi results Excel file (.xlsx or .xls, max 50MB). Example: <code>/tmp/php34ibe0vvqica7NrtUxu</code></p>
+<p>Official Tawjihi results Excel file (.xlsx or .xls, max 50MB). Example: <code>/tmp/php58vdns5dp91id5t9LkM</code></p>
         </div>
         </form>
 
@@ -24163,8 +24613,8 @@ sunset: Tue, 31 Dec 2026 23:59:59 GMT
 deprecation: true
 link: &lt;https://example.com/changelog&gt;; rel=&quot;deprecation&quot;; type=&quot;text/html&quot;
 x-api-version: 1.0.0
-x-request-id: 11e8bdc7-9e1c-4faf-b0b5-63004e8f4165
-x-response-time: 28.05ms
+x-request-id: c08bbb73-e185-4e35-805b-5be60929bce6
+x-response-time: 11.10ms
 x-ratelimit-limit: 5
 x-ratelimit-remaining: 4
 access-control-allow-origin: http://localhost:3000
