@@ -10,3 +10,8 @@ export * from "./use-profile-queries";
 export * from "./use-admin-queries";
 export * from "./use-admin-programs-queries";
 export * from "./use-admin-users-queries";
+export * from "./use-admin-branches-queries";
+export * from "./use-admin-departments-queries";
+export * from "./use-admin-document-types-queries";
+export * from "./use-admin-application-types-queries";
+export * from "./use-admin-reports-queries";

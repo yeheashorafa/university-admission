@@ -1,9 +1,12 @@
 import {
   BarChart3,
   Bell,
+  Building2,
+  Boxes,
   FileCheck2,
   FileSearch,
   FileSpreadsheet,
+  FileText,
   Settings,
   Users,
   LayoutDashboard,
@@ -77,6 +80,30 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     href: routes.adminSettings,
     icon: Settings,
     allowedRoles: [userRoles.admin, userRoles.admissionDean],
+  },
+  {
+    labelKey: "masterData.faculties",
+    href: routes.adminFaculties,
+    icon: Building2,
+    allowedRoles: [userRoles.admin],
+  },
+  {
+    labelKey: "masterData.departments",
+    href: routes.adminDepartments,
+    icon: Boxes,
+    allowedRoles: [userRoles.admin],
+  },
+  {
+    labelKey: "masterData.documentTypes",
+    href: routes.adminDocumentTypes,
+    icon: FileText,
+    allowedRoles: [userRoles.admin],
+  },
+  {
+    labelKey: "masterData.applicationTypes",
+    href: routes.adminApplicationTypes,
+    icon: FileSpreadsheet,
+    allowedRoles: [userRoles.admin],
   },
 ];
 

@@ -61,6 +61,10 @@ export const queryKeys = {
       ["admin", "applications", String(applicationId)] as const,
     programs: (params?: unknown) => ["admin", "programs", params] as const,
     users: (params?: unknown) => ["admin", "users", params] as const,
+    faculties: () => ["admin", "faculties"] as const,
+    departments: () => ["admin", "departments"] as const,
+    documentTypes: () => ["admin", "documentTypes"] as const,
+    applicationTypes: () => ["admin", "applicationTypes"] as const,
   },
 
   employee: {

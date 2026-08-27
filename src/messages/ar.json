@@ -1205,7 +1205,6 @@
     "highSchoolAverage": "معدل الثانوية العامة",
     "academicBranch": "الفرع الأكاديمي",
     "scientific": "علمي",
-    "graduationYear": "سنة التخرج",
     "school": "المدرسة",
     "mockSchool": "مدرسة الكرمل الثانوية",
     "firstNameEn": "الاسم الأول بالإنجليزية",
@@ -1532,7 +1531,13 @@
       "documentVerification": "التحقق من المستندات",
       "users": "المستخدمون",
       "notifications": "الإشعارات",
-      "settings": "الإعدادات"
+      "settings": "الإعدادات",
+      "masterData": {
+        "faculties": "الكليات",
+        "departments": "الأقسام",
+        "documentTypes": "أنواع المستندات",
+        "applicationTypes": "أنواع الطلبات"
+      }
     },
     "profileAlert": {
       "title": "يرجى إكمال ملفك الشخصي",
@@ -2184,11 +2189,11 @@
         "minimumRate": "معدل القبول الأدنى",
         "capacity": "السعة",
         "branches": "الفروع المؤهلة",
-      "selectFaculty": "اختر الكلية",
-      "department": "القسم",
-      "selectDepartment": "اختر القسم",
-      "selectFacultyFirst": "اختر الكلية أولاً",
-      "noDepartments": "لا توجد أقسام متاحة"
+        "selectFaculty": "اختر الكلية",
+        "department": "القسم",
+        "selectDepartment": "اختر القسم",
+        "selectFacultyFirst": "اختر الكلية أولاً",
+        "noDepartments": "لا توجد أقسام متاحة"
       }
     },
     "admissionCycles": {
@@ -2653,7 +2658,241 @@
     "fileReceivedProcessing": "تم استلام الملف وجارٍ معالجته بالخلفية. ستصلك رسالة إشعار عند الانتهاء.",
     "viewAdminNotifications": "عرض إشعارات الأدمن",
     "unauthorizedUpload": "غير مصرح لك برفع ملفات نتائج التوجيهي.",
-    "invalidFileFormatOrSize": "يرجى اختيار ملف Excel صحيح بصيغة .xlsx أو .xls وبحجم لا يتجاوز 50MB."
+    "invalidFileFormatOrSize": "يرجى اختيار ملف Excel صحيح بصيغة .xlsx أو .xls وبحجم لا يتجاوز 50MB.",
+    "masterData": {
+      "title": "البيانات الرئيسية",
+      "description": "إدارة البيانات الأساسية المستخدمة في نظام القبول."
+    },
+    "faculties": {
+      "academicStructure": "الهيكل الأكاديمي",
+      "managementTitle": "إدارة الكليات",
+      "managementDescription": "إنشاء وإدارة الكليات وتفاصيلها وتوفرها.",
+      "export": "تصدير",
+      "add": "إضافة كلية",
+      "search": "بحث عن كلية",
+      "searchPlaceholder": "ابحث بالاسم...",
+      "reset": "إعادة تعيين",
+      "status": "الحالة",
+      "allStatuses": "كل الحالات",
+      "stats": {
+        "total": "إجمالي الكليات",
+        "active": "الكليات النشطة",
+        "inactive": "الكليات غير النشطة"
+      },
+      "table": {
+        "nameEn": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "status": "الحالة",
+        "actions": "إجراءات"
+      },
+      "form": {
+        "nameEn": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "descriptionEn": "الوصف (بالإنجليزية)",
+        "descriptionAr": "الوصف (بالعربية)",
+        "isActive": "نشط"
+      },
+      "createTitle": "إنشاء كلية",
+      "updateTitle": "تحديث كلية",
+      "formDescription": "أدخل تفاصيل كلية.",
+      "deleteConfirmTitle": "حذف كلية؟",
+      "deleteConfirmDescription": "سيؤدي هذا الإجراء إلى حذف العنصر نهائياً.",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "save": "حفظ",
+      "edit": "تعديل كلية",
+      "enable": "تفعيل كلية",
+      "disable": "تعطيل كلية",
+      "createdSuccessfully": "تم إنشاء كلية بنجاح.",
+      "updatedSuccessfully": "تم تحديث كلية بنجاح.",
+      "deletedSuccessfully": "تم حذف كلية بنجاح.",
+      "statusUpdated": "تم تحديث حالة كلية.",
+      "paginationInfo": "عرض {from} إلى {to} من {total} الكليات",
+      "previous": "السابق",
+      "next": "التالي",
+      "noResultsTitle": "لا توجد الكليات",
+      "noResultsDescription": "جرّب تغيير كلمة البحث أو عوامل التصفية.",
+      "statuses": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      }
+    },
+    "departments": {
+      "academicStructure": "الهيكل الأكاديمي",
+      "managementTitle": "إدارة الأقسام",
+      "managementDescription": "إنشاء وإدارة الأقسام وتفاصيلها وتوفرها.",
+      "export": "تصدير",
+      "add": "إضافة قسم",
+      "search": "بحث عن قسم",
+      "searchPlaceholder": "ابحث بالاسم...",
+      "reset": "إعادة تعيين",
+      "status": "الحالة",
+      "allStatuses": "كل الحالات",
+      "stats": {
+        "total": "إجمالي الأقسام",
+        "active": "الأقسام النشطة",
+        "inactive": "الأقسام غير النشطة"
+      },
+      "table": {
+        "faculty": "الكلية",
+        "nameEn": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "status": "الحالة",
+        "actions": "إجراءات"
+      },
+      "form": {
+        "faculty": "الكلية",
+        "nameEn": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "descriptionEn": "الوصف (بالإنجليزية)",
+        "descriptionAr": "الوصف (بالعربية)",
+        "isActive": "نشط"
+      },
+      "createTitle": "إنشاء قسم",
+      "updateTitle": "تحديث قسم",
+      "formDescription": "أدخل تفاصيل قسم.",
+      "deleteConfirmTitle": "حذف قسم؟",
+      "deleteConfirmDescription": "سيؤدي هذا الإجراء إلى حذف العنصر نهائياً.",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "save": "حفظ",
+      "edit": "تعديل قسم",
+      "enable": "تفعيل قسم",
+      "disable": "تعطيل قسم",
+      "createdSuccessfully": "تم إنشاء قسم بنجاح.",
+      "updatedSuccessfully": "تم تحديث قسم بنجاح.",
+      "deletedSuccessfully": "تم حذف قسم بنجاح.",
+      "statusUpdated": "تم تحديث حالة قسم.",
+      "paginationInfo": "عرض {from} إلى {to} من {total} الأقسام",
+      "previous": "السابق",
+      "next": "التالي",
+      "noResultsTitle": "لا توجد الأقسام",
+      "noResultsDescription": "جرّب تغيير كلمة البحث أو عوامل التصفية.",
+      "statuses": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "formSelectFaculty": "اختر الكلية",
+      "formSelectFacultyFirst": "اختر الكلية أولاً"
+    },
+    "documentTypes": {
+      "academicStructure": "الهيكل الأكاديمي",
+      "managementTitle": "إدارة أنواع المستندات",
+      "managementDescription": "إنشاء وإدارة أنواع المستندات وتفاصيلها وتوفرها.",
+      "export": "تصدير",
+      "add": "إضافة نوع مستند",
+      "search": "بحث عن نوع مستند",
+      "searchPlaceholder": "ابحث بالاسم...",
+      "reset": "إعادة تعيين",
+      "status": "الحالة",
+      "allStatuses": "كل الحالات",
+      "stats": {
+        "total": "إجمالي أنواع المستندات",
+        "required": "مطلوبة",
+        "optional": "اختيارية"
+      },
+      "table": {
+        "name": "الاسم",
+        "displayNameEn": "العرض (بالإنجليزية)",
+        "displayNameAr": "العرض (بالعربية)",
+        "required": "مطلوب",
+        "status": "الحالة",
+        "actions": "إجراءات"
+      },
+      "form": {
+        "name": "الاسم (مفتاح)",
+        "displayNameEn": "الاسم المعروض (بالإنجليزية)",
+        "displayNameAr": "الاسم المعروض (بالعربية)",
+        "description": "الوصف",
+        "isRequired": "مطلوب"
+      },
+      "createTitle": "إنشاء نوع مستند",
+      "updateTitle": "تحديث نوع مستند",
+      "formDescription": "أدخل تفاصيل نوع مستند.",
+      "deleteConfirmTitle": "حذف نوع مستند؟",
+      "deleteConfirmDescription": "سيؤدي هذا الإجراء إلى حذف العنصر نهائياً.",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "save": "حفظ",
+      "edit": "تعديل نوع مستند",
+      "enable": "تفعيل نوع مستند",
+      "disable": "تعطيل نوع مستند",
+      "createdSuccessfully": "تم إنشاء نوع مستند بنجاح.",
+      "updatedSuccessfully": "تم تحديث نوع مستند بنجاح.",
+      "deletedSuccessfully": "تم حذف نوع مستند بنجاح.",
+      "statusUpdated": "تم تحديث حالة نوع مستند.",
+      "paginationInfo": "عرض {from} إلى {to} من {total} أنواع المستندات",
+      "previous": "السابق",
+      "next": "التالي",
+      "noResultsTitle": "لا توجد أنواع المستندات",
+      "noResultsDescription": "جرّب تغيير كلمة البحث أو عوامل التصفية.",
+      "statuses": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      }
+    },
+    "applicationTypes": {
+      "academicStructure": "الهيكل الأكاديمي",
+      "managementTitle": "إدارة أنواع الطلبات",
+      "managementDescription": "إنشاء وإدارة أنواع الطلبات وتفاصيلها وتوفرها.",
+      "export": "تصدير",
+      "add": "إضافة نوع طلب",
+      "search": "بحث عن نوع طلب",
+      "searchPlaceholder": "ابحث بالاسم...",
+      "reset": "إعادة تعيين",
+      "status": "الحالة",
+      "allStatuses": "كل الحالات",
+      "stats": {
+        "total": "إجمالي أنواع الطلبات",
+        "active": "الأنواع النشطة",
+        "inactive": "الأنواع غير النشطة"
+      },
+      "table": {
+        "code": "الرمز",
+        "nameEn": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "requiresApproval": "موافقة رئيس القسم",
+        "status": "الحالة",
+        "actions": "إجراءات"
+      },
+      "form": {
+        "code": "الرمز",
+        "nameEn": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "requiresDeptHeadApproval": "يتطلب موافقة رئيس القسم",
+        "isActive": "نشط"
+      },
+      "createTitle": "إنشاء نوع طلب",
+      "updateTitle": "تحديث نوع طلب",
+      "formDescription": "أدخل تفاصيل نوع طلب.",
+      "deleteConfirmTitle": "حذف نوع طلب؟",
+      "deleteConfirmDescription": "سيؤدي هذا الإجراء إلى حذف العنصر نهائياً.",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "save": "حفظ",
+      "edit": "تعديل نوع طلب",
+      "enable": "تفعيل نوع طلب",
+      "disable": "تعطيل نوع طلب",
+      "createdSuccessfully": "تم إنشاء نوع طلب بنجاح.",
+      "updatedSuccessfully": "تم تحديث نوع طلب بنجاح.",
+      "deletedSuccessfully": "تم حذف نوع طلب بنجاح.",
+      "statusUpdated": "تم تحديث حالة نوع طلب.",
+      "paginationInfo": "عرض {from} إلى {to} من {total} أنواع الطلبات",
+      "previous": "السابق",
+      "next": "التالي",
+      "noResultsTitle": "لا توجد أنواع الطلبات",
+      "noResultsDescription": "جرّب تغيير كلمة البحث أو عوامل التصفية.",
+      "statuses": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "yes": "نعم",
+      "no": "لا"
+    }
   },
   "applicationSubmitted": {
     "hero": {

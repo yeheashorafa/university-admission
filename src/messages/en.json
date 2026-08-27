@@ -1205,7 +1205,6 @@
     "highSchoolAverage": "High School Average",
     "academicBranch": "Academic Branch",
     "scientific": "Scientific",
-    "graduationYear": "Graduation Year",
     "school": "School",
     "mockSchool": "Al-Karmel Secondary School",
     "firstNameEn": "First name (English)",
@@ -1532,7 +1531,13 @@
       "documentVerification": "Document Verification",
       "users": "Users",
       "notifications": "Notifications",
-      "settings": "Settings"
+      "settings": "Settings",
+      "masterData": {
+        "faculties": "Faculties",
+        "departments": "Departments",
+        "documentTypes": "Document Types",
+        "applicationTypes": "Application Types"
+      }
     },
     "profileAlert": {
       "title": "Complete your profile",
@@ -2184,11 +2189,11 @@
         "minimumRate": "Minimum rate",
         "capacity": "Capacity",
         "branches": "Eligible branches",
-      "selectFaculty": "Select faculty",
-      "department": "Department",
-      "selectDepartment": "Select department",
-      "selectFacultyFirst": "Select a faculty first",
-      "noDepartments": "No departments available"
+        "selectFaculty": "Select faculty",
+        "department": "Department",
+        "selectDepartment": "Select department",
+        "selectFacultyFirst": "Select a faculty first",
+        "noDepartments": "No departments available"
       }
     },
     "admissionCycles": {
@@ -2653,7 +2658,241 @@
     "fileReceivedProcessing": "File received and is being processed in the background. You will receive a notification when finished.",
     "viewAdminNotifications": "View Admin Notifications",
     "unauthorizedUpload": "You are not authorized to upload Tawjihi results.",
-    "invalidFileFormatOrSize": "Please select a valid Excel file with format .xlsx or .xls and size not exceeding 50MB."
+    "invalidFileFormatOrSize": "Please select a valid Excel file with format .xlsx or .xls and size not exceeding 50MB.",
+    "masterData": {
+      "title": "Master Data",
+      "description": "Manage foundational catalog data used across the admission system."
+    },
+    "faculties": {
+      "academicStructure": "Academic Structure",
+      "managementTitle": "Faculties Management",
+      "managementDescription": "Create and manage faculties, their details, and availability.",
+      "export": "Export",
+      "add": "Add Faculty",
+      "search": "Search Faculty",
+      "searchPlaceholder": "Search by name...",
+      "reset": "Reset",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "stats": {
+        "total": "Total Faculties",
+        "active": "Active Faculties",
+        "inactive": "Inactive Faculties"
+      },
+      "table": {
+        "nameEn": "Name (EN)",
+        "nameAr": "Name (AR)",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "nameEn": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "descriptionEn": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "isActive": "Active"
+      },
+      "createTitle": "Create Faculty",
+      "updateTitle": "Update Faculty",
+      "formDescription": "Fill in the faculty details.",
+      "deleteConfirmTitle": "Delete faculty?",
+      "deleteConfirmDescription": "This action will remove the item permanently.",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit faculty",
+      "enable": "Enable faculty",
+      "disable": "Disable faculty",
+      "createdSuccessfully": "Faculty created successfully.",
+      "updatedSuccessfully": "Faculty updated successfully.",
+      "deletedSuccessfully": "Faculty deleted successfully.",
+      "statusUpdated": "Faculty status updated.",
+      "paginationInfo": "Showing {from} to {to} of {total} faculties",
+      "previous": "Previous",
+      "next": "Next",
+      "noResultsTitle": "No faculties found",
+      "noResultsDescription": "Try changing the search keyword or filters.",
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive"
+      }
+    },
+    "departments": {
+      "academicStructure": "Academic Structure",
+      "managementTitle": "Departments Management",
+      "managementDescription": "Create and manage departments, their details, and availability.",
+      "export": "Export",
+      "add": "Add Department",
+      "search": "Search Department",
+      "searchPlaceholder": "Search by name...",
+      "reset": "Reset",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "stats": {
+        "total": "Total Departments",
+        "active": "Active Departments",
+        "inactive": "Inactive Departments"
+      },
+      "table": {
+        "faculty": "Faculty",
+        "nameEn": "Name (EN)",
+        "nameAr": "Name (AR)",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "faculty": "Faculty",
+        "nameEn": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "descriptionEn": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "isActive": "Active"
+      },
+      "createTitle": "Create Department",
+      "updateTitle": "Update Department",
+      "formDescription": "Fill in the department details.",
+      "deleteConfirmTitle": "Delete department?",
+      "deleteConfirmDescription": "This action will remove the item permanently.",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit department",
+      "enable": "Enable department",
+      "disable": "Disable department",
+      "createdSuccessfully": "Department created successfully.",
+      "updatedSuccessfully": "Department updated successfully.",
+      "deletedSuccessfully": "Department deleted successfully.",
+      "statusUpdated": "Department status updated.",
+      "paginationInfo": "Showing {from} to {to} of {total} departments",
+      "previous": "Previous",
+      "next": "Next",
+      "noResultsTitle": "No departments found",
+      "noResultsDescription": "Try changing the search keyword or filters.",
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "formSelectFaculty": "Select faculty",
+      "formSelectFacultyFirst": "Select a faculty first"
+    },
+    "documentTypes": {
+      "academicStructure": "Academic Structure",
+      "managementTitle": "Document Types Management",
+      "managementDescription": "Create and manage document types, their details, and availability.",
+      "export": "Export",
+      "add": "Add Document Type",
+      "search": "Search Document Type",
+      "searchPlaceholder": "Search by name...",
+      "reset": "Reset",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "stats": {
+        "total": "Total Document Types",
+        "required": "Required",
+        "optional": "Optional"
+      },
+      "table": {
+        "name": "Name",
+        "displayNameEn": "Display (EN)",
+        "displayNameAr": "Display (AR)",
+        "required": "Required",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "name": "Name (key)",
+        "displayNameEn": "Display Name (English)",
+        "displayNameAr": "Display Name (Arabic)",
+        "description": "Description",
+        "isRequired": "Required"
+      },
+      "createTitle": "Create Document Type",
+      "updateTitle": "Update Document Type",
+      "formDescription": "Fill in the document type details.",
+      "deleteConfirmTitle": "Delete document type?",
+      "deleteConfirmDescription": "This action will remove the item permanently.",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit document type",
+      "enable": "Enable document type",
+      "disable": "Disable document type",
+      "createdSuccessfully": "Document Type created successfully.",
+      "updatedSuccessfully": "Document Type updated successfully.",
+      "deletedSuccessfully": "Document Type deleted successfully.",
+      "statusUpdated": "Document Type status updated.",
+      "paginationInfo": "Showing {from} to {to} of {total} document types",
+      "previous": "Previous",
+      "next": "Next",
+      "noResultsTitle": "No document types found",
+      "noResultsDescription": "Try changing the search keyword or filters.",
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive"
+      }
+    },
+    "applicationTypes": {
+      "academicStructure": "Academic Structure",
+      "managementTitle": "Application Types Management",
+      "managementDescription": "Create and manage application types, their details, and availability.",
+      "export": "Export",
+      "add": "Add Application Type",
+      "search": "Search Application Type",
+      "searchPlaceholder": "Search by name...",
+      "reset": "Reset",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "stats": {
+        "total": "Total Application Types",
+        "active": "Active Types",
+        "inactive": "Inactive Types"
+      },
+      "table": {
+        "code": "Code",
+        "nameEn": "Name (EN)",
+        "nameAr": "Name (AR)",
+        "requiresApproval": "Dept. Head Approval",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "code": "Code",
+        "nameEn": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "requiresDeptHeadApproval": "Requires Department Head Approval",
+        "isActive": "Active"
+      },
+      "createTitle": "Create Application Type",
+      "updateTitle": "Update Application Type",
+      "formDescription": "Fill in the application type details.",
+      "deleteConfirmTitle": "Delete application type?",
+      "deleteConfirmDescription": "This action will remove the item permanently.",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit application type",
+      "enable": "Enable application type",
+      "disable": "Disable application type",
+      "createdSuccessfully": "Application Type created successfully.",
+      "updatedSuccessfully": "Application Type updated successfully.",
+      "deletedSuccessfully": "Application Type deleted successfully.",
+      "statusUpdated": "Application Type status updated.",
+      "paginationInfo": "Showing {from} to {to} of {total} application types",
+      "previous": "Previous",
+      "next": "Next",
+      "noResultsTitle": "No application types found",
+      "noResultsDescription": "Try changing the search keyword or filters.",
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "yes": "Yes",
+      "no": "No"
+    }
   },
   "applicationSubmitted": {
     "hero": {

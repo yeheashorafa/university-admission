@@ -1,0 +1,197 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Edit, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { DocumentType } from "../data/document-types.data";
+
+type DocumentTypesTableProps = {
+  documentTypes: DocumentType[];
+  totalDocumentTypes: number;
+  currentPage: number;
+  totalPages: number;
+  from: number;
+  to: number;
+  onPageChange: (page: number) => void;
+  onEditDocumentType: (documentType: DocumentType) => void;
+  onDeleteDocumentType: (documentTypeId: string | number) => void;
+};
+
+export function DocumentTypesTable({
+  documentTypes,
+  totalDocumentTypes,
+  currentPage,
+  totalPages,
+  from,
+  to,
+  onPageChange,
+  onEditDocumentType,
+  onDeleteDocumentType,
+}: DocumentTypesTableProps) {
+  const t = useTranslations("admin");
+
+  return (
+    <section className="overflow-hidden rounded-xl border border-border bg-card shadow-[0px_4px_20px_rgba(0,77,64,0.05)]">
+      <div className="border-b border-border bg-muted px-5 py-4">
+        <h2 className="text-xl font-bold text-primary">
+          {t("documentTypes.managementTitle")}
+        </h2>
+      </div>
+
+      {documentTypes.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] border-collapse text-start">
+            <thead className="border-b border-border bg-card text-sm text-muted-foreground">
+              <tr>
+                <th className="px-5 py-4 text-start font-semibold">
+                  {t("documentTypes.table.name")}
+                </th>
+                <th className="px-5 py-4 text-start font-semibold">
+                  {t("documentTypes.table.displayNameEn")}
+                </th>
+                <th className="px-5 py-4 text-start font-semibold">
+                  {t("documentTypes.table.displayNameAr")}
+                </th>
+                <th className="px-5 py-4 text-center font-semibold">
+                  {t("documentTypes.table.required")}
+                </th>
+                <th className="px-5 py-4 text-center font-semibold">
+                  {t("documentTypes.table.actions")}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-border">
+              {documentTypes.map((documentType) => (
+                <tr
+                  key={documentType.id}
+                  className="group transition hover:bg-muted/60"
+                >
+                  <td className="px-5 py-4">
+                    <p className="font-bold text-foreground">
+                      {documentType.name}
+                    </p>
+                    {documentType.description && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {documentType.description}
+                      </p>
+                    )}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <p className="text-foreground">
+                      {documentType.display_name_en}
+                    </p>
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <p className="text-foreground">
+                      {documentType.display_name_ar}
+                    </p>
+                  </td>
+
+                  <td className="px-5 py-4 text-center">
+                    <span
+                      className={cn(
+                        "inline-flex rounded-full px-3 py-1 text-xs font-bold",
+                        documentType.is_required
+                          ? "bg-primary/10 text-primary"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {documentType.is_required
+                        ? t("documentTypes.yes")
+                        : t("documentTypes.no")}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-4 text-center">
+                    <div className="flex items-center justify-center gap-1 opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => onEditDocumentType(documentType)}
+                        title={t("documentTypes.edit")}
+                        className="rounded-lg p-2 text-primary transition hover:bg-primary/10"
+                      >
+                        <Edit className="size-5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onDeleteDocumentType(documentType.id)}
+                        title={t("documentTypes.delete")}
+                        className="rounded-lg p-2 text-destructive transition hover:bg-destructive/10"
+                      >
+                        <Trash2 className="size-5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="p-10 text-center">
+          <h2 className="text-xl font-bold text-primary">
+            {t("documentTypes.noResultsTitle")}
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            {t("documentTypes.noResultsDescription")}
+          </p>
+        </div>
+      )}
+
+      <div className="flex flex-col justify-between gap-4 border-t border-border bg-muted px-5 py-4 sm:flex-row sm:items-center">
+        <span className="text-sm text-muted-foreground">
+          {t("documentTypes.paginationInfo", {
+            from,
+            to,
+            total: totalDocumentTypes,
+          })}
+        </span>
+
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={currentPage === 1}
+              onClick={() => onPageChange(currentPage - 1)}
+              className="rounded-lg px-3 py-2 text-sm font-bold text-muted-foreground transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {t("documentTypes.previous")}
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, index) => {
+              const page = index + 1;
+
+              return (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => onPageChange(page)}
+                  className={cn(
+                    "rounded-lg px-3 py-2 text-sm font-bold text-muted-foreground transition hover:bg-card",
+                    page === currentPage &&
+                      "bg-primary text-primary-foreground hover:bg-primary"
+                  )}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              disabled={currentPage === totalPages}
+              onClick={() => onPageChange(currentPage + 1)}
+              className="rounded-lg px-3 py-2 text-sm font-bold text-muted-foreground transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {t("documentTypes.next")}
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
