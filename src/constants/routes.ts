@@ -38,6 +38,8 @@ export const routes = {
   adminApplicationTypes: "/admin/application-types",
   adminAdmissionCycles: "/admin/admission-cycles",
   adminReports: "/admin/reports",
+  adminHeadReports: "/admin/head-reports",
+  adminDeanReports: "/admin/dean-reports",
   adminSettings: "/admin/settings",
   adminLegalPolicies: "/admin/legal-policies",
   adminSecondarySchoolRecords: "/admin/secondary-school-records",

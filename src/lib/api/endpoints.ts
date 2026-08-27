@@ -85,9 +85,24 @@ export const ENDPOINTS = {
     readAllNotifications: "/department_head/notifications/read-all",
     deleteNotification: (id: string | number) =>
       `/department_head/notifications/${id}`,
+    reports: {
+      byStatus: "/department_head/reports/applications/by-status",
+      throughput: "/department_head/reports/applications/throughput",
+      timeToDecision: "/department_head/reports/applications/time-to-decision",
+      acceptanceRate: "/department_head/reports/applications/acceptance-rate",
+    },
   },
   admissionDean: {
     dashboard: "/admission_dean/dashboard",
+    reports: {
+      byStatus: "/admission_dean/reports/applications/by-status",
+      byFaculty: "/admission_dean/reports/applications/by-faculty",
+      byDepartment: "/admission_dean/reports/applications/by-department",
+      byProgram: "/admission_dean/reports/applications/by-program",
+      timeInStatus: "/admission_dean/reports/applications/time-in-status",
+      uploadVolume: "/admission_dean/reports/documents/upload-volume",
+      acceptanceRate: "/admission_dean/reports/applications/acceptance-rate",
+    },
   },
   admin: {
     applications: "/admin/applications",

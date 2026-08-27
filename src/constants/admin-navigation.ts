@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Bell,
+  ChartBar,
   Building2,
   Boxes,
   FileCheck2,
@@ -38,6 +39,18 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     href: routes.adminReports,
     icon: BarChart3,
     allowedRoles: [userRoles.admin, userRoles.admissionDean],
+  },
+  {
+    labelKey: "headReports",
+    href: routes.adminHeadReports,
+    icon: ChartBar,
+    allowedRoles: [userRoles.departmentHead],
+  },
+  {
+    labelKey: "deanReports",
+    href: routes.adminDeanReports,
+    icon: ChartBar,
+    allowedRoles: [userRoles.admissionDean],
   },
   {
     labelKey: "applications",
