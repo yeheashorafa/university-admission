@@ -12,7 +12,7 @@ import { PaymentInvoiceCard } from "./components/payment-invoice-card";
 
 import { useStudentApplicationsQuery } from "@/hooks/queries/use-application-queries";
 import type { WorkflowApplication } from "@/features/admin/applications/data/applications-workflow.data";
-import { AlertTriangle } from "lucide-react";
+import { BackendPendingBanner } from "@/components/common/backend-pending-banner";
 
 type StudentPaymentPageProps = {
   applicationId?: string;
@@ -48,12 +48,7 @@ export function StudentPaymentPage({ applicationId }: StudentPaymentPageProps) {
       <PortalNavbar activePath={routes.payment} />
 
       <main className="app-container flex flex-1 flex-col gap-8 py-10">
-        <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-          <span>
-            <strong>PENDING_BACKEND_API:</strong> نظام الدفع الإلكتروني بانتظار إتاحة نقاط النهاية (Endpoints) الخاصة بالدفع والفواتير من الخادم. تم تعطيل عمليات الدفع حالياً.
-          </span>
-        </div>
+        <BackendPendingBanner description="نظام الدفع الإلكتروني بانتظار إتاحة نقاط النهاية (Endpoints) الخاصة بالدفع والفواتير من الخادم. تم تعطيل عمليات الدفع حالياً." />
 
         <PaymentHeader />
 

@@ -3,12 +3,12 @@
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { FileWarning } from "lucide-react";
+import { BackendPendingBanner } from "@/components/common/backend-pending-banner";
 
 export function AdminLegalPoliciesPage() {
   return (
     <AdminLayout activePath={routes.adminLegalPolicies}>
       <div className="flex flex-col gap-8">
-        {/* PENDING_BACKEND_API — full page */}
         <div className="flex flex-col items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 px-6 py-20 text-center">
           <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
             <FileWarning className="size-8" />
@@ -28,6 +28,8 @@ export function AdminLegalPoliciesPage() {
             PENDING_BACKEND_API — /admin/legal-policies
           </p>
         </div>
+
+        <BackendPendingBanner description="إدارة السياسات القانونية (إضافة، تعديل، حذف، نشر) بانتظار نقاط النهاية من الخادم." />
       </div>
     </AdminLayout>
   );

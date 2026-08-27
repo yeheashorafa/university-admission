@@ -4,7 +4,6 @@
 import { useLocale } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
-import { AlertTriangle } from "lucide-react";
 
 import { useStudentApplicationsQuery } from "@/hooks/queries/use-application-queries";
 import type { SocialResearchFormValues } from "./data/social-research.data";
@@ -16,6 +15,7 @@ import type { WorkflowApplication } from "@/features/admin/applications/data/app
 import { StudentWorkflowTimeline } from "@/features/status/components/student-workflow-timeline";
 import { PortalFooter } from "@/components/layouts/portal-footer";
 import { PortalNavbar } from "@/components/layouts/portal-navbar";
+import { BackendPendingBanner } from "@/components/common/backend-pending-banner";
 import { routes } from "@/constants/routes";
 
 type SocialResearchPageProps = {
@@ -76,12 +76,7 @@ export function SocialResearchPage({ applicationId }: SocialResearchPageProps) {
       <PortalNavbar activePath={routes.socialResearch} />
 
       <div className="app-container space-y-6 py-8 md:py-12">
-        <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-          <span>
-            <strong>PENDING_BACKEND_API:</strong> خدمة تقديم البحث الاجتماعي غير مفعّلة حالياً على الخادم. النماذج والأزرار معطلة لحين تفعيل الخدمة.
-          </span>
-        </div>
+        <BackendPendingBanner description="خدمة تقديم البحث الاجتماعي غير مفعّلة حالياً على الخادم. النماذج والأزرار معطلة لحين تفعيل الخدمة." />
 
         <SocialResearchHeader />
 

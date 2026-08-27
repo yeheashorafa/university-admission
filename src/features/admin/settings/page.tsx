@@ -8,6 +8,7 @@ import { NotificationSettingsCard } from "./components/notification-settings-car
 import { SecuritySettingsCard } from "./components/security-settings-card";
 import { SettingsSaveBar } from "./components/settings-save-bar";
 import { AdminFunctionalChecklistCard } from "./components/admin-functional-checklist-card";
+import { BackendPendingBanner } from "@/components/common/backend-pending-banner";
 
 export function AdminSettingsPage() {
   return (
@@ -15,10 +16,7 @@ export function AdminSettingsPage() {
       <div className="flex flex-col gap-8">
         <AdminSettingsHeader />
 
-        <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs font-bold text-amber-800 dark:text-amber-300">
-          <span>PENDING_BACKEND_API:</span>
-          <span>إعدادات النظام العامة واجهة تجريبية (لا توجد endpoints لحفظ الإعدادات في التوثيق النهائي للباك إند).</span>
-        </div>
+        <BackendPendingBanner description="إعدادات النظام العامة واجهة تجريبية (لا توجد endpoints لحفظ الإعدادات في التوثيق النهائي للباك إند)." />
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
           <section className="flex flex-col gap-6 xl:col-span-8">
