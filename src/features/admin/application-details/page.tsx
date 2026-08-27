@@ -21,8 +21,11 @@ import {
   type WorkflowApplication,
 } from "../applications/data/applications-workflow.data";
 import { ApplicationWorkflowActions } from "../applications/components/application-workflow-actions";
+import { ApplicationEmployeeActions } from "../applications/components/application-employee-actions";
+import { ApplicationAdminActions } from "../applications/components/application-admin-actions";
 import { userRoles } from "@/constants/roles";
 import { useAdminApplicationDetailsQuery } from "@/hooks/queries/use-admin-queries";
+import type { EmployeeApplication } from "@/services/employee.service";
 
 type AdminApplicationDetailsPageProps = {
   applicationId: string;
@@ -38,6 +41,11 @@ export function AdminApplicationDetailsPage({
       : routes.adminApplications;
 
   const { data: apiApp, isLoading, isError } = useAdminApplicationDetailsQuery(applicationId);
+
+  const employeeComments =
+    user?.role === userRoles.admissionEmployee && apiApp
+      ? ((apiApp as EmployeeApplication).comments ?? [])
+      : [];
 
   const initialApplication = useMemo(() => {
     if (!apiApp) return null;
@@ -86,6 +94,21 @@ export function AdminApplicationDetailsPage({
               status={initialApplication.currentStatus}
               role={user?.role}
             />
+
+            {user?.role === userRoles.admissionEmployee && (
+              <ApplicationEmployeeActions
+                applicationId={applicationId}
+                status={initialApplication.currentStatus}
+                comments={employeeComments}
+              />
+            )}
+
+            {user?.role === userRoles.admin && (
+              <ApplicationAdminActions
+                applicationId={applicationId}
+                status={initialApplication.currentStatus}
+              />
+            )}
           </aside>
         </div>
       </div>

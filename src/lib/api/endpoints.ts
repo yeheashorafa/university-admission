@@ -58,6 +58,10 @@ export const ENDPOINTS = {
       `/admission_employee/applications/${id}/comments`,
     verifyDocument: (documentId: string | number) =>
       `/admission_employee/documents/${documentId}/verify`,
+    updateComment: (id: string | number, commentId: string | number) =>
+      `/admission_employee/applications/${id}/comments/${commentId}`,
+    deleteComment: (id: string | number, commentId: string | number) =>
+      `/admission_employee/applications/${id}/comments/${commentId}`,
     notifications: "/admission_employee/notifications",
     readNotification: (id: string | number) =>
       `/admission_employee/notifications/${id}/read`,

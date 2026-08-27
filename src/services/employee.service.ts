@@ -2,6 +2,13 @@ import { apiClient, extractArray, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { BackendApplicationStatus } from "@/lib/adapters/status-adapter";
 
+export type EmployeeComment = {
+  id: string | number;
+  comment: string;
+  author?: string;
+  created_at?: string;
+};
+
 export type EmployeeApplication = {
   id: string | number;
   applicationNo: string;
@@ -13,6 +20,7 @@ export type EmployeeApplication = {
   submittedAt: string;
   aiVerificationStatus?: "pending" | "verified" | "failed";
   commentsCount?: number;
+  comments?: EmployeeComment[];
 };
 
 export async function getEmployeeApplications(params?: {
@@ -55,10 +63,12 @@ export async function requestApplicationRevision(
 }
 
 export async function reForwardApplication(
-  id: string | number
+  id: string | number,
+  payload?: { forward_to?: string; note?: string }
 ): Promise<EmployeeApplication> {
   const response = await apiClient.post<EmployeeApplication | { data: EmployeeApplication }>(
-    ENDPOINTS.admissionEmployee.reForward(id)
+    ENDPOINTS.admissionEmployee.reForward(id),
+    payload
   );
   return extractResource<EmployeeApplication>(response.data);
 }
@@ -94,6 +104,27 @@ export async function addEmployeeComment(
     { comment }
   );
   return response.data;
+}
+
+export async function updateEmployeeComment(
+  applicationId: string | number,
+  commentId: string | number,
+  comment: string
+): Promise<{ id: string | number; comment: string; createdAt: string }> {
+  const response = await apiClient.put<{ id: string | number; comment: string; createdAt: string }>(
+    ENDPOINTS.admissionEmployee.updateComment(applicationId, commentId),
+    { comment }
+  );
+  return response.data;
+}
+
+export async function deleteEmployeeComment(
+  applicationId: string | number,
+  commentId: string | number
+): Promise<void> {
+  await apiClient.delete(
+    ENDPOINTS.admissionEmployee.deleteComment(applicationId, commentId)
+  );
 }
 
 export async function verifyDocumentByEmployee(

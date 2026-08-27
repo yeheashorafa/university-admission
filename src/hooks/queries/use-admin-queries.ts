@@ -5,6 +5,10 @@ import {
   getAdminApplications,
   getAdminMasterCatalogPrograms,
   getAdminAdmissionCycles,
+  createAdminAdmissionCycle,
+  updateAdminAdmissionCycle,
+  deleteAdminAdmissionCycle,
+  type AdminAdmissionCyclePayload,
   type AdminApplicationStatus,
 } from "@/services/admin.service";
 import {
@@ -13,7 +17,11 @@ import {
   forwardApplicationToDepartment,
   requestApplicationRevision,
   rejectApplicationByEmployee,
+  reForwardApplication,
   verifyAiCheck,
+  addEmployeeComment,
+  updateEmployeeComment,
+  deleteEmployeeComment,
   verifyDocumentByEmployee,
 } from "@/services/employee.service";
 import {
@@ -179,12 +187,59 @@ export function useEmployeeWorkflowMutations() {
     onSuccess: () => invalidateAllWorkflowQueries(),
   });
 
+  const reForwardMutation = useMutation({
+    mutationFn: ({
+      id,
+      forwardTo,
+      note,
+    }: {
+      id: string | number;
+      forwardTo?: string;
+      note?: string;
+    }) => reForwardApplication(id, { forward_to: forwardTo, note }),
+    onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: ({ id, comment }: { id: string | number; comment: string }) =>
+      addEmployeeComment(id, comment),
+    onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
+  });
+
+  const updateCommentMutation = useMutation({
+    mutationFn: ({
+      id,
+      commentId,
+      comment,
+    }: {
+      id: string | number;
+      commentId: string | number;
+      comment: string;
+    }) => updateEmployeeComment(id, commentId, comment),
+    onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: ({
+      id,
+      commentId,
+    }: {
+      id: string | number;
+      commentId: string | number;
+    }) => deleteEmployeeComment(id, commentId),
+    onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
+  });
+
   return {
     forwardMutation,
     requestRevisionMutation,
     rejectMutation,
     verifyAiMutation,
     verifyDocumentMutation,
+    reForwardMutation,
+    addCommentMutation,
+    updateCommentMutation,
+    deleteCommentMutation,
   };
 }
 
@@ -248,5 +303,42 @@ export function useAdminAdmissionCyclesQuery() {
     queryFn: getAdminAdmissionCycles,
     enabled: isEnabled,
     retry: false,
+  });
+}
+
+export function useCreateAdmissionCycleMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: AdminAdmissionCyclePayload) =>
+      createAdminAdmissionCycle(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "admissionCycles"] });
+    },
+  });
+}
+
+export function useUpdateAdmissionCycleMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string | number;
+      payload: Partial<AdminAdmissionCyclePayload>;
+    }) => updateAdminAdmissionCycle(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "admissionCycles"] });
+    },
+  });
+}
+
+export function useDeleteAdmissionCycleMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string | number) => deleteAdminAdmissionCycle(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "admissionCycles"] });
+    },
   });
 }
