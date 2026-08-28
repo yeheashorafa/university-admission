@@ -128,7 +128,7 @@ export function RegisterForm() {
 
       toast.success(t("accountCreatedSuccessfully"));
 
-      if (!isUserVerified(user)) {
+      if (isUserVerified(user) === false) {
         router.replace(withLocale(locale, routes.verifyOtp));
         return;
       }

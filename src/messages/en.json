@@ -2723,7 +2723,25 @@
     "invalidFileFormatOrSize": "Please select a valid Excel file with format .xlsx or .xls and size not exceeding 50MB.",
     "masterData": {
       "title": "Master Data",
-      "description": "Manage foundational catalog data used across the admission system."
+      "description": "Manage foundational catalog data used across the admission system.",
+      "branches": "Branches"
+    },
+    "branches": {
+      "managementTitle": "Branches Management",
+      "managementDescription": "Create and manage branches and their statuses.",
+      "add": "Add Branch",
+      "edit": "Edit Branch",
+      "delete": "Delete Branch",
+      "deleteConfirm": "Are you sure you want to delete this branch?",
+      "deleteSuccess": "Branch deleted successfully",
+      "deleteFailed": "Failed to delete branch",
+      "nameAr": "Arabic Name",
+      "nameEn": "English Name",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "searchPlaceholder": "Search branches...",
+      "noResults": "No branches found"
     },
     "faculties": {
       "academicStructure": "Academic Structure",

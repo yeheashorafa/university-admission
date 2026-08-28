@@ -1,7 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { getAdminBranches } from "@/services/admin-branches.service";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getAdminBranches, createAdminBranch, updateAdminBranch, deleteAdminBranch } from "@/services/admin-branches.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { isAdminRole } from "@/constants/roles";
 
@@ -18,5 +18,36 @@ export function useAdminBranchesQuery() {
     queryFn: getAdminBranches,
     enabled: isEnabled,
     retry: false,
+  });
+}
+
+export function useCreateAdminBranchMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createAdminBranch,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "branches"] });
+    },
+  });
+}
+
+export function useUpdateAdminBranchMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ branchId, payload }: { branchId: string | number; payload: Parameters<typeof updateAdminBranch>[1] }) =>
+      updateAdminBranch(branchId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "branches"] });
+    },
+  });
+}
+
+export function useDeleteAdminBranchMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAdminBranch,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "branches"] });
+    },
   });
 }

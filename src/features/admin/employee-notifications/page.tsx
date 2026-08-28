@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 import { useTranslations } from "next-intl";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
-import { useCurrentAuth } from "@/hooks/use-current-auth";
 import {
   useEmployeeNotificationsQuery,
   useMarkEmployeeNotificationAsReadMutation,
@@ -21,7 +20,6 @@ import type { AdminNotification, NotificationType } from "@/features/admin/notif
 
 export function EmployeeNotificationsPage() {
   const t = useTranslations("admin");
-  const { user } = useCurrentAuth();
 
   const query = useEmployeeNotificationsQuery();
 

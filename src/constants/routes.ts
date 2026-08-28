@@ -37,6 +37,7 @@ export const routes = {
   adminDocumentTypes: "/admin/document-types",
   adminApplicationTypes: "/admin/application-types",
   adminAdmissionCycles: "/admin/admission-cycles",
+  adminBranches: "/admin/branches",
   adminReports: "/admin/reports",
   adminHeadReports: "/admin/head-reports",
   adminDeanReports: "/admin/dean-reports",

@@ -130,6 +130,12 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     icon: FileSpreadsheet,
     allowedRoles: [userRoles.admin],
   },
+  {
+    labelKey: "masterData.branches",
+    href: routes.adminBranches,
+    icon: Building2,
+    allowedRoles: [userRoles.admin],
+  },
 ];
 
 export function getAdminNavigationItems(role?: string | null) {

@@ -537,7 +537,7 @@ async function runAudit() {
       if (typeof appsRes.status === "number") {
         const is200 = appsRes.status === 200;
         const appsList = extractArray(appsRes.data);
-        studentInitialAppsCount = appsList.length;
+        // const studentInitialAppsCount = studentAppsResponse.data.length;
         const hasArray = Array.isArray(appsList);
         const sampleApp = appsList[0] || {};
         const hasId = appsList.length === 0 || sampleApp.id !== undefined;

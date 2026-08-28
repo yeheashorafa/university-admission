@@ -55,7 +55,7 @@ export function LoginForm() {
 
       toast.success(t("loggedInSuccessfully"));
 
-      if (!isUserVerified(user)) {
+      if (isUserVerified(user) === false) {
         router.replace(withLocale(locale, routes.verifyOtp));
         return;
       }

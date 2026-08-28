@@ -2723,7 +2723,25 @@
     "invalidFileFormatOrSize": "يرجى اختيار ملف Excel صحيح بصيغة .xlsx أو .xls وبحجم لا يتجاوز 50MB.",
     "masterData": {
       "title": "البيانات الرئيسية",
-      "description": "إدارة البيانات الأساسية المستخدمة في نظام القبول."
+      "description": "إدارة البيانات الأساسية المستخدمة في نظام القبول.",
+      "branches": "إدارة الفروع"
+    },
+    "branches": {
+      "managementTitle": "إدارة الفروع",
+      "managementDescription": "إنشاء وإدارة الفروع وحالتها.",
+      "add": "إضافة فرع",
+      "edit": "تعديل فرع",
+      "delete": "حذف فرع",
+      "deleteConfirm": "هل أنت متأكد من حذف هذا الفرع؟",
+      "deleteSuccess": "تم حذف الفرع بنجاح",
+      "deleteFailed": "فشل حذف الفرع",
+      "nameAr": "الاسم بالعربية",
+      "nameEn": "الاسم بالإنجليزية",
+      "status": "الحالة",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "searchPlaceholder": "ابحث في الفروع...",
+      "noResults": "لم يتم العثور على فروع"
     },
     "faculties": {
       "academicStructure": "الهيكل الأكاديمي",
