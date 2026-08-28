@@ -189,7 +189,12 @@ export async function resetPassword(payload: {
   password: string;
   passwordConfirmation: string;
 }) {
-  const response = await apiClient.post("/auth/reset-password", payload);
+  const response = await apiClient.post("/auth/reset-password", {
+    token: payload.token,
+    email: payload.email,
+    password: payload.password,
+    password_confirmation: payload.passwordConfirmation,
+  });
   return response.data;
 }
 
@@ -207,4 +212,15 @@ export async function sendOtp(payload: { channel: "email" | "sms" }): Promise<{
 
 export async function verifyOtp(payload: { code: string }): Promise<void> {
   await apiClient.post(ENDPOINTS.auth.verifyOtp, payload);
+}
+
+export async function resendVerificationEmail(): Promise<void> {
+  await apiClient.post(ENDPOINTS.auth.emailVerificationNotification);
+}
+
+export async function verifyEmailLink(
+  id: string | number,
+  hash: string
+): Promise<void> {
+  await apiClient.get(ENDPOINTS.auth.emailVerify(id, hash));
 }
