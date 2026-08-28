@@ -9,12 +9,29 @@ import {
   FileWarning,
   FolderOpen,
   Boxes,
+  Users,
+  GraduationCap,
+  Network,
+  Clock,
+  Undo2,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type DeanKpiCard = {
-  id: "total" | "submitted" | "review" | "accepted" | "rejected" | "programs" | "faculties";
+  id:
+    | "total"
+    | "submitted"
+    | "pending"
+    | "review"
+    | "returned"
+    | "accepted"
+    | "rejected"
+    | "programs"
+    | "faculties"
+    | "departments"
+    | "students"
+    | "users";
   value: string;
   variant?: "default" | "warning" | "success" | "danger";
 };
@@ -26,11 +43,16 @@ type DeanKpiCardProps = {
 const kpiIconMap: Record<DeanKpiCard["id"], LucideIcon> = {
   total: FolderOpen,
   submitted: ClipboardList,
+  pending: Clock,
   review: FileWarning,
+  returned: Undo2,
   accepted: CheckCircle2,
   rejected: CircleX,
   programs: Boxes,
   faculties: Building2,
+  departments: Network,
+  students: GraduationCap,
+  users: Users,
 };
 
 const variantClasses = {

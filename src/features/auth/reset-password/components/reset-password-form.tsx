@@ -13,16 +13,21 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
 } from "@/features/auth/schemas/reset-password.schema";
 import { routes, withLocale } from "@/constants/routes";
+import { resetPassword } from "@/services/auth.service";
+import { getApiErrorMessage } from "@/lib/api/api-error";
 
 export function ResetPasswordForm() {
   const locale = useLocale();
   const t = useTranslations("auth");
+  const searchParams = useSearchParams();
 
   const [isDone, setIsDone] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,9 +46,30 @@ export function ResetPasswordForm() {
     },
   });
 
-  function onSubmit(values: ResetPasswordFormValues) {
-    void values;
-    setIsDone(true);
+  async function onSubmit(values: ResetPasswordFormValues) {
+    const token = searchParams.get("token") ?? "";
+    const email = searchParams.get("email") ?? "";
+
+    if (!token || !email) {
+      toast.error(
+        locale === "ar"
+          ? "رابط إعادة التعيين غير صالح"
+          : "Invalid password reset link"
+      );
+      return;
+    }
+
+    try {
+      await resetPassword({
+        token,
+        email,
+        password: values.password,
+        passwordConfirmation: values.passwordConfirmation,
+      });
+      setIsDone(true);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    }
   }
 
   return (

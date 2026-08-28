@@ -188,15 +188,8 @@ export function useEmployeeWorkflowMutations() {
   });
 
   const reForwardMutation = useMutation({
-    mutationFn: ({
-      id,
-      forwardTo,
-      note,
-    }: {
-      id: string | number;
-      forwardTo?: string;
-      note?: string;
-    }) => reForwardApplication(id, { forward_to: forwardTo, note }),
+    mutationFn: ({ id }: { id: string | number }) =>
+      reForwardApplication(id),
     onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
   });
 

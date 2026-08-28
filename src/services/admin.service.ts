@@ -48,12 +48,10 @@ export async function assignReviewerToApplication(
 }
 
 export async function cancelApplicationByAdmin(
-  applicationId: string | number,
-  reason?: string
+  applicationId: string | number
 ): Promise<AdminApplication> {
   const response = await apiClient.post<AdminApplication | { data: AdminApplication }>(
-    ENDPOINTS.admin.cancelApplication(applicationId),
-    { reason }
+    ENDPOINTS.admin.cancelApplication(applicationId)
   );
   return extractResource<AdminApplication>(response.data);
 }
@@ -250,13 +248,6 @@ export type AdminApplicationTypePayload = {
   requires_department_head_approval?: boolean;
   is_active?: boolean;
 };
-
-export async function createAdminApplicationType(
-  payload: AdminApplicationTypePayload
-): Promise<Record<string, unknown>> {
-  const response = await apiClient.post(ENDPOINTS.admin.applicationTypes, payload);
-  return extractResource<Record<string, unknown>>(response.data);
-}
 
 export async function updateAdminApplicationType(
   applicationTypeId: string | number,

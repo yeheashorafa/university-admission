@@ -765,12 +765,7 @@ export function ApplicationWizard() {
           }
         }
 
-        const checklistPayload = state.documents.documents.map((d) => ({
-          document_type_id: d.documentTypeId,
-          pledge: !!d.pledge,
-        }));
-
-        await submitStudentApplication(activeId, checklistPayload);
+        await submitStudentApplication(activeId);
 
         // Safety verification: verify refreshed detail and list
         let refreshedList: StudentApplicationDetail[] = [];

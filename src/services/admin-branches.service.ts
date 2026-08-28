@@ -1,4 +1,5 @@
 import { apiClient, extractArray, extractResource } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 
 export type AdminBranch = {
   id: string | number;
@@ -14,15 +15,18 @@ export type AdminBranchPayload = {
   is_active?: boolean;
 };
 
-const BASE = "/admin/branches";
-
 export async function getAdminBranches(): Promise<AdminBranch[]> {
-  const response = await apiClient.get<AdminBranch[] | { data: AdminBranch[] }>(BASE);
+  const response = await apiClient.get<AdminBranch[] | { data: AdminBranch[] }>(
+    ENDPOINTS.admin.branches.index
+  );
   return extractArray<AdminBranch>(response.data);
 }
 
 export async function createAdminBranch(payload: AdminBranchPayload): Promise<AdminBranch> {
-  const response = await apiClient.post<AdminBranch | { data: AdminBranch }>(BASE, payload);
+  const response = await apiClient.post<AdminBranch | { data: AdminBranch }>(
+    ENDPOINTS.admin.branches.store,
+    payload
+  );
   return extractResource<AdminBranch>(response.data);
 }
 
@@ -31,12 +35,12 @@ export async function updateAdminBranch(
   payload: Partial<AdminBranchPayload>
 ): Promise<AdminBranch> {
   const response = await apiClient.put<AdminBranch | { data: AdminBranch }>(
-    `${BASE}/${branchId}`,
+    ENDPOINTS.admin.branches.update(branchId),
     payload
   );
   return extractResource<AdminBranch>(response.data);
 }
 
 export async function deleteAdminBranch(branchId: string | number): Promise<void> {
-  await apiClient.delete(`${BASE}/${branchId}`);
+  await apiClient.delete(ENDPOINTS.admin.branches.destroy(branchId));
 }

@@ -139,11 +139,9 @@ export async function updateApplicationPreferences(
 }
 
 export async function submitStudentApplication(
-  id: string | number,
-  checklist?: { document_type_id: string | number; pledge: boolean }[]
+  id: string | number
 ): Promise<StudentApplicationDetail> {
-  const payload = checklist ? { checklist } : undefined;
-  const response = await apiClient.post(ENDPOINTS.student.submitApplication(id), payload);
+  const response = await apiClient.post(ENDPOINTS.student.submitApplication(id));
   const raw = extractResource<BackendApplicationRaw>(response.data);
   return adaptBackendApplication(raw);
 }

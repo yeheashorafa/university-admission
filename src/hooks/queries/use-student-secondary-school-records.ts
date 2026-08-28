@@ -21,8 +21,13 @@ export function useUpdateSecondarySchoolRecordMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UpdateSecondarySchoolRecordPayload) =>
-      updateMySecondarySchoolRecord(payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string | number;
+      payload: UpdateSecondarySchoolRecordPayload;
+    }) => updateMySecondarySchoolRecord(id, payload),
     onSuccess: (record: SecondarySchoolRecord) => {
       queryClient.setQueryData(
         queryKeys.profile.secondarySchoolRecord,

@@ -205,6 +205,11 @@
     "verifying": "Verifying...",
     "didntReceiveCode": "Didn't receive the code?",
     "resendCode": "Resend Code",
+    "resendEmailVerification": "Resend verification email instead",
+    "verifyingEmail": "Verifying your email...",
+    "emailVerified": "Email verified",
+    "emailVerifiedDescription": "Your account email has been verified. You can now sign in.",
+    "emailVerifyFailed": "Email verification failed",
     "otpRequired": "Please enter the verification code.",
     "otpInvalid": "The verification code is invalid or has expired.",
     "otpTooManyAttempts": "Too many incorrect attempts. Please request a new code.",
@@ -1440,11 +1445,16 @@
     "deanKpi": {
       "total": "Total Applications",
       "submitted": "Submitted",
+      "pending": "Pending",
       "review": "Under Review",
+      "returned": "Returned for Revision",
       "accepted": "Accepted",
       "rejected": "Rejected",
       "programs": "Programs",
-      "faculties": "Faculties"
+      "faculties": "Faculties",
+      "departments": "Departments",
+      "students": "Students",
+      "users": "Users"
     },
     "deanDashboard": {
       "loading": "Loading dean dashboard...",

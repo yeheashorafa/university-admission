@@ -11,54 +11,59 @@ export function DeanDashboard() {
   const { data, isLoading, isError } = useDeanDashboardQuery();
 
   const cards = useMemo<DeanKpiCardType[]>(() => {
-    if (!data) return [];
+    if (!data?.statistics) return [];
 
+    const s = data.statistics;
     const result: DeanKpiCardType[] = [];
 
-    if (typeof data.totalApplications === "number") {
-      result.push({
-        id: "total",
-        value: data.totalApplications.toLocaleString(),
-      });
+    if (typeof s.total_applications === "number") {
+      result.push({ id: "total", value: s.total_applications.toLocaleString() });
     }
-    if (typeof data.submittedApplications === "number") {
-      result.push({
-        id: "submitted",
-        value: data.submittedApplications.toLocaleString(),
-      });
+    if (typeof s.pending_applications === "number") {
+      result.push({ id: "pending", value: s.pending_applications.toLocaleString() });
     }
-    if (typeof data.underReviewApplications === "number") {
+    if (typeof s.under_review_applications === "number") {
       result.push({
         id: "review",
-        value: data.underReviewApplications.toLocaleString(),
+        value: s.under_review_applications.toLocaleString(),
         variant: "warning",
       });
     }
-    if (typeof data.acceptedApplications === "number") {
+    if (typeof s.returned_for_revision_applications === "number") {
+      result.push({
+        id: "returned",
+        value: s.returned_for_revision_applications.toLocaleString(),
+        variant: "warning",
+      });
+    }
+    if (typeof s.accepted_applications === "number") {
       result.push({
         id: "accepted",
-        value: data.acceptedApplications.toLocaleString(),
+        value: s.accepted_applications.toLocaleString(),
         variant: "success",
       });
     }
-    if (typeof data.rejectedApplications === "number") {
+    if (typeof s.rejected_applications === "number") {
       result.push({
         id: "rejected",
-        value: data.rejectedApplications.toLocaleString(),
+        value: s.rejected_applications.toLocaleString(),
         variant: "danger",
       });
     }
-    if (typeof data.programsCount === "number") {
-      result.push({
-        id: "programs",
-        value: data.programsCount.toLocaleString(),
-      });
+    if (typeof s.total_programs === "number") {
+      result.push({ id: "programs", value: s.total_programs.toLocaleString() });
     }
-    if (typeof data.facultiesCount === "number") {
-      result.push({
-        id: "faculties",
-        value: data.facultiesCount.toLocaleString(),
-      });
+    if (typeof s.total_faculties === "number") {
+      result.push({ id: "faculties", value: s.total_faculties.toLocaleString() });
+    }
+    if (typeof s.total_departments === "number") {
+      result.push({ id: "departments", value: s.total_departments.toLocaleString() });
+    }
+    if (typeof s.total_students === "number") {
+      result.push({ id: "students", value: s.total_students.toLocaleString() });
+    }
+    if (typeof s.total_users === "number") {
+      result.push({ id: "users", value: s.total_users.toLocaleString() });
     }
 
     return result;

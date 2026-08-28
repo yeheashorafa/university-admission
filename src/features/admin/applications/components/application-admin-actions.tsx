@@ -32,7 +32,6 @@ export function ApplicationAdminActions({
   const [reviewerId, setReviewerId] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
 
-  const [cancelReason, setCancelReason] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
 
   const canCancel = status !== "cancelled" && status !== "completed";
@@ -91,13 +90,13 @@ export function ApplicationAdminActions({
     if (!res.isConfirmed) return;
 
     const reason = (res.value as string) ?? "";
+    void reason;
     setIsCancelling(true);
     try {
-      await cancelApplicationByAdmin(applicationId, reason);
+      await cancelApplicationByAdmin(applicationId);
       await queryClient.invalidateQueries({
         queryKey: queryKeys.admin.applicationDetails(applicationId),
       });
-      setCancelReason("");
       await Swal.fire({
         title: t("successTitle"),
         text: t("cancelApplicationSuccess"),
@@ -143,13 +142,6 @@ export function ApplicationAdminActions({
 
       <div className="mt-5 flex flex-col gap-3">
         <label className="text-sm font-bold text-foreground">{t("cancelApplication")}</label>
-        <textarea
-          value={cancelReason}
-          onChange={(event) => setCancelReason(event.target.value)}
-          placeholder={t("cancelReasonPlaceholder")}
-          disabled={isCancelling}
-          className="min-h-[90px] w-full rounded-[18px] border border-input bg-background p-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
-        />
         <button
           type="button"
           disabled={!canCancel || isCancelling}

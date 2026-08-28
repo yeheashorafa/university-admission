@@ -40,8 +40,6 @@ export function ApplicationEmployeeActions({
   const [newComment, setNewComment] = useState("");
 
   const [isReForwardOpen, setIsReForwardOpen] = useState(false);
-  const [reForwardTo, setReForwardTo] = useState("department_head");
-  const [reForwardNote, setReForwardNote] = useState("");
 
   useEffect(() => {
     setComments(initialComments ?? []);
@@ -74,13 +72,8 @@ export function ApplicationEmployeeActions({
 
   async function handleReForward() {
     try {
-      await reForwardMutation.mutateAsync({
-        id: applicationId,
-        forwardTo: reForwardTo,
-        note: reForwardNote,
-      });
+      await reForwardMutation.mutateAsync({ id: applicationId });
       setIsReForwardOpen(false);
-      setReForwardNote("");
       await Swal.fire({
         title: t("successTitle"),
         text: t("reForwardSuccess"),
@@ -103,7 +96,7 @@ export function ApplicationEmployeeActions({
         {
           id: created.id,
           comment: created.comment,
-          created_at: (created as { createdAt?: string }).createdAt,
+          created_at: created.created_at,
         },
       ]);
       setNewComment("");
@@ -273,26 +266,9 @@ export function ApplicationEmployeeActions({
               </button>
             </div>
 
-            <label className="mb-1 block text-sm font-bold text-foreground">
-              {t("forwardTo")}
-            </label>
-            <select
-              value={reForwardTo}
-              onChange={(event) => setReForwardTo(event.target.value)}
-              className="mb-4 h-11 w-full rounded-[14px] border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-            >
-              <option value="department_head">{t("forwardToDepartmentHead")}</option>
-            </select>
-
-            <label className="mb-1 block text-sm font-bold text-foreground">
-              {t("note")}
-            </label>
-            <textarea
-              value={reForwardNote}
-              onChange={(event) => setReForwardNote(event.target.value)}
-              placeholder={t("notePlaceholder")}
-              className="mb-5 min-h-[100px] w-full rounded-[18px] border border-input bg-background p-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-            />
+            <p className="mb-5 text-sm leading-6 text-muted-foreground">
+              {t("reForwardConfirmDescription")}
+            </p>
 
             <div className="flex gap-3">
               <button

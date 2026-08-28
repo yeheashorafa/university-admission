@@ -207,6 +207,11 @@
     "verifying": "جاري التحقق...",
     "didntReceiveCode": "لم تستلم الرمز؟",
     "resendCode": "إعادة إرسال الرمز",
+    "resendEmailVerification": "إعادة إرسال رسالة التحقق عبر البريد",
+    "verifyingEmail": "جاري التحقق من بريدك الإلكتروني...",
+    "emailVerified": "تم التحقق من البريد",
+    "emailVerifiedDescription": "تم التحقق من بريد حسابك. يمكنك تسجيل الدخول الآن.",
+    "emailVerifyFailed": "فشل التحقق من البريد الإلكتروني",
     "otpRequired": "يرجى إدخال رمز التحقق.",
     "otpInvalid": "رمز التحقق غير صحيح أو منتهٍ الصلاحية.",
     "otpTooManyAttempts": "محاولات خاطئة كثيرة. يرجى طلب رمز جديد.",
@@ -1440,11 +1445,16 @@
     "deanKpi": {
       "total": "إجمالي الطلبات",
       "submitted": "تم الإرسال",
+      "pending": "قيد الانتظار",
       "review": "قيد المراجعة",
+      "returned": "معادة للتعديل",
       "accepted": "المقبولون",
       "rejected": "المرفوضون",
       "programs": "البرامج",
-      "faculties": "الكليات"
+      "faculties": "الكليات",
+      "departments": "الأقسام",
+      "students": "الطلاب",
+      "users": "المستخدمون"
     },
     "deanDashboard": {
       "loading": "جاري تحميل لوحة عميد القبول...",

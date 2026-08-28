@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/constants/query-keys";
 import {
-  createAdminApplicationType,
   deleteAdminApplicationType,
   getAdminApplicationTypes,
   updateAdminApplicationType,
@@ -25,20 +24,6 @@ export function useAdminApplicationTypesQuery() {
     queryFn: getAdminApplicationTypes,
     enabled: isEnabled,
     retry: false,
-  });
-}
-
-export function useCreateAdminApplicationTypeMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: AdminApplicationTypePayload) =>
-      createAdminApplicationType(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.admin.applicationTypes(),
-      });
-    },
   });
 }
 

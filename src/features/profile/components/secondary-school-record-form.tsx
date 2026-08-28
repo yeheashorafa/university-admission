@@ -62,18 +62,23 @@ export function SecondarySchoolRecordForm() {
       return;
     }
 
+    if (!record?.id) {
+      const msg = isAr
+        ? "تعذر تحديد سجل الثانوية العامة"
+        : "Could not resolve the secondary school record id";
+      setFormError(msg);
+      toast.error(msg);
+      return;
+    }
+
     const payload: UpdateSecondarySchoolRecordPayload = {
       student_school_id: value("student_school_id").trim(),
       graduation_year: graduationYear,
       average,
-      branch: value("branch").trim() || null,
-      seat_number: value("seat_number").trim() || null,
-      total_marks: value("total_marks").trim() ? Number(value("total_marks")) : null,
-      certificate_type: value("certificate_type").trim() || null,
     };
 
     try {
-      await mutation.mutateAsync(payload);
+      await mutation.mutateAsync({ id: record.id, payload });
       toast.success(isAr ? "تم حفظ سجل الثانوية العامة بنجاح" : "Secondary school record saved");
     } catch (err) {
       const apiError = extractApiError(err);
@@ -134,31 +139,6 @@ export function SecondarySchoolRecordForm() {
           type="number"
           value={value("average")}
           onChange={(v) => updateField("average", v)}
-        />
-        <Field
-          id="branch"
-          label={`${t("branch")} (${isAr ? "اختياري" : "Optional"})`}
-          value={value("branch")}
-          onChange={(v) => updateField("branch", v)}
-        />
-        <Field
-          id="seat-number"
-          label={`${t("seatNumber")} (${isAr ? "اختياري" : "Optional"})`}
-          value={value("seat_number")}
-          onChange={(v) => updateField("seat_number", v)}
-        />
-        <Field
-          id="total-marks"
-          label={`${t("totalMarks")} (${isAr ? "اختياري" : "Optional"})`}
-          type="number"
-          value={value("total_marks")}
-          onChange={(v) => updateField("total_marks", v)}
-        />
-        <Field
-          id="certificate-type"
-          label={`${t("certificateType")} (${isAr ? "اختياري" : "Optional"})`}
-          value={value("certificate_type")}
-          onChange={(v) => updateField("certificate_type", v)}
         />
       </div>
 

@@ -7,6 +7,9 @@ export const ENDPOINTS = {
     logout: "/auth/logout",
     sendOtp: "/auth/send-otp",
     verifyOtp: "/auth/verify-otp",
+    emailVerificationNotification: "/auth/email/verification-notification",
+    emailVerify: (id: string | number, hash: string) =>
+      `/auth/email/verify/${id}/${hash}`,
   },
   public: {
     admissionCycles: "/public/admission-cycles",
@@ -33,6 +36,8 @@ export const ENDPOINTS = {
     profile: "/student/profile",
     socialInformation: "/student/social-information",
     secondarySchoolRecords: "/student/secondary_school_records",
+    secondarySchoolRecordsUpdate: (id: string | number) =>
+      `/student/secondary_school_records/${id}`,
     documents: "/student/documents",
     documentDetail: (id: string | number) => `/student/documents/${id}`,
     deleteDocument: (id: string | number) => `/student/documents/${id}`,
@@ -132,5 +137,12 @@ export const ENDPOINTS = {
     readNotification: (id: string | number) => `/admin/notifications/${id}/read`,
     readAllNotifications: "/admin/notifications/read-all",
     deleteNotification: (id: string | number) => `/admin/notifications/${id}`,
+    branches: {
+      index: "/admin/branches",
+      store: "/admin/branches",
+      show: (id: string | number) => `/admin/branches/${id}`,
+      update: (id: string | number) => `/admin/branches/${id}`,
+      destroy: (id: string | number) => `/admin/branches/${id}`,
+    },
   },
 } as const;

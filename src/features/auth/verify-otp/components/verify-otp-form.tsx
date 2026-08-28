@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { routes, withLocale } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { extractApiError, getApiErrorMessage } from "@/lib/api/api-error";
-import { sendOtp, verifyOtp } from "@/services/auth.service";
+import { sendOtp, verifyOtp, resendVerificationEmail } from "@/services/auth.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { getDashboardRouteByRole } from "@/constants/role-navigation";
 
@@ -156,6 +156,19 @@ export function VerifyOtpForm() {
     setOtp(Array(OTP_LENGTH).fill(""));
     inputRefs.current[0]?.focus();
     await requestOtp(channel);
+  }
+
+  async function handleResendEmail() {
+    try {
+      await resendVerificationEmail();
+      toast.success(
+        locale === "ar"
+          ? "تم إرسال رسالة التحقق إلى بريدك الإلكتروني"
+          : "Verification email sent to your inbox"
+      );
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    }
   }
 
   async function completeVerification() {
@@ -340,6 +353,14 @@ export function VerifyOtpForm() {
               </span>
             )}
           </div>
+
+          <button
+            type="button"
+            onClick={handleResendEmail}
+            className="mt-2 text-sm font-bold text-primary transition hover:underline"
+          >
+            {t("resendEmailVerification")}
+          </button>
         </div>
 
         <Link

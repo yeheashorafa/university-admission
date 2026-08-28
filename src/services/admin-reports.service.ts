@@ -12,6 +12,7 @@ export type ReportAcceptanceRate = {
   label: string;
   total: number;
   accepted: number;
+  rejected: number;
   rate: number;
 };
 

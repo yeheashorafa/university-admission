@@ -1,15 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Download, Plus } from "lucide-react";
+import { Download } from "lucide-react";
 
-type ApplicationTypesHeaderProps = {
-  onAddApplicationType: () => void;
-};
-
-export function ApplicationTypesHeader({
-  onAddApplicationType,
-}: ApplicationTypesHeaderProps) {
+export function ApplicationTypesHeader() {
   const t = useTranslations("admin");
 
   return (
@@ -35,15 +29,6 @@ export function ApplicationTypesHeader({
         >
           <Download className="size-5" />
           {t("applicationTypes.export")}
-        </button>
-
-        <button
-          type="button"
-          onClick={onAddApplicationType}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
-        >
-          <Plus className="size-5" />
-          {t("applicationTypes.add")}
         </button>
       </div>
     </header>

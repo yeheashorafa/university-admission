@@ -17,7 +17,6 @@ import type {
 import { ApplicationTypesFilterBar } from "./components/application-types-filter-bar";
 import {
   useAdminApplicationTypesQuery,
-  useCreateAdminApplicationTypeMutation,
   useUpdateAdminApplicationTypeMutation,
   useDeleteAdminApplicationTypeMutation,
 } from "@/hooks/queries";
@@ -45,12 +44,11 @@ export function ApplicationTypesPage() {
 
   const { data: apiApplicationTypes } = useAdminApplicationTypesQuery();
 
-  const createMutation = useCreateAdminApplicationTypeMutation();
   const updateMutation = useUpdateAdminApplicationTypeMutation();
   const deleteMutation = useDeleteAdminApplicationTypeMutation();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
   const [editingApplicationType, setEditingApplicationType] =
     useState<ApplicationType | null>(null);
 
@@ -132,12 +130,6 @@ export function ApplicationTypesPage() {
     pushParams({ page: nextPage });
   }
 
-  function handleOpenCreate() {
-    setModalMode("create");
-    setEditingApplicationType(null);
-    setModalOpen(true);
-  }
-
   function handleOpenEdit(applicationType: ApplicationType) {
     setModalMode("edit");
     setEditingApplicationType(applicationType);
@@ -156,10 +148,7 @@ export function ApplicationTypesPage() {
     };
 
     try {
-      if (modalMode === "create") {
-        await createMutation.mutateAsync(payload);
-        toast.success(t("applicationTypes.createdSuccessfully"));
-      } else if (values.id) {
+      if (values.id) {
         await updateMutation.mutateAsync({
           applicationTypeId: values.id,
           payload,
@@ -219,7 +208,7 @@ export function ApplicationTypesPage() {
   return (
     <AdminLayout activePath={routes.adminApplicationTypes}>
       <div className="flex flex-col gap-8">
-        <ApplicationTypesHeader onAddApplicationType={handleOpenCreate} />
+        <ApplicationTypesHeader />
 
         {applicationTypes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card py-20 text-center">

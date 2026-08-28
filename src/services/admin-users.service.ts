@@ -7,6 +7,7 @@ export type AdminUserPayload = {
   email?: string;
   phone?: string;
   password?: string;
+  is_active?: boolean;
   roles?: UserRole[];
 };
 
@@ -36,9 +37,11 @@ export async function updateAdminUser(
   userId: string | number,
   payload: Partial<AdminUserPayload>
 ): Promise<AuthUser> {
+  // The API update endpoint does not accept a password field; omit it to avoid 422s.
+  const { password: _password, ...rest } = payload;
   const response = await apiClient.put<AuthUser | { data: AuthUser }>(
     ENDPOINTS.admin.userDetail(userId),
-    payload
+    rest
   );
   return extractResource<AuthUser>(response.data);
 }

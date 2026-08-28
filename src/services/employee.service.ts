@@ -63,12 +63,10 @@ export async function requestApplicationRevision(
 }
 
 export async function reForwardApplication(
-  id: string | number,
-  payload?: { forward_to?: string; note?: string }
+  id: string | number
 ): Promise<EmployeeApplication> {
   const response = await apiClient.post<EmployeeApplication | { data: EmployeeApplication }>(
-    ENDPOINTS.admissionEmployee.reForward(id),
-    payload
+    ENDPOINTS.admissionEmployee.reForward(id)
   );
   return extractResource<EmployeeApplication>(response.data);
 }
@@ -98,8 +96,8 @@ export async function verifyAiCheck(
 export async function addEmployeeComment(
   id: string | number,
   comment: string
-): Promise<{ id: string | number; comment: string; createdAt: string }> {
-  const response = await apiClient.post<{ id: string | number; comment: string; createdAt: string }>(
+): Promise<{ id: string | number; comment: string; created_at: string }> {
+  const response = await apiClient.post<{ id: string | number; comment: string; created_at: string }>(
     ENDPOINTS.admissionEmployee.comments(id),
     { comment }
   );
@@ -110,10 +108,10 @@ export async function updateEmployeeComment(
   applicationId: string | number,
   commentId: string | number,
   comment: string
-): Promise<{ id: string | number; comment: string; createdAt: string }> {
-  const response = await apiClient.put<{ id: string | number; comment: string; createdAt: string }>(
+): Promise<{ id: string | number; comment: string; created_at: string }> {
+  const response = await apiClient.put<{ id: string | number; comment: string; created_at: string }>(
     ENDPOINTS.admissionEmployee.updateComment(applicationId, commentId),
-    { comment }
+    { body: comment }
   );
   return response.data;
 }
