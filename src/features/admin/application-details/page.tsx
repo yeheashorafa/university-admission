@@ -97,6 +97,7 @@ export function AdminApplicationDetailsPage({
 
             {user?.role === userRoles.admissionEmployee && (
               <ApplicationEmployeeActions
+                key={applicationId}
                 applicationId={applicationId}
                 status={initialApplication.currentStatus}
                 comments={employeeComments}

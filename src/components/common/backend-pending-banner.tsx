@@ -2,13 +2,11 @@ import { AlertTriangle, type LucideIcon } from "lucide-react";
 import { useLocale } from "next-intl";
 
 type BackendPendingBannerProps = {
-  title?: string;
   description?: string;
   icon?: LucideIcon;
 };
 
 export function BackendPendingBanner({
-  title,
   description,
   icon: Icon = AlertTriangle,
 }: BackendPendingBannerProps) {

@@ -90,7 +90,10 @@ export function VerifyOtpForm() {
   }
 
   useEffect(() => {
-    requestOtp("email");
+    const timer = setTimeout(() => {
+      void requestOtp("email");
+    }, 0);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

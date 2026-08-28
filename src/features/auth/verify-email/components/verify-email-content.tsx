@@ -20,25 +20,37 @@ export function VerifyEmailContent() {
   useEffect(() => {
     const id = searchParams.get("id") ?? searchParams.get("user");
     const hash = searchParams.get("hash") ?? "";
+    let cancelled = false;
+
+    const fail = (msg: string) => {
+      if (!cancelled) {
+        setStatus("error");
+        setMessage(msg);
+      }
+    };
 
     if (!id || !hash) {
-      setStatus("error");
-      setMessage(
-        locale === "ar"
-          ? "رابط التحقق غير صالح"
-          : "Invalid verification link"
+      Promise.resolve().then(() =>
+        fail(
+          locale === "ar"
+            ? "رابط التحقق غير صالح"
+            : "Invalid verification link"
+        )
       );
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
     verifyEmailLink(id, hash)
       .then(() => {
-        setStatus("success");
+        if (!cancelled) setStatus("success");
       })
-      .catch((err) => {
-        setStatus("error");
-        setMessage(getApiErrorMessage(err));
-      });
+      .catch((err) => fail(getApiErrorMessage(err)));
+
+    return () => {
+      cancelled = true;
+    };
   }, [searchParams, locale]);
 
   return (

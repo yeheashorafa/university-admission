@@ -38,7 +38,8 @@ export async function updateAdminUser(
   payload: Partial<AdminUserPayload>
 ): Promise<AuthUser> {
   // The API update endpoint does not accept a password field; omit it to avoid 422s.
-  const { password: _password, ...rest } = payload;
+  const rest: Partial<AdminUserPayload> = { ...payload };
+  delete rest.password;
   const response = await apiClient.put<AuthUser | { data: AuthUser }>(
     ENDPOINTS.admin.userDetail(userId),
     rest

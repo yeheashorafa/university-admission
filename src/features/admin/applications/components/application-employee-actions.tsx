@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2, MessageSquare, Send, Sparkles, Trash2, Pencil, X } from "lucide-react";
 import Swal from "sweetalert2";
@@ -40,10 +40,6 @@ export function ApplicationEmployeeActions({
   const [newComment, setNewComment] = useState("");
 
   const [isReForwardOpen, setIsReForwardOpen] = useState(false);
-
-  useEffect(() => {
-    setComments(initialComments ?? []);
-  }, [initialComments]);
 
   const canReForward = isEmployee && status !== "cancelled" && status !== "rejected";
 
