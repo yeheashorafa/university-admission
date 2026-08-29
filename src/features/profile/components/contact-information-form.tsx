@@ -8,6 +8,7 @@ import { FormSkeleton } from "@/components/common/loading/form-skeleton";
 import { useMyProfileQuery, useUpdateMyProfileMutation } from "@/hooks/queries/use-profile-queries";
 import { useSocialInformationQuery, useUpdateSocialInformationMutation } from "@/hooks/queries/use-social-information-queries";
 import { useAuthStore } from "@/stores/auth.store";
+import { extractApiError } from "@/lib/api/api-error";
 
 export function ContactInformationForm() {
   const t = useTranslations("profile");
@@ -16,7 +17,13 @@ export function ContactInformationForm() {
 
   const user = useAuthStore((state) => state.user);
   const { data: profile, isLoading: loadingProfile } = useMyProfileQuery();
-  const { data: social, isLoading: loadingSocial } = useSocialInformationQuery();
+  const { 
+    data: social, 
+    isLoading: loadingSocial, 
+    isError: isSocialError, 
+    error: socialError, 
+    refetch: refetchSocial 
+  } = useSocialInformationQuery();
 
   const updateProfileMutation = useUpdateMyProfileMutation();
   const updateSocialMutation = useUpdateSocialInformationMutation();
@@ -155,7 +162,7 @@ export function ContactInformationForm() {
     }
   }
 
-  if (loadingProfile && loadingSocial) {
+  if (loadingProfile || loadingSocial) {
     return <FormSkeleton fields={4} />;
   }
 
@@ -171,6 +178,26 @@ export function ContactInformationForm() {
           {t("contactInformationDescription")}
         </p>
       </div>
+
+      {isSocialError && (
+        <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-[18px] border border-destructive/30 bg-destructive/10 p-4">
+          <div className="flex items-center gap-3 text-sm font-semibold text-destructive">
+            <Lock className="size-5 shrink-0" />
+            <span>
+              {isAr
+                ? "تعذر تحميل بيانات التواصل الإضافية (مثل الهاتف البديل والمدينة)."
+                : "Unable to load additional social/contact information."}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => refetchSocial()}
+            className="inline-flex h-9 items-center justify-center rounded-lg bg-destructive px-4 text-xs font-bold text-destructive-foreground transition hover:bg-destructive/90"
+          >
+            {isAr ? "إعادة المحاولة" : "Retry"}
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {/* Email Address - Read Only */}

@@ -20,6 +20,16 @@ export function useMyProfileQuery() {
   const isUnverified = isUserVerified(user) === false;
   const isEnabled = Boolean(hasHydrated && token && user && !isUnverified);
 
+  if (process.env.NODE_ENV === "development") {
+    console.log("[useMyProfileQuery] enabled state:", {
+      hasHydrated,
+      hasToken: !!token,
+      hasUser: !!user,
+      isUnverified,
+      isEnabled,
+    });
+  }
+
   return useQuery({
     queryKey: queryKeys.profile.myProfile,
     queryFn: getMyProfile,

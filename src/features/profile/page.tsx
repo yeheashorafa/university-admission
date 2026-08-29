@@ -16,51 +16,130 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 
+import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
+import { extractApiError, isVerificationError } from "@/lib/api/api-error";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
 export function StudentProfilePage() {
   const user = useAuthStore((state) => state.user);
   const locale = useLocale();
+  const router = useRouter();
+  
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    status
+  } = useMyProfileQuery();
+
   const unverified = isUserVerified(user) === false;
+
+  let content;
+
+  if (unverified) {
+    content = (
+      <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-sm">
+        <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
+        <h2 className="mb-2 text-2xl font-semibold">
+          {locale === "ar" ? "حساب غير مفعل" : "Account Not Verified"}
+        </h2>
+        <p className="mb-6 max-w-md text-muted-foreground">
+          {locale === "ar"
+            ? "يرجى تفعيل حسابك قبل عرض بيانات الملف الشخصي."
+            : "Please verify your account before viewing your profile."}
+        </p>
+        <Link
+          href={`/${locale}/verify-otp?reason=verification`}
+          className="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary px-8 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+        >
+          {locale === "ar" ? "تفعيل الحساب" : "Verify Account"}
+        </Link>
+      </div>
+    );
+  } else if (isLoading || (isFetching && status === "pending")) {
+    content = (
+      <div className="flex min-h-[400px] flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  } else if (isError) {
+    const apiError = extractApiError(error);
+    const isVerifyError = isVerificationError(error);
+    const isAuthError = apiError.status === 401;
+
+    if (isVerifyError) {
+      content = (
+        <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-sm">
+          <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
+          <h2 className="mb-2 text-2xl font-semibold">
+            {locale === "ar" ? "حساب غير مفعل" : "Account Not Verified"}
+          </h2>
+          <p className="mb-6 max-w-md text-muted-foreground">
+            {locale === "ar"
+              ? "يرجى تفعيل حسابك قبل عرض بيانات الملف الشخصي."
+              : "Please verify your account before viewing your profile."}
+          </p>
+          <Link
+            href={`/${locale}/verify-otp?reason=verification`}
+            className="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary px-8 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+          >
+            {locale === "ar" ? "تفعيل الحساب" : "Verify Account"}
+          </Link>
+        </div>
+      );
+    } else if (isAuthError) {
+      // Normal session handling will catch this, but just in case we render a fallback
+      content = null; 
+    } else {
+      content = (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-destructive/30 bg-destructive/5 p-12 text-center shadow-sm">
+          <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
+          <h2 className="mb-2 text-2xl font-semibold">
+            {locale === "ar" ? "خطأ في التحميل" : "Loading Error"}
+          </h2>
+          <p className="mb-6 max-w-md text-muted-foreground">
+            {locale === "ar" ? "تعذر تحميل بيانات الملف الشخصي." : "Unable to load profile data."}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary px-8 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+          >
+            {locale === "ar" ? "إعادة المحاولة" : "Retry"}
+          </button>
+        </div>
+      );
+    }
+  } else {
+    content = (
+      <>
+        <ProfileHeader />
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+          <aside className="flex flex-col gap-6 xl:col-span-4">
+            <ProfileCompletionCard />
+            <AcademicSummaryCard />
+            <AccountSecurityCard />
+          </aside>
+
+          <section className="flex flex-col gap-6 xl:col-span-8">
+            <PersonalInformationForm />
+            <ContactInformationForm />
+            <SecondarySchoolRecordForm />
+          </section>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <PortalNavbar activePath={routes.profile} />
 
       <main className="app-container flex flex-1 flex-col gap-8 py-10">
-        <ProfileHeader />
-
-        {unverified ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-sm">
-            <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
-            <h2 className="mb-2 text-2xl font-semibold">
-              {locale === "ar" ? "حساب غير مفعل" : "Account Not Verified"}
-            </h2>
-            <p className="mb-6 max-w-md text-muted-foreground">
-              {locale === "ar"
-                ? "يرجى تفعيل حسابك قبل عرض بيانات الملف الشخصي."
-                : "Please verify your account before viewing your profile."}
-            </p>
-            <Link
-              href={`/${locale}/verify-otp?reason=verification`}
-              className="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary px-8 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
-            >
-              {locale === "ar" ? "تفعيل الحساب" : "Verify Account"}
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-            <aside className="flex flex-col gap-6 xl:col-span-4">
-              <ProfileCompletionCard />
-              <AcademicSummaryCard />
-              <AccountSecurityCard />
-            </aside>
-
-            <section className="flex flex-col gap-6 xl:col-span-8">
-              <PersonalInformationForm />
-              <ContactInformationForm />
-              <SecondarySchoolRecordForm />
-            </section>
-          </div>
-        )}
+        {content}
       </main>
 
       <PortalFooter />

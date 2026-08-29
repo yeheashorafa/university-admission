@@ -9,8 +9,9 @@ import {
   useMySecondarySchoolRecordQuery,
   useUpdateSecondarySchoolRecordMutation,
 } from "@/hooks/queries/use-student-secondary-school-records";
-import { extractApiError } from "@/lib/api/api-error";
+import { extractApiError, isVerificationError } from "@/lib/api/api-error";
 import type { UpdateSecondarySchoolRecordPayload } from "@/services/student-secondary-school-records.service";
+import Link from "next/link";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const GRADUATION_YEARS = Array.from({ length: 15 }, (_, i) =>
@@ -22,7 +23,7 @@ export function SecondarySchoolRecordForm() {
   const locale = useLocale();
   const isAr = locale === "ar";
 
-  const { data: record, isLoading } = useMySecondarySchoolRecordQuery();
+  const { data: record, isLoading, isError, error, refetch, isFetching } = useMySecondarySchoolRecordQuery();
   const mutation = useUpdateSecondarySchoolRecordMutation();
 
   const [form, setForm] = useState<Record<string, string>>({});
@@ -87,8 +88,64 @@ export function SecondarySchoolRecordForm() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <FormSkeleton fields={5} />;
+  }
+
+  if (isError) {
+    const apiError = extractApiError(error);
+    const isVerifyError = isVerificationError(error);
+
+    if (isVerifyError) {
+      return (
+        <section className="rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)] text-center">
+           <AlertCircle className="mx-auto mb-4 h-10 w-10 text-destructive" />
+           <p className="mb-4 text-muted-foreground">
+             {isAr ? "يرجى تفعيل حسابك لعرض بيانات الثانوية العامة." : "Please verify your account to view secondary school records."}
+           </p>
+           <Link
+             href={`/${locale}/verify-otp?reason=verification`}
+             className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+           >
+             {isAr ? "تفعيل الحساب" : "Verify Account"}
+           </Link>
+        </section>
+      );
+    }
+
+    if (apiError.status === 404) {
+      return (
+        <section className="rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)]">
+           <div className="mb-6 border-b border-border pb-4">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-primary">
+              <GraduationCap className="size-6 text-secondary" />
+              {t("secondarySchoolRecord")}
+            </h2>
+          </div>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <GraduationCap className="mb-4 h-12 w-12 text-muted-foreground/30" />
+            <p className="text-muted-foreground font-medium">
+              {isAr ? "لا توجد سجلات ثانوية عامة متاحة." : "No record available."}
+            </p>
+          </div>
+        </section>
+      );
+    }
+
+    return (
+      <section className="rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)] text-center">
+        <AlertCircle className="mx-auto mb-4 h-10 w-10 text-destructive" />
+        <p className="mb-4 text-muted-foreground">
+          {isAr ? "تعذر تحميل سجل الثانوية العامة." : "Unable to load secondary school record."}
+        </p>
+        <button
+          onClick={() => refetch()}
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+        >
+          {isAr ? "إعادة المحاولة" : "Retry"}
+        </button>
+      </section>
+    );
   }
 
   return (

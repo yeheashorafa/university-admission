@@ -13,7 +13,24 @@ export function ProfileHeader() {
   const locale = useLocale();
   const isAr = locale === "ar";
   const user = useAuthStore((state) => state.user);
-  const { data: profile, isLoading } = useMyProfileQuery();
+  const { data: profile, isLoading, isError } = useMyProfileQuery();
+
+  if (isError) {
+    return (
+      <section className="relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)] md:p-8">
+        <div className="flex items-center gap-5">
+           <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+             <UserCircle2 className="size-12" />
+           </div>
+           <div>
+             <h1 className="text-2xl font-bold text-destructive md:text-3xl">
+               {isAr ? "تعذر تحميل بيانات الملف الشخصي." : "Unable to load profile data."}
+             </h1>
+           </div>
+        </div>
+      </section>
+    );
+  }
 
   const fullName = getStudentDisplayName(profile, user, locale);
   const nationalId = getStudentNationalId(profile, user, locale);
