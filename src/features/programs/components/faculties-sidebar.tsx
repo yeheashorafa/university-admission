@@ -40,6 +40,8 @@ export function FacultiesSidebar({
         <Search className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
 
         <input
+          id="facultySearch"
+          name="facultySearch"
           type="text"
           value={facultySearch}
           onChange={(event) => onFacultySearchChange(event.target.value)}

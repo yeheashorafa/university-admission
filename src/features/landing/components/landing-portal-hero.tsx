@@ -168,6 +168,8 @@ export function LandingPortalHero() {
             >
               <Search className="size-5 text-[#256b12] dark:text-[#76BC21] ms-2 shrink-0" />
               <input
+                id="applicationTracker"
+                name="applicationTracker"
                 type="text"
                 value={trackQuery}
                 onChange={(e) => setTrackQuery(e.target.value)}

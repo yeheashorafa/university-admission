@@ -181,8 +181,7 @@ apiClient.interceptors.response.use(
         currentPath.includes("/login") || currentPath.includes("/unauthorized");
 
       if (status === 403 && isVerificationError(apiError) && !alreadyOnAuthPage) {
-        clearAuthStorage();
-        redirectTo("/login?reason=verification");
+        redirectTo("/verify-otp?reason=verification");
       } else if (
         status === 401 &&
         !isAuthOrOtp &&

@@ -154,15 +154,9 @@ export function ProgramsPage() {
             <AlertTriangle className="size-8 text-red-500 mx-auto" />
             <h3 className="text-base font-bold text-red-800">
               {locale === "ar"
-                ? "فشل تحميل دليل الكليات والبرامج"
-                : "Failed to load faculties catalog"}
+                ? "تعذر تحميل الكليات حاليًا. يرجى المحاولة لاحقًا."
+                : "Unable to load faculties right now. Please try again later."}
             </h3>
-            <p className="text-xs text-red-600">
-              {(activeError as Error)?.message ||
-                (locale === "ar"
-                  ? "تعذر الاتصال بالخادم الرئيسي"
-                  : "Server connection failed")}
-            </p>
             <button
               type="button"
               onClick={() => {

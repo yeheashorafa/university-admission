@@ -54,6 +54,8 @@ export function ProgramsContent({
             <Search className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
 
             <input
+              id="programSearch"
+              name="programSearch"
               type="text"
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}

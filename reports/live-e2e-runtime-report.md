@@ -39,7 +39,12 @@ The frontend was audited and tested against the exact payloads requested by the 
   - The frontend logic uses the correct `GET`, `POST`, `PUT`, and `DELETE` hooks directed at `/admin/branches`.
   - Runtime CRUD verification blocked because valid live admin credentials were not available during this check.
 
-### 5. Final Quality Checks
+### 5. Public Endpoints Runtime
+- **`GET /public/faculties` (BACKEND_500_INTERNAL_SERVER_ERROR):** The endpoint currently returns a 500 Internal Server Error ("An unexpected error occurred."). The `/ar/faculties` UI correctly catches this and presents a graceful error interface with a "Retry Connection" button, explicitly reading: "تعذر تحميل الكليات حاليًا. يرجى المحاولة لاحقًا." No fake fallback data is displayed to the user in production.
+- **`GET /public/application-types` (PENDING_BACKEND_API / INTENTIONALLY_DISABLED_FRONTEND_CALL):** Endpoint returns 404. The frontend does not currently call this endpoint in the production wizard. It is intentionally disabled until the backend provides it.
+- **`GET /public/programs` (FRONTEND_UNUSED_ENDPOINT):** The frontend does not call this collection endpoint in production. (Programs load exclusively through `/public/faculties/{id}/departments` and `/public/departments/{id}/programs`, as well as individual `/public/programs/{id}`).
+
+### 6. Final Quality Checks
 - **TypeScript:** `npx tsc --noEmit` exited with code 0.
 - **Linting:** `npm run lint` exited with code 0.
 - **Build:** `npm run build` completed successfully, producing an optimized production build.
