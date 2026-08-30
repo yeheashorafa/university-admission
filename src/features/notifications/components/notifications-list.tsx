@@ -7,6 +7,9 @@ import { useSearchParams } from "next/navigation";
 import { getNotificationTitle } from "@/services/notifications.service";
 import { useMyNotificationsQuery } from "@/hooks/queries/use-notifications-queries";
 import { NotificationCard } from "./notification-card";
+import { isVerificationError } from "@/lib/api/api-error";
+import { isAccountVerificationBypassed } from "@/lib/auth-verification";
+import { AlertTriangle } from "lucide-react";
 
 export function NotificationsList() {
   const t = useTranslations("notifications");
@@ -19,7 +22,7 @@ export function NotificationsList() {
   const statusFilter = searchParams?.get("status") || "all";
 
   // Pass type/status to backend query when available; local filtering still applied as fallback.
-  const { data: notifications, isLoading, isError } = useMyNotificationsQuery({
+  const { data: notifications, isLoading, isError, error } = useMyNotificationsQuery({
     type: typeFilter !== "all" ? (typeFilter as import("@/services/notifications.service").NotificationType) : undefined,
     status: statusFilter === "read" || statusFilter === "unread" ? statusFilter : undefined,
   });
@@ -57,6 +60,18 @@ export function NotificationsList() {
         {isLoading ? (
           <div className="p-4">
             <ListSkeleton items={4} />
+          </div>
+        ) : isError && isVerificationError(error) && isAccountVerificationBypassed() ? (
+          <div className="p-12 text-center space-y-3 bg-amber-50 dark:bg-amber-950/20">
+            <AlertTriangle className="size-8 mx-auto text-amber-500" />
+            <h3 className="text-base font-bold text-amber-900 dark:text-amber-200">
+              {isAr ? "تعذر تحميل الإشعارات" : "Failed to load notifications"}
+            </h3>
+            <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+              {isAr
+                ? "الباك ما زال يطلب تفعيل الحساب. يرجى تفعيل التجاوز المؤقت من جهة الباك."
+                : "Backend still requires account verification. Please ask the backend team to enable the temporary verification bypass."}
+            </p>
           </div>
         ) : isError || filteredNotifications.length === 0 ? (
           <div className="p-12 text-center text-sm text-muted-foreground space-y-3">

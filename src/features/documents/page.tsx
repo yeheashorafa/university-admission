@@ -14,6 +14,8 @@ import { AdditionalDocumentsSection } from "./components/additional-documents-se
 import { PortalFooter } from "../../components/layouts/portal-footer";
 import { useMyDocumentsQuery, useUploadDocumentMutation, useDeleteDocumentMutation } from "@/hooks/queries/use-documents-queries";
 import { useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
+import { isVerificationError } from "@/lib/api/api-error";
+import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 
 export function DocumentsPage() {
   const locale = useLocale();
@@ -69,6 +71,25 @@ export function DocumentsPage() {
 
         {loadingDocs || loadingTypes ? (
           <ListSkeleton items={5} />
+        ) : docsError && isVerificationError(docsErr) && isAccountVerificationBypassed() ? (
+          <div className="rounded-2xl border border-amber-300/50 bg-amber-50 p-6 text-center space-y-3 dark:border-amber-900/30 dark:bg-amber-950/20">
+            <AlertTriangle className="size-8 text-amber-500 mx-auto" />
+            <h3 className="text-base font-bold text-amber-900 dark:text-amber-200">
+              {isAr ? "تعذر تحميل المستندات" : "Failed to load documents"}
+            </h3>
+            <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+              {isAr
+                ? "الباك ما زال يطلب تفعيل الحساب. يرجى تفعيل التجاوز المؤقت من جهة الباك."
+                : "Backend still requires account verification. Please ask the backend team to enable the temporary verification bypass."}
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="inline-flex h-9 items-center justify-center rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground hover:bg-primary/90"
+            >
+              {isAr ? "إعادة المحاولة" : "Retry"}
+            </button>
+          </div>
         ) : docsError ? (
           <div className="rounded-2xl border border-red-200 bg-red-50/50 p-6 text-center space-y-3">
             <AlertTriangle className="size-8 text-red-500 mx-auto" />

@@ -1,5 +1,6 @@
 import { routes } from "@/constants/routes";
 import { DashboardWelcome } from "./components/dashboard-welcome";
+import { DashboardVerificationWarning } from "./components/dashboard-verification-warning";
 import { PortalNavbar } from "@/components/layouts/portal-navbar";
 import { PortalFooter } from "@/components/layouts/portal-footer";
 import { ProfileCompletionCard } from "./components/profile-completion-card";
@@ -14,6 +15,7 @@ export function StudentDashboardPage() {
       <PortalNavbar activePath={routes.dashboard} />
 
       <main className="app-container flex flex-1 flex-col gap-8 py-10">
+        <DashboardVerificationWarning />
         <DashboardWelcome />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">

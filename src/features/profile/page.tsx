@@ -101,6 +101,26 @@ export function StudentProfilePage() {
           </Link>
         </div>
       );
+    } else if (isVerifyError && isAccountVerificationBypassed()) {
+      content = (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-amber-300/50 bg-amber-50 p-12 text-center shadow-sm dark:border-amber-900/30 dark:bg-amber-950/20">
+          <AlertCircle className="mb-4 h-12 w-12 text-amber-500" />
+          <h2 className="mb-2 text-2xl font-semibold text-amber-900 dark:text-amber-200">
+            {locale === "ar" ? "تعذر تحميل بيانات الملف الشخصي" : "Unable to load profile data"}
+          </h2>
+          <p className="mb-6 max-w-md text-amber-800 dark:text-amber-300 font-medium">
+            {locale === "ar"
+              ? "الباك ما زال يطلب تفعيل الحساب. يرجى تفعيل التجاوز المؤقت من جهة الباك."
+              : "Backend still requires account verification. Please ask the backend team to enable the temporary verification bypass."}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary px-8 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+          >
+            {locale === "ar" ? "إعادة المحاولة" : "Retry"}
+          </button>
+        </div>
+      );
     } else if (isAuthError) {
       // Normal session handling will catch this, but just in case we render a fallback
       content = null; 
