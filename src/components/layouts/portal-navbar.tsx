@@ -49,17 +49,15 @@ export function PortalNavbar({ activePath = routes.home }: PortalNavbarProps) {
   const storeUser = useAuthStore((state) => state.user);
   const storeRole = useAuthStore((state) => state.role);
 
-  const { user: currentAuthUser, role: currentAuthRole, isAuthenticated: currentAuthIsAuth } = useCurrentAuth();
+  const { user: currentAuthUser, role: currentAuthRole, isAuthenticated: currentAuthIsAuth, isHydrated } = useCurrentAuth();
 
-  const effectiveToken =
-    storeToken ||
-    (currentAuthIsAuth ? "valid" : null) ||
-    (typeof window !== "undefined" ? getAccessToken() : null);
+  const effectiveToken = isHydrated
+    ? storeToken || (currentAuthIsAuth ? "valid" : null) || getAccessToken()
+    : null;
 
-  const effectiveUser =
-    storeUser ||
-    currentAuthUser ||
-    (typeof window !== "undefined" ? getStoredUser<AuthUser>() : null);
+  const effectiveUser = isHydrated
+    ? storeUser || currentAuthUser || getStoredUser<AuthUser>()
+    : null;
 
   const user = effectiveUser;
   const role = storeRole || currentAuthRole || effectiveUser?.role || null;

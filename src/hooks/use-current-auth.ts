@@ -115,7 +115,22 @@ export function useCurrentAuth() {
     getServerAuthStorageSnapshot
   );
 
-  return useMemo(() => parseAuthStorage(snapshot), [snapshot]);
+  const parsed = useMemo(() => parseAuthStorage(snapshot), [snapshot]);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  const isHydrated = mounted && parsed.isHydrated;
+
+  return {
+    isHydrated,
+    user: isHydrated ? parsed.user : null,
+    token: isHydrated ? parsed.token : null,
+    role: isHydrated ? parsed.role : null,
+    isAuthenticated: isHydrated && parsed.isAuthenticated,
+  };
 }
 
 export function clearCurrentAuth() {

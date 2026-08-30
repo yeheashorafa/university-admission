@@ -6,6 +6,7 @@ import { useStudentDashboardQuery, useStudentApplicationsQuery } from "@/hooks/q
 import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
 import { useMyDocumentsQuery } from "@/hooks/queries/use-documents-queries";
 import { useMyNotificationsQuery } from "@/hooks/queries/use-notifications-queries";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { isVerificationError } from "@/lib/api/api-error";
 import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 
@@ -19,6 +20,8 @@ export function DashboardVerificationWarning() {
   const { error: docsError } = useMyDocumentsQuery();
   const { error: notifError } = useMyNotificationsQuery();
 
+  const { isHydrated } = useCurrentAuth();
+
   const hasVerificationError =
     (dashError && isVerificationError(dashError)) ||
     (appsError && isVerificationError(appsError)) ||
@@ -26,7 +29,7 @@ export function DashboardVerificationWarning() {
     (docsError && isVerificationError(docsError)) ||
     (notifError && isVerificationError(notifError));
 
-  if (!hasVerificationError || !isAccountVerificationBypassed()) {
+  if (!isHydrated || !hasVerificationError || !isAccountVerificationBypassed()) {
     return null;
   }
 
