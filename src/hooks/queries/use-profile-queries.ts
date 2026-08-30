@@ -10,19 +10,17 @@ import {
 } from "@/services/profile.service";
 
 import { isUserVerified } from "@/services/auth.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 export function useMyProfileQuery() {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, isHydrated } = useCurrentAuth();
 
-  const isUnverified = isUserVerified(user) === false;
-  const isEnabled = Boolean(hasHydrated && token && user && !isUnverified);
+  const isUnverified = user ? isUserVerified(user) === false : false;
+  const isEnabled = Boolean(isHydrated && token && !isUnverified);
 
   if (process.env.NODE_ENV === "development") {
     console.log("[useMyProfileQuery] enabled state:", {
-      hasHydrated,
+      isHydrated,
       hasToken: !!token,
       hasUser: !!user,
       isUnverified,

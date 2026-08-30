@@ -444,7 +444,7 @@ async function runAudit() {
     }
   }
 
-  let studentInitialAppsCount = 0;
+
 
   if (studentToken) {
     console.log(`--> Testing authenticated student endpoints using ${studentAuthMethod} token...`);

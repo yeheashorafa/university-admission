@@ -8,15 +8,12 @@ import {
   uploadDocument,
 } from "@/services/documents.service";
 
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 export function useMyDocumentsQuery() {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { token, role, isHydrated } = useCurrentAuth();
 
-  const isEnabled = Boolean(hasHydrated && token && user && role === "student");
+  const isEnabled = Boolean(isHydrated && token && role === "student");
 
   return useQuery({
     queryKey: queryKeys.documents.myDocuments,

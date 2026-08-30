@@ -36,7 +36,7 @@ export function ProgramsPage() {
     data: publicFaculties,
     isLoading: isLoadingFaculties,
     isError: isErrorFaculties,
-    error: facultiesError,
+
     refetch: refetchFaculties,
   } = usePublicFacultiesQuery();
 
@@ -73,7 +73,7 @@ export function ProgramsPage() {
   const {
     data: facultyProgramsData,
     isError: isErrorPrograms,
-    error: programsError,
+
     refetch: refetchPrograms,
   } = useFacultyProgramsQuery(activeFaculty?.id);
 
@@ -130,7 +130,6 @@ export function ProgramsPage() {
   }
 
   const isError = isErrorFaculties || isErrorPrograms;
-  const activeError = facultiesError || programsError;
 
   return (
     <div className="min-h-screen bg-background text-foreground">

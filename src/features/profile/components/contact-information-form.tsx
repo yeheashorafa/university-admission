@@ -8,7 +8,7 @@ import { FormSkeleton } from "@/components/common/loading/form-skeleton";
 import { useMyProfileQuery, useUpdateMyProfileMutation } from "@/hooks/queries/use-profile-queries";
 import { useSocialInformationQuery, useUpdateSocialInformationMutation } from "@/hooks/queries/use-social-information-queries";
 import { useAuthStore } from "@/stores/auth.store";
-import { extractApiError } from "@/lib/api/api-error";
+
 
 export function ContactInformationForm() {
   const t = useTranslations("profile");
@@ -21,7 +21,7 @@ export function ContactInformationForm() {
     data: social, 
     isLoading: loadingSocial, 
     isError: isSocialError, 
-    error: socialError, 
+
     refetch: refetchSocial 
   } = useSocialInformationQuery();
 

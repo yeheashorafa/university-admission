@@ -10,21 +10,18 @@ import {
 } from "@/services/student-secondary-school-records.service";
 
 import { isUserVerified } from "@/services/auth.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 export function useMySecondarySchoolRecordQuery() {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, role, isHydrated } = useCurrentAuth();
 
-  const isUnverified = isUserVerified(user) === false;
+  const isUnverified = user ? isUserVerified(user) === false : false;
 
   return useQuery({
     queryKey: queryKeys.profile.secondarySchoolRecord,
     queryFn: getMySecondarySchoolRecord,
     enabled: Boolean(
-      hasHydrated && token && user && role === "student" && !isUnverified
+      isHydrated && token && role === "student" && !isUnverified
     ),
     retry: false,
   });

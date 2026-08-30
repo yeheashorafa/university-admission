@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslations } from "next-intl";
@@ -34,7 +34,7 @@ export function AdminBranchFormModal({ isOpen, onClose, branch }: Props) {
   const updateMutation = useUpdateAdminBranchMutation();
   const isPending = createMutation.isPending || updateMutation.isPending;
 
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, control, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name_ar: "",
@@ -43,7 +43,7 @@ export function AdminBranchFormModal({ isOpen, onClose, branch }: Props) {
     },
   });
 
-  const isActive = watch("is_active");
+  const isActive = useWatch({ control, name: "is_active" });
 
   useEffect(() => {
     if (isOpen) {

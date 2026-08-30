@@ -15,17 +15,14 @@ import {
 } from "@/services/application.service";
 
 import { isUserVerified } from "@/services/auth.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 function useStudentQueryGuard(extraCondition: boolean = true) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, role, isHydrated } = useCurrentAuth();
 
-  const isUnverified = isUserVerified(user) === false;
+  const isUnverified = user ? isUserVerified(user) === false : false;
 
-  return Boolean(hasHydrated && token && user && role === "student" && !isUnverified && extraCondition);
+  return Boolean(isHydrated && token && role === "student" && !isUnverified && extraCondition);
 }
 
 export function useStudentDashboardQuery() {

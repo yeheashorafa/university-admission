@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { FormSkeleton } from "@/components/common/loading/form-skeleton";
 import { useMyProfileQuery, useUpdateMyProfileMutation } from "@/hooks/queries/use-profile-queries";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { extractApiError } from "@/lib/api/api-error";
 import { getStudentNationalId } from "@/lib/adapters/student-profile-adapter";
 import type { PersonalInformation } from "@/services/profile.service";
@@ -19,9 +20,13 @@ export function PersonalInformationForm() {
   const isAr = locale === "ar";
 
   const user = useAuthStore((state) => state.user);
-  const { data: profile, isLoading, isFetched } = useMyProfileQuery();
+  const { isHydrated } = useCurrentAuth();
+  const { data: profile, isLoading, isFetched, isError, refetch, status, fetchStatus } = useMyProfileQuery();
   const updateMutation = useUpdateMyProfileMutation();
 
+  const isAuthHydrating = !isHydrated;
+  const isQueryDisabled = status === "pending" && fetchStatus === "idle";
+  
   const isProfileLoaded = !isLoading && isFetched && profile !== undefined;
   const pi = profile?.personal_information;
   const nationalIdValue = getStudentNationalId(profile, user);
@@ -292,6 +297,41 @@ export function PersonalInformationForm() {
         handleBackendError(err);
       }
     }
+  }
+
+  if (isAuthHydrating || isQueryDisabled) {
+    return (
+      <section className="rounded-xl border border-border bg-card p-12 text-center shadow-[0px_4px_20px_rgba(0,77,64,0.05)]">
+        <div className="flex flex-col items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground font-medium">
+            {locale === "ar" ? "جاري تحميل الجلسة..." : "Loading session..."}
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="rounded-xl border border-destructive/30 bg-destructive/5 p-12 text-center shadow-[0px_4px_20px_rgba(0,77,64,0.05)]">
+        <div className="flex flex-col items-center justify-center">
+          <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
+          <h2 className="mb-2 text-2xl font-semibold">
+            {locale === "ar" ? "خطأ في التحميل" : "Loading Error"}
+          </h2>
+          <p className="mb-6 max-w-md text-muted-foreground">
+            {locale === "ar" ? "تعذر تحميل بيانات الملف الشخصي الأساسية." : "Unable to load basic personal data."}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary px-8 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+          >
+            {locale === "ar" ? "إعادة المحاولة" : "Retry"}
+          </button>
+        </div>
+      </section>
+    );
   }
 
   if (isLoading || !isProfileLoaded) {

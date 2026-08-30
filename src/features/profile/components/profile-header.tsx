@@ -2,18 +2,23 @@
  
 import { useLocale } from "next-intl";
 import { UserCircle2, Loader2 } from "lucide-react";
-import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   getStudentDisplayName,
   getStudentNationalId,
 } from "@/lib/adapters/student-profile-adapter";
+import type { StudentProfile } from "@/services/profile.service";
 
-export function ProfileHeader() {
+type ProfileHeaderProps = {
+  profile?: StudentProfile | null;
+  isLoading: boolean;
+  isError: boolean;
+};
+
+export function ProfileHeader({ profile, isLoading, isError }: ProfileHeaderProps) {
   const locale = useLocale();
   const isAr = locale === "ar";
   const user = useAuthStore((state) => state.user);
-  const { data: profile, isLoading, isError } = useMyProfileQuery();
 
   if (isError) {
     return (

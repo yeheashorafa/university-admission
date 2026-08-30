@@ -10,21 +10,21 @@ import { PersonalInformationForm } from "./components/personal-information-form"
 import { ContactInformationForm } from "./components/contact-information-form";
 import { SecondarySchoolRecordForm } from "./components/secondary-school-record-form";
 import { PortalFooter } from "../../components/layouts/portal-footer";
-import { useAuthStore } from "@/stores/auth.store";
 import { isUserVerified } from "@/services/auth.service";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 
 import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
 import { extractApiError, isVerificationError } from "@/lib/api/api-error";
-import { useRouter } from "next/navigation";
+
 import { Loader2 } from "lucide-react";
 
 export function StudentProfilePage() {
-  const user = useAuthStore((state) => state.user);
+  const { user, isHydrated } = useCurrentAuth();
   const locale = useLocale();
-  const router = useRouter();
+
   
   const {
     data: profile,
@@ -40,7 +40,16 @@ export function StudentProfilePage() {
 
   let content;
 
-  if (unverified) {
+  if (!isHydrated) {
+    content = (
+      <div className="flex min-h-[400px] flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground font-medium">
+          {locale === "ar" ? "جاري تحميل الجلسة..." : "Loading session..."}
+        </p>
+      </div>
+    );
+  } else if (unverified) {
     content = (
       <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-sm">
         <AlertCircle className="mb-4 h-12 w-12 text-destructive" />
@@ -116,7 +125,7 @@ export function StudentProfilePage() {
   } else {
     content = (
       <>
-        <ProfileHeader />
+        <ProfileHeader profile={profile} isLoading={isLoading} isError={isError} />
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
           <aside className="flex flex-col gap-6 xl:col-span-4">
             <ProfileCompletionCard />

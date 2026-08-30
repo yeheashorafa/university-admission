@@ -85,14 +85,9 @@ export function normalizeStudentProfile(raw: unknown): StudentProfile {
 }
 
 /**
- * Derives student display name following strict priority:
- * 1. Arabic full name from personal_information
- * 2. English full name from personal_information
- * 3. profile.name
- * 4. profile.full_name
- * 5. profile.fullName
- * 6. user.name
- * 7. Localized polite fallback only if all above are missing
+ * Derives student display name following locale-based priority:
+ * For 'en': EN parts -> AR parts -> profile/user names -> Fallback
+ * For 'ar': AR parts -> EN parts -> profile/user names -> Fallback
  */
 export function getStudentDisplayName(
   profile: StudentProfile | null | undefined,
@@ -104,7 +99,9 @@ export function getStudentDisplayName(
 
   const pi = profile?.personal_information;
 
-  // 1. Arabic full name from personal_information
+  let arName = "";
+  let enName = "";
+
   if (pi) {
     const arParts = [
       pi.first_name_ar,
@@ -112,22 +109,30 @@ export function getStudentDisplayName(
       pi.grandfather_name_ar,
       pi.family_name_ar,
     ].filter((p): p is string => typeof p === "string" && p.trim().length > 0);
-
+    
     if (arParts.length > 0) {
-      return arParts.join(" ");
+      arName = arParts.join(" ");
     }
 
-    // 2. English full name from personal_information
     const enParts = [
       pi.first_name_en,
       pi.father_name_en,
       pi.grandfather_name_en,
       pi.family_name_en,
     ].filter((p): p is string => typeof p === "string" && p.trim().length > 0);
-
+    
     if (enParts.length > 0) {
-      return enParts.join(" ");
+      enName = enParts.join(" ");
     }
+  }
+
+  // 1 & 2. Try Locale-preferred name parts first
+  if (isAr) {
+    if (arName) return arName;
+    if (enName) return enName;
+  } else {
+    if (enName) return enName;
+    if (arName) return arName;
   }
 
   // 3. profile.name

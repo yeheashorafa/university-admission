@@ -13,6 +13,7 @@ import {
 } from "@/services/notifications.service";
 
 import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 type NotificationsParams = {
   page?: number;
@@ -24,14 +25,11 @@ export function useMyNotificationsQuery(
   params?: NotificationsParams,
   options?: { enabled?: boolean }
 ) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { token, role, isHydrated } = useCurrentAuth();
 
   const isStudent = role === "student";
   const isEnabled =
-    Boolean(hasHydrated && token && user && isStudent) &&
+    Boolean(isHydrated && token && isStudent) &&
     (options?.enabled ?? true);
 
   return useQuery({
@@ -43,15 +41,12 @@ export function useMyNotificationsQuery(
 }
 
 export function useStaffNotificationsQuery(params?: { page?: number }) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { token, role, isHydrated } = useCurrentAuth();
 
   const isStaff = role === "admission_employee" || role === "department_head";
   const staffRole = role as "admission_employee" | "department_head";
 
-  const isEnabled = Boolean(hasHydrated && token && user && isStaff);
+  const isEnabled = Boolean(isHydrated && token && isStaff);
 
   return useQuery({
     queryKey: ["staff-notifications", role, params],
