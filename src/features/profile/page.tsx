@@ -18,6 +18,7 @@ import { AlertCircle } from "lucide-react";
 
 import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
 import { extractApiError, isVerificationError } from "@/lib/api/api-error";
+import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 
 import { Loader2 } from "lucide-react";
 
@@ -80,7 +81,7 @@ export function StudentProfilePage() {
     const isVerifyError = isVerificationError(error);
     const isAuthError = apiError.status === 401;
 
-    if (isVerifyError) {
+    if (isVerifyError && !isAccountVerificationBypassed()) {
       content = (
         <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-12 text-center shadow-sm">
           <AlertCircle className="mb-4 h-12 w-12 text-destructive" />

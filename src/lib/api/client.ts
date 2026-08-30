@@ -7,6 +7,7 @@ import { getAccessToken, setAccessToken, clearAuthStorage } from "./auth-token";
 import { extractApiError, isVerificationError, ApiError } from "./api-error";
 import { extractResource } from "./response";
 import { ENDPOINTS } from "./endpoints";
+import { isAccountVerificationBypassed } from "../auth-verification";
 
 const NO_REFRESH_ENDPOINTS = /^\/auth\/(login|register|refresh|send-otp|verify-otp)(\/|$)/;
 
@@ -180,8 +181,20 @@ apiClient.interceptors.response.use(
       const alreadyOnAuthPage =
         currentPath.includes("/login") || currentPath.includes("/unauthorized");
 
-      if (status === 403 && isVerificationError(apiError) && !alreadyOnAuthPage) {
+      if (
+        status === 403 &&
+        isVerificationError(apiError) &&
+        !isAccountVerificationBypassed() &&
+        !alreadyOnAuthPage
+      ) {
         redirectTo("/verify-otp?reason=verification");
+      } else if (
+        status === 403 &&
+        isVerificationError(apiError) &&
+        isAccountVerificationBypassed()
+      ) {
+        // Temporary bypass mode: keep session and let UI handle the error.
+        return Promise.reject(extractApiError(error));
       } else if (
         status === 401 &&
         !isAuthOrOtp &&

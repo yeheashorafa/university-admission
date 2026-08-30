@@ -1,6 +1,7 @@
 import { apiClient } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { UserRole } from "@/constants/roles";
+import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 
 export type { UserRole };
 
@@ -38,11 +39,17 @@ export type AuthResponse = {
 };
 
 export function isUserVerified(user: AuthUser | null | undefined): boolean | undefined {
+  if (isAccountVerificationBypassed()) return true;
+
   if (!user) return undefined;
   if (typeof user.is_verified === "boolean") return user.is_verified;
   if (typeof user.verified === "boolean") return user.verified;
   if (user.email_verified_at !== undefined && user.email_verified_at !== null) return true;
-  if (user.email_verified_at === null) return false;
+
+  // Do not automatically force false just because email_verified_at is null
+  // unless backend explicitly returns is_verified:false or verified:false.
+  if (user.email_verified_at === null) return undefined;
+
   return undefined;
 }
 
@@ -106,12 +113,13 @@ export function normalizeAuthUser(
     ((rawUser?.personal_information as Record<string, unknown> | null | undefined)?.national_id as string) ??
     undefined;
 
-  const is_verified =
-    typeof rawVerified === "boolean"
-      ? rawVerified
-      : typeof rawEmailVerifiedAt !== "undefined" && rawEmailVerifiedAt !== null
-      ? Boolean(rawEmailVerifiedAt)
-      : undefined;
+  const is_verified = isAccountVerificationBypassed()
+    ? true
+    : typeof rawVerified === "boolean"
+    ? rawVerified
+    : typeof rawEmailVerifiedAt !== "undefined" && rawEmailVerifiedAt !== null
+    ? Boolean(rawEmailVerifiedAt)
+    : undefined;
 
   const email_verified_at =
     typeof rawEmailVerifiedAt === "string"

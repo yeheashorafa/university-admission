@@ -10,6 +10,7 @@ import { routes, withLocale } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { isVerificationError } from "@/lib/api/api-error";
 import { isUserVerified } from "@/services/auth.service";
+import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   getMyProfile,
@@ -166,7 +167,7 @@ export function ApplicationWizard() {
           verificationErrorDetected = true;
         }
 
-        if (verificationErrorDetected) {
+        if (verificationErrorDetected && !isAccountVerificationBypassed()) {
           setIsUnverified(true);
           return;
         }
