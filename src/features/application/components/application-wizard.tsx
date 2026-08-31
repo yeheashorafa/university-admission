@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Check, ArrowLeft, ArrowRight, Save, Loader2, AlertCircle } from "lucide-react";
 import { routes, withLocale } from "@/constants/routes";
 import { cn } from "@/lib/utils";
-import { isVerificationError } from "@/lib/api/api-error";
+import { isVerificationError, extractApiError } from "@/lib/api/api-error";
 import { isUserVerified } from "@/services/auth.service";
 import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 import { useAuthStore } from "@/stores/auth.store";
@@ -543,16 +543,7 @@ export function ApplicationWizard() {
         // PENDING_BACKEND_API: map qualificationData to backend once admission qualification endpoint or fields are provided.
         // Currently qualificationData remains in frontend draft state only.
       } else if (currentStep === 3) {
-        await updateMyProfile({
-          personal_information: {
-            first_name_ar: state.tawjihi.firstNameAr,
-            father_name_ar: state.tawjihi.fatherNameAr,
-            grandfather_name_ar: state.tawjihi.grandfatherNameAr,
-            family_name_ar: state.tawjihi.familyNameAr,
-            gender: state.tawjihi.gender,
-            nationality: state.tawjihi.nationality,
-          },
-        });
+        // Do not call PUT /student/profile here. Secondary school fields are stored in local state only.
       } else if (currentStep === 4) {
         await updateSocialInformation({
           birth_place: state.basicData.birthPlace as BirthPlace,
@@ -643,9 +634,17 @@ export function ApplicationWizard() {
         }
       }
     } catch (error) {
-      const err = error as { message?: string };
+      const apiError = extractApiError(error);
+      if (apiError.status === 422) {
+        toast.error(
+          locale === "ar"
+            ? "يرجى إكمال البيانات المطلوبة قبل المتابعة."
+            : "Please complete the required information before continuing."
+        );
+        return;
+      }
       toast.error(
-        err?.message ||
+        apiError.message ||
           (locale === "ar"
             ? "فشل حفظ البيانات. يرجى التحقق من الاتصال والمحاولة مرة أخرى."
             : "Failed to save details. Please check connection and try again.")

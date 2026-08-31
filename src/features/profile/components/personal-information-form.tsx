@@ -168,22 +168,22 @@ export function PersonalInformationForm() {
     if (isBaseProfileIncomplete) {
       // First base completion: ALL 6 required base fields must be present
       if (!formValues.first_name_ar.trim()) {
-        newFieldErrors.first_name_ar = isAr ? "الاسم الأول مطلوب" : "First name is required";
+        newFieldErrors.first_name_ar = isAr ? "الاسم الأول بالعربية مطلوب." : "First name is required";
       }
       if (!formValues.father_name_ar.trim()) {
-        newFieldErrors.father_name_ar = isAr ? "اسم الأب مطلوب" : "Father name is required";
+        newFieldErrors.father_name_ar = isAr ? "اسم الأب بالعربية مطلوب." : "Father name is required";
       }
       if (!formValues.grandfather_name_ar.trim()) {
-        newFieldErrors.grandfather_name_ar = isAr ? "اسم الجد مطلوب" : "Grandfather name is required";
+        newFieldErrors.grandfather_name_ar = isAr ? "اسم الجد بالعربية مطلوب." : "Grandfather name is required";
       }
       if (!formValues.family_name_ar.trim()) {
-        newFieldErrors.family_name_ar = isAr ? "اسم العائلة مطلوب" : "Family name is required";
+        newFieldErrors.family_name_ar = isAr ? "اسم العائلة بالعربية مطلوب." : "Family name is required";
       }
       if (!formValues.gender) {
-        newFieldErrors.gender = isAr ? "الجنس مطلوب" : "Gender is required";
+        newFieldErrors.gender = isAr ? "الجنس مطلوب." : "Gender is required";
       }
       if (!formValues.nationality.trim()) {
-        newFieldErrors.nationality = isAr ? "الجنسية مطلوبة" : "Nationality is required";
+        newFieldErrors.nationality = isAr ? "الجنسية مطلوبة." : "Nationality is required";
       }
 
       validateOptionalFields(newFieldErrors);
