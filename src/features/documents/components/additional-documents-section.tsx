@@ -77,8 +77,8 @@ export function AdditionalDocumentsSection() {
             : "Backend still requires account verification, so the document cannot be uploaded right now.";
         } else {
           errorMsg = isAr
-            ? "ليس لديك صلاحية لرفع هذا المستند."
-            : "You do not have permission to upload this document.";
+            ? "رفض الخادم رفع المستند لأن صلاحية رفع المستندات غير مفعّلة لهذا الحساب أو لهذا الإجراء. يرجى مراجعة إعدادات الصلاحيات في الباك."
+            : "The server rejected the upload because document upload permission is not enabled for this account or action. Please check backend authorization settings.";
         }
       } else if (status === 422) {
         errorMsg = typedErr?.message || (isAr ? "بيانات غير صالحة" : "Invalid data");
