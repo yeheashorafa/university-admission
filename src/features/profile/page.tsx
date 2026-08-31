@@ -17,8 +17,10 @@ import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 
 import { useMyProfileQuery } from "@/hooks/queries/use-profile-queries";
+import { useSocialInformationQuery } from "@/hooks/queries/use-social-information-queries";
 import { extractApiError, isVerificationError } from "@/lib/api/api-error";
 import { isAccountVerificationBypassed } from "@/lib/auth-verification";
+import { getStudentNationalId } from "@/lib/adapters/student-profile-adapter";
 
 import { Loader2 } from "lucide-react";
 
@@ -36,6 +38,14 @@ export function StudentProfilePage() {
     isFetching,
     status
   } = useMyProfileQuery();
+
+  const { data: socialInformation } = useSocialInformationQuery();
+
+  const nationalId = getStudentNationalId({
+    profile,
+    user,
+    socialInformation,
+  });
 
   const unverified = isUserVerified(user) === false;
 
@@ -146,7 +156,7 @@ export function StudentProfilePage() {
   } else {
     content = (
       <>
-        <ProfileHeader profile={profile} isLoading={isLoading} isError={isError} />
+        <ProfileHeader profile={profile} nationalId={nationalId} isLoading={isLoading} isError={isError} />
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
           <aside className="flex flex-col gap-6 xl:col-span-4">
             <ProfileCompletionCard />
@@ -155,7 +165,7 @@ export function StudentProfilePage() {
           </aside>
 
           <section className="flex flex-col gap-6 xl:col-span-8">
-            <PersonalInformationForm />
+            <PersonalInformationForm nationalId={nationalId} />
             <ContactInformationForm />
             <SecondarySchoolRecordForm />
           </section>

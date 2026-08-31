@@ -3,19 +3,17 @@
 import { useLocale } from "next-intl";
 import { UserCircle2, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
-import {
-  getStudentDisplayName,
-  getStudentNationalId,
-} from "@/lib/adapters/student-profile-adapter";
+import { getStudentDisplayName } from "@/lib/adapters/student-profile-adapter";
 import type { StudentProfile } from "@/services/profile.service";
 
 type ProfileHeaderProps = {
   profile?: StudentProfile | null;
+  nationalId?: string;
   isLoading: boolean;
   isError: boolean;
 };
 
-export function ProfileHeader({ profile, isLoading, isError }: ProfileHeaderProps) {
+export function ProfileHeader({ profile, nationalId: passedNationalId, isLoading, isError }: ProfileHeaderProps) {
   const locale = useLocale();
   const isAr = locale === "ar";
   const user = useAuthStore((state) => state.user);
@@ -38,7 +36,7 @@ export function ProfileHeader({ profile, isLoading, isError }: ProfileHeaderProp
   }
 
   const fullName = getStudentDisplayName(profile, user, locale);
-  const nationalId = getStudentNationalId({ profile, user }) || (isAr ? "غير متوفر" : "Unavailable");
+  const nationalId = passedNationalId || (isAr ? "غير متوفر" : "Unavailable");
 
   return (
     <section className="relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)] md:p-8">

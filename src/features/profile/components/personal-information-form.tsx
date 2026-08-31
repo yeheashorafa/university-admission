@@ -6,20 +6,17 @@ import { Save, UserRound, Loader2, AlertCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { FormSkeleton } from "@/components/common/loading/form-skeleton";
 import { useMyProfileQuery, useUpdateMyProfileMutation } from "@/hooks/queries/use-profile-queries";
-import { useAuthStore } from "@/stores/auth.store";
 import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { extractApiError } from "@/lib/api/api-error";
-import { getStudentNationalId } from "@/lib/adapters/student-profile-adapter";
 import type { PersonalInformation } from "@/services/profile.service";
 
 type FormErrors = Partial<Record<keyof PersonalInformation, string>>;
 
-export function PersonalInformationForm() {
+export function PersonalInformationForm({ nationalId }: { nationalId?: string }) {
   const t = useTranslations("profile");
   const locale = useLocale();
   const isAr = locale === "ar";
 
-  const user = useAuthStore((state) => state.user);
   const { isHydrated } = useCurrentAuth();
   const { data: profile, isLoading, isFetched, isError, refetch, status, fetchStatus } = useMyProfileQuery();
   const updateMutation = useUpdateMyProfileMutation();
@@ -29,7 +26,7 @@ export function PersonalInformationForm() {
   
   const isProfileLoaded = !isLoading && isFetched && profile !== undefined;
   const pi = profile?.personal_information;
-  const nationalIdValue = getStudentNationalId({ profile, user });
+  const nationalIdValue = nationalId;
 
   // Base profile is incomplete if ANY of the required 6 base fields is missing/null in backend
   const isBaseProfileIncomplete =
@@ -165,8 +162,8 @@ export function PersonalInformationForm() {
 
     if (!nationalIdValue) {
       const msg = isAr
-        ? "رقم الهوية غير متوفر. يرجى تسجيل الدخول من جديد أو التواصل مع الدعم."
-        : "National ID is unavailable. Please sign in again or contact support.";
+        ? "رقم الهوية غير موجود في بيانات الحساب القادمة من الخادم."
+        : "National ID is missing from the account data returned by the server.";
       setFormError(msg);
       toast.error(msg);
       return;
