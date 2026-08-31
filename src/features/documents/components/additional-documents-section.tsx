@@ -12,6 +12,8 @@ import {
 import Swal from "sweetalert2";
 import { useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
 import { useMyDocumentsQuery, useUploadDocumentMutation, useDeleteDocumentMutation } from "@/hooks/queries/use-documents-queries";
+import { isVerificationError } from "@/lib/api/api-error";
+import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 
 export function AdditionalDocumentsSection() {
   const locale = useLocale();
@@ -62,11 +64,33 @@ export function AdditionalDocumentsSection() {
         icon: "success",
         confirmButtonText: isAr ? "ممتاز" : "Great",
       });
-    } catch (err) {
-      const msg = (err as Error)?.message || (isAr ? "فشل رفع المستند" : "Failed to upload document");
+    } catch (err: unknown) {
+      const typedErr = err as { status?: number; message?: string };
+      const status = typedErr?.status;
+      const isVerification = isVerificationError(err);
+      let errorMsg = typedErr?.message || (isAr ? "فشل في رفع المستند" : "Failed to upload document");
+
+      if (status === 403) {
+        if (isVerification && isAccountVerificationBypassed()) {
+          errorMsg = isAr
+            ? "الباك ما زال يطلب تفعيل الحساب، لذلك لا يمكن رفع المستند حاليًا."
+            : "Backend still requires account verification, so the document cannot be uploaded right now.";
+        } else {
+          errorMsg = isAr
+            ? "ليس لديك صلاحية لرفع هذا المستند."
+            : "You do not have permission to upload this document.";
+        }
+      } else if (status === 422) {
+        errorMsg = typedErr?.message || (isAr ? "بيانات غير صالحة" : "Invalid data");
+      } else if (status === 413) {
+        errorMsg = isAr ? "حجم الملف أكبر من المسموح." : "File size is too large.";
+      } else if ((status ?? 0) >= 500 || !status) {
+        errorMsg = isAr ? "تعذر رفع المستند. حاول مرة أخرى." : "Could not upload document. Try again.";
+      }
+
       await Swal.fire({
         title: isAr ? "خطأ في الرفع" : "Upload Error",
-        text: msg,
+        text: errorMsg,
         icon: "error",
         confirmButtonText: isAr ? "حسناً" : "OK",
       });

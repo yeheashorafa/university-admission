@@ -44,7 +44,29 @@ export function DocumentsPage() {
       toast.success(isAr ? "تم رفع المستند بنجاح" : "Document uploaded successfully");
       setSelectedFile(null);
     } catch (err: unknown) {
-      const errorMsg = (err as Error)?.message || (isAr ? "فشل في رفع المستند" : "Failed to upload document");
+      const typedErr = err as { status?: number; message?: string };
+      const status = typedErr?.status;
+      const isVerification = isVerificationError(err);
+      let errorMsg = typedErr?.message || (isAr ? "فشل في رفع المستند" : "Failed to upload document");
+
+      if (status === 403) {
+        if (isVerification && isAccountVerificationBypassed()) {
+          errorMsg = isAr
+            ? "الباك ما زال يطلب تفعيل الحساب، لذلك لا يمكن رفع المستند حاليًا."
+            : "Backend still requires account verification, so the document cannot be uploaded right now.";
+        } else {
+          errorMsg = isAr
+            ? "ليس لديك صلاحية لرفع هذا المستند."
+            : "You do not have permission to upload this document.";
+        }
+      } else if (status === 422) {
+        errorMsg = typedErr?.message || (isAr ? "بيانات غير صالحة" : "Invalid data");
+      } else if (status === 413) {
+        errorMsg = isAr ? "حجم الملف أكبر من المسموح." : "File size is too large.";
+      } else if ((status ?? 0) >= 500 || !status) {
+        errorMsg = isAr ? "تعذر رفع المستند. حاول مرة أخرى." : "Could not upload document. Try again.";
+      }
+
       toast.error(errorMsg);
     }
   }

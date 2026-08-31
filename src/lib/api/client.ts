@@ -208,6 +208,13 @@ apiClient.interceptors.response.use(
         isProtectedRoute(currentPath) &&
         !alreadyOnAuthPage
       ) {
+        const method = originalRequest?.method?.toLowerCase();
+        const isMutation = method && method !== "get";
+
+        if (isMutation) {
+          return Promise.reject(extractApiError(error));
+        }
+
         redirectTo("/unauthorized");
       }
     }
