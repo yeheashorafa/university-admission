@@ -38,7 +38,7 @@ export function ProfileHeader({ profile, isLoading, isError }: ProfileHeaderProp
   }
 
   const fullName = getStudentDisplayName(profile, user, locale);
-  const nationalId = getStudentNationalId(profile, user) || (isAr ? "غير متوفر" : "Unavailable");
+  const nationalId = getStudentNationalId({ profile, user }) || (isAr ? "غير متوفر" : "Unavailable");
 
   return (
     <section className="relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)] md:p-8">

@@ -178,7 +178,7 @@ export function ApplicationWizard() {
         if (profileRes.status === "fulfilled" && profileRes.value) {
           const p = profileRes.value;
           setLoadedProfile(p);
-          resolvedNationalId = getStudentNationalId(p, user) || "";
+          resolvedNationalId = getStudentNationalId({ profile: p, user }) || "";
           embeddedSocial = getSocialInformationFromProfile(p);
           const pi = p.personal_information;
 

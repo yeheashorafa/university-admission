@@ -29,7 +29,7 @@ export function PersonalInformationForm() {
   
   const isProfileLoaded = !isLoading && isFetched && profile !== undefined;
   const pi = profile?.personal_information;
-  const nationalIdValue = getStudentNationalId(profile, user);
+  const nationalIdValue = getStudentNationalId({ profile, user });
 
   // Base profile is incomplete if ANY of the required 6 base fields is missing/null in backend
   const isBaseProfileIncomplete =

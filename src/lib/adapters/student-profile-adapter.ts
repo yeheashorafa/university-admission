@@ -160,55 +160,56 @@ export function getStudentDisplayName(
   return unavailableText;
 }
 
-/**
- * Derives student National ID following strict priority:
- * 1. profile.personal_information.national_id
- * 2. profile.national_id
- * 3. profile.nationalId
- * 4. profile.user.national_id
- * 5. user.national_id
- * 6. localized fallback only if all missing
- */
-export function getStudentNationalId(
-  profile: StudentProfile | null | undefined,
-  user: AuthUser | null | undefined
-): string | undefined {
-  // 1. profile.personal_information.national_id
-  const piId = profile?.personal_information?.national_id;
-  if (typeof piId === "string" && piId.trim().length > 0) {
-    return piId.trim();
-  }
+export function getStudentNationalId({
+  profile,
+  user,
+  socialInformation,
+  formValues,
+}: {
+  profile?: unknown;
+  user?: unknown;
+  socialInformation?: unknown;
+  formValues?: unknown;
+} = {}): string | undefined {
+  const p = profile as Record<string, unknown> | undefined;
+  const pPi = p?.personal_information as Record<string, unknown> | undefined;
+  const pUser = p?.user as Record<string, unknown> | undefined;
 
-  // 2. profile.national_id
-  const profIdSnake = profile?.national_id;
-  if (typeof profIdSnake === "string" && profIdSnake.trim().length > 0) {
-    return profIdSnake.trim();
-  }
+  const u = user as Record<string, unknown> | undefined;
+  const uUser = u?.user as Record<string, unknown> | undefined;
 
-  // 3. profile.nationalId
-  const profIdCamel = profile?.nationalId;
-  if (typeof profIdCamel === "string" && profIdCamel.trim().length > 0) {
-    return profIdCamel.trim();
-  }
+  const s = socialInformation as Record<string, unknown> | undefined;
+  const f = formValues as Record<string, unknown> | undefined;
 
-  // 4. profile.user.national_id or profile.user.nationalId
-  const profUser = (profile as Record<string, unknown> | undefined)?.user as Record<string, unknown> | undefined;
-  const profUserId = profUser?.national_id ?? profUser?.nationalId;
-  if (typeof profUserId === "string" && profUserId.trim().length > 0) {
-    return profUserId.trim();
-  }
+  const candidates = [
+    pPi?.national_id,
+    p?.national_id,
+    p?.nationalId,
+    pUser?.national_id,
+    pUser?.nationalId,
+    u?.national_id,
+    u?.nationalId,
+    uUser?.national_id,
+    uUser?.nationalId,
+    s?.national_id,
+    s?.nationalId,
+    f?.national_id,
+    f?.nationalId,
+  ];
 
-  // 5. user.national_id or user.nationalId
-  const userId = user?.national_id ?? (user as Record<string, unknown>)?.nationalId;
-  if (typeof userId === "string" && userId.trim().length > 0) {
-    return userId.trim();
-  }
-
-  // 6. user.user?.national_id
-  const nestedUser = (user as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
-  const nestedUserId = nestedUser?.national_id ?? nestedUser?.nationalId;
-  if (typeof nestedUserId === "string" && nestedUserId.trim().length > 0) {
-    return nestedUserId.trim();
+  for (const val of candidates) {
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (
+        trimmed &&
+        trimmed !== "غير متوفر" &&
+        trimmed !== "Unavailable"
+      ) {
+        return trimmed;
+      }
+    } else if (typeof val === "number") {
+      return String(val).trim();
+    }
   }
 
   return undefined;

@@ -109,8 +109,13 @@ export function normalizeAuthUser(
 
   const rawNationalId =
     (rawUser?.national_id as string) ??
+    (rawUser?.nationalId as string) ??
     (outerPayload?.national_id as string) ??
+    (outerPayload?.nationalId as string) ??
     ((rawUser?.personal_information as Record<string, unknown> | null | undefined)?.national_id as string) ??
+    ((rawUser?.personal_information as Record<string, unknown> | null | undefined)?.nationalId as string) ??
+    ((outerPayload?.personal_information as Record<string, unknown> | null | undefined)?.national_id as string) ??
+    ((outerPayload?.personal_information as Record<string, unknown> | null | undefined)?.nationalId as string) ??
     undefined;
 
   const is_verified = isAccountVerificationBypassed()
