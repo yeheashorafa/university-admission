@@ -163,6 +163,15 @@ export function PersonalInformationForm() {
     setFormError(null);
     setFieldErrors({});
 
+    if (!nationalIdValue) {
+      const msg = isAr
+        ? "رقم الهوية غير متوفر. يرجى تسجيل الدخول من جديد أو التواصل مع الدعم."
+        : "National ID is unavailable. Please sign in again or contact support.";
+      setFormError(msg);
+      toast.error(msg);
+      return;
+    }
+
     const newFieldErrors: FormErrors = {};
 
     if (isBaseProfileIncomplete) {
@@ -198,8 +207,9 @@ export function PersonalInformationForm() {
         return;
       }
 
-      // Build payload containing ONLY valid non-empty values. Do NOT send national_id.
+      // Build payload containing ONLY valid non-empty values. Include required national_id.
       const payload: PersonalInformation = {
+        national_id: nationalIdValue,
         first_name_ar: formValues.first_name_ar.trim(),
         father_name_ar: formValues.father_name_ar.trim(),
         grandfather_name_ar: formValues.grandfather_name_ar.trim(),
@@ -227,7 +237,9 @@ export function PersonalInformationForm() {
       }
     } else {
       // Base profile already exists in backend. Partial update mode: send ONLY changed non-empty fields.
-      const changedFields: Partial<PersonalInformation> = {};
+      const changedFields: Partial<PersonalInformation> = {
+        national_id: nationalIdValue,
+      };
       let hasEmptyClearedField = false;
 
       const checkField = (

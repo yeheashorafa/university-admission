@@ -171,12 +171,8 @@ export function getStudentDisplayName(
  */
 export function getStudentNationalId(
   profile: StudentProfile | null | undefined,
-  user: AuthUser | null | undefined,
-  locale?: string
-): string {
-  const isAr = locale === "ar";
-  const unavailableText = isAr ? "غير متوفر" : "Unavailable";
-
+  user: AuthUser | null | undefined
+): string | undefined {
   // 1. profile.personal_information.national_id
   const piId = profile?.personal_information?.national_id;
   if (typeof piId === "string" && piId.trim().length > 0) {
@@ -195,21 +191,27 @@ export function getStudentNationalId(
     return profIdCamel.trim();
   }
 
-  // 4. profile.user.national_id
+  // 4. profile.user.national_id or profile.user.nationalId
   const profUser = (profile as Record<string, unknown> | undefined)?.user as Record<string, unknown> | undefined;
-  const profUserId = profUser?.national_id;
+  const profUserId = profUser?.national_id ?? profUser?.nationalId;
   if (typeof profUserId === "string" && profUserId.trim().length > 0) {
     return profUserId.trim();
   }
 
-  // 5. user.national_id
-  const userId = user?.national_id;
+  // 5. user.national_id or user.nationalId
+  const userId = user?.national_id ?? (user as Record<string, unknown>)?.nationalId;
   if (typeof userId === "string" && userId.trim().length > 0) {
     return userId.trim();
   }
 
-  // 6. localized fallback only if all missing
-  return locale ? unavailableText : "";
+  // 6. user.user?.national_id
+  const nestedUser = (user as Record<string, unknown>)?.user as Record<string, unknown> | undefined;
+  const nestedUserId = nestedUser?.national_id ?? nestedUser?.nationalId;
+  if (typeof nestedUserId === "string" && nestedUserId.trim().length > 0) {
+    return nestedUserId.trim();
+  }
+
+  return undefined;
 }
 
 /**
