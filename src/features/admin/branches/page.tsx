@@ -7,6 +7,8 @@ import { AdminBranchFormModal } from "./components/admin-branch-form-modal";
 import { AdminBranchDeleteConfirm } from "./components/admin-branch-delete-confirm";
 import { useAdminBranchesQuery } from "@/hooks/queries/use-admin-branches-queries";
 import type { AdminBranch } from "@/services/admin-branches.service";
+import { AdminLayout } from "@/components/layouts/admin-layout";
+import { routes } from "@/constants/routes";
 
 export function AdminBranchesPage() {
   const { data: branches = [], isLoading } = useAdminBranchesQuery();
@@ -27,7 +29,8 @@ export function AdminBranchesPage() {
   }, [branches, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <AdminLayout activePath={routes.adminBranches}>
+      <div className="space-y-6">
       <AdminBranchesHeader
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -62,5 +65,6 @@ export function AdminBranchesPage() {
         branch={branchToDelete}
       />
     </div>
+    </AdminLayout>
   );
 }
