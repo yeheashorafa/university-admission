@@ -154,7 +154,7 @@ export function AdminSidebar({ activePath = routes.admin }: AdminSidebarProps) {
           </div>
         </div>
 
-        <nav className="mt-4 flex flex-col gap-2">
+        <nav className="mt-4 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain pb-6">
           {navigationItems.map((item) => {
             const Icon = item.icon;
 
