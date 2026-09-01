@@ -1550,17 +1550,23 @@
     "sidebar": {
       "dashboard": "لوحة التحكم",
       "reports": "الإحصائيات والتقارير",
+      "headReports": "تقارير رئيس القسم",
+      "deanReports": "تقارير العميد",
       "applications": "الطلبات",
       "manualReview": "المراجعة اليدوية",
       "documentVerification": "التحقق من المستندات",
+      "tawjihiImport": "استيراد نتائج التوجيهي",
       "users": "المستخدمون",
       "notifications": "الإشعارات",
+      "employeeNotifications": "إشعارات الموظفين",
+      "headNotifications": "إشعارات رئيس القسم",
       "settings": "الإعدادات",
       "masterData": {
         "faculties": "الكليات",
         "departments": "الأقسام",
         "documentTypes": "أنواع المستندات",
-        "applicationTypes": "أنواع الطلبات"
+        "applicationTypes": "أنواع الطلبات",
+        "branches": "الفروع"
       }
     },
     "profileAlert": {

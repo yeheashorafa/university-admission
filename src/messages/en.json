@@ -1550,17 +1550,23 @@
     "sidebar": {
       "dashboard": "Dashboard",
       "reports": "Statistics & Reports",
+      "headReports": "Head Reports",
+      "deanReports": "Dean Reports",
       "applications": "Applications",
       "manualReview": "Manual Review",
       "documentVerification": "Document Verification",
+      "tawjihiImport": "Tawjihi Import",
       "users": "Users",
       "notifications": "Notifications",
+      "employeeNotifications": "Employee Notifications",
+      "headNotifications": "Head Notifications",
       "settings": "Settings",
       "masterData": {
         "faculties": "Faculties",
         "departments": "Departments",
         "documentTypes": "Document Types",
-        "applicationTypes": "Application Types"
+        "applicationTypes": "Application Types",
+        "branches": "Branches"
       }
     },
     "profileAlert": {
