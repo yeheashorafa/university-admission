@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { useEffect, useState } from "react";
 import {
   Bell,
@@ -21,7 +21,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { LanguageToggle } from "@/components/shared/language-toggle";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { routes, withLocale } from "@/constants/routes";
-import { clearCurrentAuth, useCurrentAuth } from "@/hooks/use-current-auth";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { useLogout } from "@/hooks/use-logout";
 import { getAccessToken, getStoredUser } from "@/lib/api/auth-token";
 import type { AuthUser } from "@/services/auth.service";
 import { cn } from "@/lib/utils";
@@ -40,7 +41,6 @@ type PortalNavbarProps = {
 };
 
 export function PortalNavbar({ activePath = routes.home }: PortalNavbarProps) {
-  const router = useRouter();
   const locale = useLocale();
   const tCommon = useTranslations("common");
   const tNav = useTranslations("navigation");
@@ -87,19 +87,15 @@ export function PortalNavbar({ activePath = routes.home }: PortalNavbarProps) {
   }, [isAuthenticated]);
 
 
+  const logout = useLogout();
+
   async function handleLogout() {
-    try {
-      await useAuthStore.getState().logout();
-    } catch {
-      useAuthStore.getState().clearAuth();
-    }
-    clearCurrentAuth();
     setMobileOpen(false);
     setStudentMenuOpen(false);
     setAccountMenuOpen(false);
     setUserDropdownOpen(false);
     setNotificationsOpen(false);
-    router.push(withLocale(locale, routes.home));
+    await logout();
   }
 
   const mainNavItems = [

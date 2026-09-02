@@ -8,6 +8,7 @@ import { extractApiError, isVerificationError, ApiError } from "./api-error";
 import { extractResource } from "./response";
 import { ENDPOINTS } from "./endpoints";
 import { isAccountVerificationBypassed } from "../auth-verification";
+import { getLogoutInProgress } from "../auth/logout-state";
 
 const NO_REFRESH_ENDPOINTS = /^\/auth\/(login|register|refresh|send-otp|verify-otp)(\/|$)/;
 
@@ -178,8 +179,13 @@ apiClient.interceptors.response.use(
       const apiError = extractApiError(error);
       const currentPath = window.location.pathname;
       const isAuthOrOtp = NO_REFRESH_ENDPOINTS.test(requestUrl);
+      const isLogoutRequest = requestUrl.includes("/auth/logout");
       const alreadyOnAuthPage =
         currentPath.includes("/login") || currentPath.includes("/unauthorized");
+
+      if (isLogoutRequest || getLogoutInProgress()) {
+        return Promise.reject(extractApiError(error));
+      }
 
       if (
         status === 403 &&

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -14,6 +14,7 @@ type RoleGuardProps = {
 };
 
 import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { getLogoutInProgress } from "@/lib/auth/logout-state";
 
 export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
   const router = useRouter();
@@ -26,15 +27,21 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
   const isAuthenticated = Boolean(user);
   const isAllowed = canAccessRole(role, allowedRoles);
 
+  const didRedirectRef = useRef(false);
+
   useEffect(() => {
     if (!isHydrated) return;
+    if (getLogoutInProgress()) return;
+    if (didRedirectRef.current) return;
 
     if (!isAuthenticated) {
+      didRedirectRef.current = true;
       router.replace(withLocale(locale, routes.login));
       return;
     }
 
     if (!isAllowed) {
+      didRedirectRef.current = true;
       router.replace(withLocale(locale, routes.dashboard));
     }
   }, [isHydrated, isAuthenticated, isAllowed, router, locale]);

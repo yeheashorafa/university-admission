@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 import {
   ChevronDown,
@@ -14,7 +14,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { LanguageToggle } from "@/components/shared/language-toggle";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { routes, withLocale } from "@/constants/routes";
-import { clearCurrentAuth, useCurrentAuth } from "@/hooks/use-current-auth";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { useLogout } from "@/hooks/use-logout";
 import { cn } from "@/lib/utils";
 import { IugLogo } from "@/components/shared/iug-logo";
 import { getAdminNavigationItems } from "@/constants/admin-navigation";
@@ -24,7 +25,6 @@ type AdminSidebarProps = {
 };
 
 export function AdminSidebar({ activePath = routes.admin }: AdminSidebarProps) {
-  const router = useRouter();
   const locale = useLocale();
   const tCommon = useTranslations("common");
   const { user } = useCurrentAuth();
@@ -34,11 +34,12 @@ export function AdminSidebar({ activePath = routes.admin }: AdminSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
 
-  function handleLogout() {
-    clearCurrentAuth();
+  const logout = useLogout();
+  
+  async function handleLogout() {
     setMobileOpen(false);
     setAccountOpen(false);
-    router.push(withLocale(locale, routes.login));
+    await logout();
   }
 
   return (
