@@ -1,4 +1,4 @@
-import { apiClient, extractArray, extractResource } from "@/lib/api/client";
+import { apiClient, extractApplicationsArray, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { BackendApplicationStatus } from "@/lib/adapters/status-adapter";
 
@@ -32,7 +32,7 @@ export async function getEmployeeApplications(params?: {
     ENDPOINTS.admissionEmployee.applications,
     { params }
   );
-  return extractArray<EmployeeApplication>(response.data);
+  return extractApplicationsArray<EmployeeApplication>(response.data);
 }
 
 export async function getEmployeeApplicationById(

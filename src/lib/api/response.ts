@@ -28,6 +28,43 @@ export function extractArray<T>(responseData: unknown): T[] {
   return [];
 }
 
+export function extractApplicationsArray<T>(responseData: unknown): T[] {
+  if (!responseData) return [];
+  if (Array.isArray(responseData)) return responseData as T[];
+
+  if (responseData && typeof responseData === "object") {
+    const obj = responseData as Record<string, unknown>;
+
+    // Priority 1: Direct applications array
+    if (Array.isArray(obj.applications)) return obj.applications as T[];
+
+    // Priority 2: applications.data
+    if (obj.applications && typeof obj.applications === "object" && obj.applications !== null) {
+      const apps = obj.applications as Record<string, unknown>;
+      if (Array.isArray(apps.data)) return apps.data as T[];
+    }
+
+    if (obj.data && typeof obj.data === "object" && obj.data !== null) {
+      const inner = obj.data as Record<string, unknown>;
+
+      // Priority 3: data.applications array
+      if (Array.isArray(inner.applications)) return inner.applications as T[];
+
+      // Priority 4: data.applications.data
+      if (inner.applications && typeof inner.applications === "object" && inner.applications !== null) {
+        const apps = inner.applications as Record<string, unknown>;
+        if (Array.isArray(apps.data)) return apps.data as T[];
+      }
+
+      // Priority 5: data.data (standard Laravel pagination)
+      if (Array.isArray(inner.data)) return inner.data as T[];
+    }
+  }
+
+  // Fallback to standard extraction
+  return extractArray<T>(responseData);
+}
+
 export function extractResource<T>(responseData: unknown): T {
   if (responseData && typeof responseData === "object") {
     const obj = responseData as Record<string, unknown>;

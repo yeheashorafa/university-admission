@@ -92,7 +92,7 @@ export function useAdminApplicationDetailsQuery(applicationId: string | number) 
 }
 
 export function useEmployeeApplicationsQuery(params?: { page?: number; status?: string; search?: string }) {
-  const isEnabled = useStaffQueryGuard([userRoles.admissionEmployee, userRoles.admin]);
+  const isEnabled = useStaffQueryGuard([userRoles.admissionEmployee]);
   return useQuery({
     queryKey: queryKeys.employee.applications(params),
     queryFn: () => getEmployeeApplications(params),
@@ -102,7 +102,7 @@ export function useEmployeeApplicationsQuery(params?: { page?: number; status?: 
 }
 
 export function useEmployeeApplicationDetailQuery(id: string | number) {
-  const isEnabled = useStaffQueryGuard([userRoles.admissionEmployee, userRoles.admin], Boolean(id));
+  const isEnabled = useStaffQueryGuard([userRoles.admissionEmployee], Boolean(id));
   return useQuery({
     queryKey: queryKeys.employee.applicationDetail(id),
     queryFn: () => getEmployeeApplicationById(id),
@@ -112,7 +112,7 @@ export function useEmployeeApplicationDetailQuery(id: string | number) {
 }
 
 export function useHeadApplicationsQuery(params?: { page?: number; status?: string; search?: string }) {
-  const isEnabled = useStaffQueryGuard([userRoles.departmentHead, userRoles.admin]);
+  const isEnabled = useStaffQueryGuard([userRoles.departmentHead]);
   return useQuery({
     queryKey: queryKeys.departmentHead.applications(params),
     queryFn: () => getHeadApplications(params),
@@ -122,7 +122,7 @@ export function useHeadApplicationsQuery(params?: { page?: number; status?: stri
 }
 
 export function useHeadApplicationDetailQuery(id: string | number) {
-  const isEnabled = useStaffQueryGuard([userRoles.departmentHead, userRoles.admin], Boolean(id));
+  const isEnabled = useStaffQueryGuard([userRoles.departmentHead], Boolean(id));
   return useQuery({
     queryKey: queryKeys.departmentHead.applicationDetail(id),
     queryFn: () => getHeadApplicationById(id),

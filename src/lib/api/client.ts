@@ -229,7 +229,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-export { extractArray, extractResource } from "./response";
+export { extractArray, extractResource, extractApplicationsArray } from "./response";
 
 export function unwrapResourceResponse<T>(responseData: unknown): T {
   return extractResource<T>(responseData);

@@ -8,8 +8,11 @@ export type WorkflowApplication = {
   id: string;
   applicationNo: string;
   studentName: string;
+  studentEmail?: string;
+  studentPhone?: string;
   nationalId: string;
   selectedProgram: string;
+  admissionCycle?: string;
   faculty: string;
   average: string;
   currentStatus: ApplicationStatus;
@@ -338,8 +341,11 @@ export function mapBackendApplicationToWorkflowApplication(
       id: "",
       applicationNo: "—",
       studentName: "غير متوفر",
+      studentEmail: "غير متوفر",
+      studentPhone: "غير متوفر",
       nationalId: "غير متوفر",
       selectedProgram: "غير متوفر",
+      admissionCycle: "غير متوفر",
       faculty: "—",
       average: "—",
       currentStatus: "submitted" as ApplicationStatus,
@@ -355,27 +361,69 @@ export function mapBackendApplicationToWorkflowApplication(
     (typeof app.application_no === "string" && app.application_no) ||
     (id ? `APP-${id}` : "—");
 
-  const studentName =
-    (typeof app.studentName === "string" && app.studentName) ||
-    (typeof app.student_name === "string" && app.student_name) ||
-    "غير متوفر";
+  const applicantObj = app.applicant ?? app.student ?? app.user ?? null;
 
-  const nationalId =
-    (typeof app.nationalId === "string" && app.nationalId) ||
-    (typeof app.national_id === "string" && app.national_id) ||
-    "—";
+  let studentName = "غير متوفر";
+  let studentEmail = "غير متوفر";
+  let studentPhone = "غير متوفر";
+  
+  if (typeof app.studentName === "string" && app.studentName) studentName = app.studentName;
+  else if (typeof app.student_name === "string" && app.student_name) studentName = app.student_name;
+  
+  if (applicantObj && typeof applicantObj === "object") {
+    const s = applicantObj as Record<string, unknown>;
+    
+    if (typeof s.name === "string" && s.name) studentName = s.name;
+    else if (typeof s.name_ar === "string" && s.name_ar) studentName = s.name_ar;
+    else if (typeof s.full_name === "string" && s.full_name) studentName = s.full_name;
+    else if (typeof s.first_name === "string" && s.first_name) studentName = `${s.first_name} ${s.last_name || ""}`.trim();
+    
+    if (typeof s.email === "string" && s.email) studentEmail = s.email;
+    if (typeof s.phone === "string" && s.phone) studentPhone = s.phone;
+  }
 
-  const selectedProgram =
-    (typeof app.program === "string" && app.program) ||
-    (typeof app.selectedProgram === "string" && app.selectedProgram) ||
-    (typeof app.program_name === "string" && app.program_name) ||
-    "غير متوفر";
+  let nationalId = "—";
+  if (typeof app.nationalId === "string" && app.nationalId) nationalId = app.nationalId;
+  else if (typeof app.national_id === "string" && app.national_id) nationalId = app.national_id;
+  else if (applicantObj && typeof applicantObj === "object") {
+    const s = applicantObj as Record<string, unknown>;
+    if (typeof s.national_id === "string" && s.national_id) nationalId = s.national_id;
+  }
 
-  const faculty =
-    (typeof app.faculty === "string" && app.faculty) ||
-    (typeof app.faculty_name === "string" && app.faculty_name) ||
-    (typeof app.department === "string" && app.department) ||
-    "—";
+  let selectedProgram = "غير متوفر";
+  if (typeof app.program === "string" && app.program) selectedProgram = app.program;
+  else if (typeof app.selectedProgram === "string" && app.selectedProgram) selectedProgram = app.selectedProgram;
+  else if (typeof app.program_name === "string" && app.program_name) selectedProgram = app.program_name;
+  else if (app.program && typeof app.program === "object") {
+    const p = app.program as Record<string, unknown>;
+    if (typeof p.name_ar === "string" && p.name_ar) selectedProgram = p.name_ar;
+    else if (typeof p.name_en === "string" && p.name_en) selectedProgram = p.name_en;
+    else if (typeof p.name === "string" && p.name) selectedProgram = p.name;
+  }
+
+  let admissionCycle = "غير متوفر";
+  if (typeof app.admission_cycle === "string" && app.admission_cycle) admissionCycle = app.admission_cycle;
+  else if (app.admission_cycle && typeof app.admission_cycle === "object") {
+    const ac = app.admission_cycle as Record<string, unknown>;
+    if (typeof ac.name === "string" && ac.name) admissionCycle = ac.name;
+    else if (typeof ac.academic_year === "string" && ac.academic_year) admissionCycle = ac.academic_year;
+  }
+
+
+
+  let faculty = "—";
+  if (typeof app.faculty === "string" && app.faculty) faculty = app.faculty;
+  else if (typeof app.faculty_name === "string" && app.faculty_name) faculty = app.faculty_name;
+  else if (typeof app.department === "string" && app.department) faculty = app.department;
+  else if (app.faculty && typeof app.faculty === "object") {
+    const f = app.faculty as Record<string, unknown>;
+    if (typeof f.name_ar === "string" && f.name_ar) faculty = f.name_ar;
+    else if (typeof f.name === "string" && f.name) faculty = f.name;
+  } else if (app.department && typeof app.department === "object") {
+    const d = app.department as Record<string, unknown>;
+    if (typeof d.name_ar === "string" && d.name_ar) faculty = d.name_ar;
+    else if (typeof d.name === "string" && d.name) faculty = d.name;
+  }
 
   const average =
     (typeof app.average === "string" && app.average) ||
@@ -415,8 +463,11 @@ export function mapBackendApplicationToWorkflowApplication(
     id,
     applicationNo,
     studentName,
+    studentEmail,
+    studentPhone,
     nationalId,
     selectedProgram,
+    admissionCycle,
     faculty,
     average,
     currentStatus,

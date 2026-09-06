@@ -1,4 +1,4 @@
-import { apiClient, extractArray, extractResource } from "@/lib/api/client";
+import { apiClient, extractArray, extractApplicationsArray, extractResource } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { BackendApplicationStatus } from "@/lib/adapters/status-adapter";
 
@@ -24,7 +24,7 @@ export async function getAdminApplications(params?: {
     ENDPOINTS.admin.applications,
     { params }
   );
-  return extractArray<AdminApplication>(response.data);
+  return extractApplicationsArray<AdminApplication>(response.data);
 }
 
 export async function getAdminApplicationById(
