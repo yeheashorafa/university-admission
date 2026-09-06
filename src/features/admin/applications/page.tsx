@@ -34,10 +34,29 @@ export function AdminApplicationsPage() {
 
   const applications: WorkflowApplication[] = useMemo(() => {
     const list = Array.isArray(rawApps) ? rawApps : [];
-    return list.map((app) =>
+    const normalized = list.map((app) =>
       mapBackendApplicationToWorkflowApplication(app as Record<string, unknown>)
     );
-  }, [rawApps]);
+
+    if (process.env.NODE_ENV !== "production") {
+      console.debug("[applications-debug]", {
+        role: user?.role,
+        endpoint: isEmployee ? "employee" : isHead ? "head" : "admin",
+        rawCount: Array.isArray(rawApps) ? rawApps.length : 0,
+        rawShape: rawApps,
+        normalizedCount: normalized.length,
+        firstApp: normalized[0] ? {
+          id: normalized[0].id,
+          applicationNo: normalized[0].applicationNo,
+          status: normalized[0].currentStatus,
+        } : null,
+        filters: { search },
+        visibleCount: normalized.length
+      });
+    }
+
+    return normalized;
+  }, [rawApps, isEmployee, isHead, search, user?.role]);
 
   return (
     <AdminLayout activePath={routes.adminApplications}>

@@ -60,7 +60,12 @@ export const useAuthStore = create<AuthState>()(
       },
 
       get role() {
-        return get().user?.role ?? null;
+        const rawRole = get().user?.role;
+        if (!rawRole) return null;
+        const normalized = String(rawRole).toLowerCase().replace(/[- ]/g, "_");
+        if (normalized === "employee") return "admission_employee" as UserRole;
+        if (normalized === "dean") return "admission_dean" as UserRole;
+        return normalized as UserRole;
       },
 
       setHasHydrated: (value) => {
