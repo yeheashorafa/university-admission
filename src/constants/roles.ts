@@ -58,3 +58,37 @@ export function canViewAllStatistics(role?: string | null) {
 export function canAccessAdmin(role?: string | null) {
   return isAdminRole(role);
 }
+
+export function normalizeRole(value: unknown): UserRole | null {
+  let raw: unknown = value;
+
+  if (raw && typeof raw === "object" && "name" in raw) {
+    raw = (raw as { name?: unknown }).name;
+  }
+
+  if (typeof raw !== "string") return null;
+
+  const normalized = raw.trim().toLowerCase().replace(/[-\s]+/g, "_");
+
+  const aliases: Record<string, UserRole> = {
+    student: userRoles.student,
+
+    admin: userRoles.admin,
+    administrator: userRoles.admin,
+    super_admin: userRoles.admin,
+
+    employee: userRoles.admissionEmployee,
+    admission_employee: userRoles.admissionEmployee,
+    admissionemployee: userRoles.admissionEmployee,
+
+    department_head: userRoles.departmentHead,
+    departmenthead: userRoles.departmentHead,
+    head: userRoles.departmentHead,
+
+    dean: userRoles.admissionDean,
+    admission_dean: userRoles.admissionDean,
+    admissiondean: userRoles.admissionDean,
+  };
+
+  return aliases[normalized] ?? null;
+}

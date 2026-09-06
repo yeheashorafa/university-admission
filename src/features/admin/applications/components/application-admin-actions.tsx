@@ -24,10 +24,10 @@ export function ApplicationAdminActions({
   status,
 }: ApplicationAdminActionsProps) {
   const t = useTranslations("admin.applicationWorkflow");
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
   const queryClient = useQueryClient();
 
-  const isAdmin = user?.role === userRoles.admin;
+  const isAdmin = role === userRoles.admin;
 
   const [reviewerId, setReviewerId] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);

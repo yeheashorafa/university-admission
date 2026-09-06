@@ -24,9 +24,9 @@ export function ApplicationEmployeeActions({
   comments: initialComments,
 }: ApplicationEmployeeActionsProps) {
   const t = useTranslations("admin.applicationWorkflow");
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
   const isEmployee =
-    user?.role === userRoles.admissionEmployee || user?.role === userRoles.admin;
+    role === userRoles.admissionEmployee || role === userRoles.admin;
 
   const {
     verifyAiMutation,

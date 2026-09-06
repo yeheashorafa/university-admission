@@ -34,16 +34,16 @@ type AdminApplicationDetailsPageProps = {
 export function AdminApplicationDetailsPage({
   applicationId,
 }: AdminApplicationDetailsPageProps) {
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
   const activeSidebarPath =
-    user?.role === userRoles.admissionEmployee
+    role === userRoles.admissionEmployee
       ? routes.adminManualReview
       : routes.adminApplications;
 
   const { data: apiApp, isLoading, isError } = useAdminApplicationDetailsQuery(applicationId);
 
   const employeeComments =
-    user?.role === userRoles.admissionEmployee && apiApp
+    role === userRoles.admissionEmployee && apiApp
       ? ((apiApp as EmployeeApplication).comments ?? [])
       : [];
 
@@ -92,10 +92,10 @@ export function AdminApplicationDetailsPage({
             <ApplicationWorkflowActions
               applicationId={applicationId}
               status={initialApplication.currentStatus}
-              role={user?.role}
+              role={role}
             />
 
-            {user?.role === userRoles.admissionEmployee && (
+            {role === userRoles.admissionEmployee && (
               <ApplicationEmployeeActions
                 key={applicationId}
                 applicationId={applicationId}
@@ -104,7 +104,7 @@ export function AdminApplicationDetailsPage({
               />
             )}
 
-            {user?.role === userRoles.admin && (
+            {role === userRoles.admin && (
               <ApplicationAdminActions
                 applicationId={applicationId}
                 status={initialApplication.currentStatus}

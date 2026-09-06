@@ -12,10 +12,10 @@ import { AdminKpiCard } from "./admin-kpi-card";
 import type { AdminKpiCard as KpiCardType } from "../data/admin-dashboard.data";
 
 export function AdminKpiGrid() {
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
 
-  const isHead = user?.role === userRoles.departmentHead;
-  const isEmployee = user?.role === userRoles.admissionEmployee;
+  const isHead = role === userRoles.departmentHead;
+  const isEmployee = role === userRoles.admissionEmployee;
 
   const { data: empApps } = useEmployeeApplicationsQuery();
   const { data: headApps } = useHeadApplicationsQuery();

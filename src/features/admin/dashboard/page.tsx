@@ -10,9 +10,9 @@ import { EmployeeOperationalDashboard } from "./components/employee-operational-
 import { DeanDashboard } from "./components/dean-dashboard";
 
 export function AdminDashboardPage() {
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
 
-  if (isAdmissionDean(user?.role)) {
+  if (isAdmissionDean(role)) {
     return (
       <AdminLayout activePath={routes.admin}>
         <DeanDashboard />
@@ -20,7 +20,7 @@ export function AdminDashboardPage() {
     );
   }
 
-  if (isAdmissionEmployee(user?.role)) {
+  if (isAdmissionEmployee(role)) {
     return (
       <AdminLayout activePath={routes.admin}>
         <EmployeeOperationalDashboard />

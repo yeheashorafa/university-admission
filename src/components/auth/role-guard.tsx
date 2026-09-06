@@ -21,9 +21,7 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
   const locale = useLocale();
   const t = useTranslations("common");
 
-  const { user, isHydrated } = useCurrentAuth();
-
-  const role = user?.role ?? null;
+  const { user, role, isHydrated } = useCurrentAuth();
   const isAuthenticated = Boolean(user);
   const isAllowed = canAccessRole(role, allowedRoles);
 

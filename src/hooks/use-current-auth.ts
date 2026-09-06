@@ -3,6 +3,7 @@
 import { useMemo, useSyncExternalStore } from "react";
 import type { AuthUser } from "@/services/auth.service";
 import { clearAuthStorage, getAccessToken, getStoredUser } from "@/lib/api/auth-token";
+import { normalizeRole } from "@/constants/roles";
 
 type StoredAuth = {
   user: AuthUser | null;
@@ -90,11 +91,13 @@ function parseAuthStorage(snapshot: string): StoredAuth {
       };
     }
 
+    const normalizedRole = normalizeRole(user.role);
+
     return {
-      user,
+      user: normalizedRole ? { ...user, role: normalizedRole } : user,
       token,
       isAuthenticated: true,
-      role: user.role ?? null,
+      role: normalizedRole,
       isHydrated: true,
     };
   } catch {

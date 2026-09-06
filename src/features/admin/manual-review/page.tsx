@@ -18,11 +18,11 @@ import {
 } from "../applications/data/applications-workflow.data";
 
 export function AdminManualReviewPage() {
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
   const [search, setSearch] = useState("");
 
-  const isHead = user?.role === userRoles.departmentHead;
-  const isEmployee = user?.role === userRoles.admissionEmployee;
+  const isHead = role === userRoles.departmentHead;
+  const isEmployee = role === userRoles.admissionEmployee;
 
   const { data: employeeApps, isLoading: loadingEmp } = useEmployeeApplicationsQuery();
   const { data: headApps, isLoading: loadingHead } = useHeadApplicationsQuery();
@@ -66,7 +66,7 @@ export function AdminManualReviewPage() {
       <div className="flex flex-col gap-6">
         <ManualReviewHeader
           totalApplications={reviewApplications.length}
-          role={user?.role}
+          role={role}
         />
 
         {isLoading ? (

@@ -19,11 +19,11 @@ import {
 } from "./data/applications-workflow.data";
 
 export function AdminApplicationsPage() {
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
   const [search, setSearch] = useState("");
 
-  const isEmployee = user?.role === userRoles.admissionEmployee;
-  const isHead = user?.role === userRoles.departmentHead;
+  const isEmployee = role === userRoles.admissionEmployee;
+  const isHead = role === userRoles.departmentHead;
 
   const { data: empApps, isLoading: empLoading } = useEmployeeApplicationsQuery({ search });
   const { data: headApps, isLoading: headLoading } = useHeadApplicationsQuery({ search });
@@ -40,7 +40,7 @@ export function AdminApplicationsPage() {
 
     if (process.env.NODE_ENV !== "production") {
       console.debug("[applications-debug]", {
-        role: user?.role,
+        role,
         endpoint: isEmployee ? "employee" : isHead ? "head" : "admin",
         rawCount: Array.isArray(rawApps) ? rawApps.length : 0,
         rawShape: rawApps,
@@ -56,7 +56,7 @@ export function AdminApplicationsPage() {
     }
 
     return normalized;
-  }, [rawApps, isEmployee, isHead, search, user?.role]);
+  }, [rawApps, isEmployee, isHead, search, role]);
 
   return (
     <AdminLayout activePath={routes.adminApplications}>

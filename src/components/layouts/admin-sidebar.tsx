@@ -27,8 +27,8 @@ type AdminSidebarProps = {
 export function AdminSidebar({ activePath = routes.admin }: AdminSidebarProps) {
   const locale = useLocale();
   const tCommon = useTranslations("common");
-  const { user } = useCurrentAuth();
-  const navigationItems = getAdminNavigationItems(user?.role);
+  const { user, role } = useCurrentAuth();
+  const navigationItems = getAdminNavigationItems(role);
   const t = useTranslations("admin");
 
   const [mobileOpen, setMobileOpen] = useState(false);

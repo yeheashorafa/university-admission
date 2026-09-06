@@ -358,6 +358,7 @@ export function mapBackendApplicationToWorkflowApplication(
   const id = String(app.id ?? "");
   const applicationNo =
     (typeof app.applicationNo === "string" && app.applicationNo) ||
+    (typeof app.application_number === "string" && app.application_number) ||
     (typeof app.application_no === "string" && app.application_no) ||
     (id ? `APP-${id}` : "—");
 

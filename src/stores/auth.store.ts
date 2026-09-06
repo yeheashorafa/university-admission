@@ -19,6 +19,7 @@ import {
 } from "@/lib/api/auth-token";
 import { extractApiError } from "@/lib/api/api-error";
 import type { UserRole } from "@/constants/roles";
+import { normalizeRole } from "@/constants/roles";
 
 type AuthStatus = "loading" | "authenticated" | "guest";
 
@@ -60,12 +61,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       get role() {
-        const rawRole = get().user?.role;
-        if (!rawRole) return null;
-        const normalized = String(rawRole).toLowerCase().replace(/[- ]/g, "_");
-        if (normalized === "employee") return "admission_employee" as UserRole;
-        if (normalized === "dean") return "admission_dean" as UserRole;
-        return normalized as UserRole;
+        return normalizeRole(get().user?.role);
       },
 
       setHasHydrated: (value) => {

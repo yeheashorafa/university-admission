@@ -27,11 +27,11 @@ import type { AdminNotification, NotificationType } from "./data/admin-notificat
 
 export function AdminNotificationsPage() {
   const t = useTranslations("admin");
-  const { user } = useCurrentAuth();
+  const { role } = useCurrentAuth();
 
-  const isAdmin = user?.role === "admin";
-  const isDean = user?.role === "admission_dean";
-  const isStaff = user?.role === "admission_employee" || user?.role === "department_head";
+  const isAdmin = role === "admin";
+  const isDean = role === "admission_dean";
+  const isStaff = role === "admission_employee" || role === "department_head";
 
   const adminQuery = useAdminNotificationsQuery({ enabled: isAdmin });
   const staffQuery = useStaffNotificationsQuery();

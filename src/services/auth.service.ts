@@ -4,6 +4,7 @@ import type { UserRole } from "@/constants/roles";
 import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 
 export type { UserRole };
+import { normalizeRole } from "@/constants/roles";
 
 export type AuthUser = {
   id: string | number;
@@ -56,36 +57,32 @@ export function isUserVerified(user: AuthUser | null | undefined): boolean | und
 export function extractRoleName(userRaw: Record<string, unknown> | null | undefined): UserRole {
   if (!userRaw) return "student";
 
-  // Check role property
+  let extracted: unknown = "student";
+
   if (typeof userRaw.role === "string") {
-    return userRaw.role as UserRole;
-  }
-  if (
+    extracted = userRaw.role;
+  } else if (
     userRaw.role &&
     typeof userRaw.role === "object" &&
     "name" in (userRaw.role as object) &&
     typeof (userRaw.role as { name: unknown }).name === "string"
   ) {
-    return (userRaw.role as { name: string }).name as UserRole;
-  }
-
-  // Check roles array
-  if (Array.isArray(userRaw.roles) && userRaw.roles.length > 0) {
+    extracted = (userRaw.role as { name: string }).name;
+  } else if (Array.isArray(userRaw.roles) && userRaw.roles.length > 0) {
     const firstRole = userRaw.roles[0];
     if (typeof firstRole === "string") {
-      return firstRole as UserRole;
-    }
-    if (
+      extracted = firstRole;
+    } else if (
       firstRole &&
       typeof firstRole === "object" &&
       "name" in (firstRole as object) &&
       typeof (firstRole as { name: unknown }).name === "string"
     ) {
-      return (firstRole as { name: string }).name as UserRole;
+      extracted = (firstRole as { name: string }).name;
     }
   }
 
-  return "student";
+  return normalizeRole(extracted) || "student";
 }
 
 export function normalizeAuthUser(
