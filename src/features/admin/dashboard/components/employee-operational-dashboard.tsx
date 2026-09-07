@@ -17,6 +17,11 @@ import {
   isPendingManualReview,
   type RawBackendApplication,
 } from "@/features/admin/document-verification/utils/document-verification-filter";
+import {
+  getProgramLabel,
+  getApplicantLabel,
+  getApplicationNumber,
+} from "@/lib/utils/application-formatters";
 
 export function EmployeeOperationalDashboard() {
   const locale = useLocale();
@@ -197,9 +202,11 @@ export function EmployeeOperationalDashboard() {
                 </tr>
               ) : (
                 manualReviewApps.slice(0, 5).map((app) => {
-                  const appNo = app.applicationNo || app.application_no || `APP-${app.id}`;
-                  const name = app.studentName || app.student_name || "طالب غير محدد";
-                  const prog = app.program || "برنامج غير محدد";
+                  const appRecord = app as unknown as Record<string, unknown>;
+                  
+                  const appNo = getApplicationNumber(appRecord);
+                  const name = getApplicantLabel(appRecord);
+                  const prog = getProgramLabel(appRecord, isAr);
                   const appStatus = String(app.status || "under_review");
 
                   return (
