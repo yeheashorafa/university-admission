@@ -17,7 +17,7 @@ import type {
   ReportLabelCount,
   ReportTimeInStatus,
 } from "@/services/admin-reports.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { isAdmissionDean } from "@/constants/roles";
 
 export type DeanReportsData = {
@@ -31,12 +31,9 @@ export type DeanReportsData = {
 };
 
 export function useDeanReportsQuery(range?: ReportDateRange) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, role, isHydrated } = useCurrentAuth();
 
-  const isEnabled = Boolean(hasHydrated && token && user && isAdmissionDean(role));
+  const isEnabled = Boolean(isHydrated && token && user && isAdmissionDean(role));
 
   return useQuery({
     queryKey: ["admissionDean", "reports", range?.from ?? "all", range?.to ?? "all"],

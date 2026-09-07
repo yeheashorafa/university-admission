@@ -14,7 +14,7 @@ import type {
   ReportDateCount,
   ReportLabelCount,
 } from "@/services/admin-reports.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { isDepartmentHead } from "@/constants/roles";
 
 export type HeadReportsData = {
@@ -25,13 +25,10 @@ export type HeadReportsData = {
 };
 
 export function useHeadReportsQuery(range?: ReportDateRange) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, role, isHydrated } = useCurrentAuth();
 
   const isEnabled = Boolean(
-    hasHydrated && token && user && isDepartmentHead(role)
+    isHydrated && token && user && isDepartmentHead(role)
   );
 
   return useQuery({

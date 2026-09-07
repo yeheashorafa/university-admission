@@ -27,7 +27,7 @@ import { getAccessToken, getStoredUser } from "@/lib/api/auth-token";
 import type { AuthUser } from "@/services/auth.service";
 import { cn } from "@/lib/utils";
 import { IugLogo } from "@/components/shared/iug-logo";
-import { isAdminRole, isStudentRole } from "@/constants/roles";
+import { isAdminRole, isStudentRole, normalizeRole } from "@/constants/roles";
 import { useAuthStore } from "@/stores/auth.store";
 import { useMyNotificationsQuery } from "@/hooks/queries/use-notifications-queries";
 import { getNotificationTitle } from "@/services/notifications.service";
@@ -60,7 +60,7 @@ export function PortalNavbar({ activePath = routes.home }: PortalNavbarProps) {
     : null;
 
   const user = effectiveUser;
-  const role = storeRole || currentAuthRole || effectiveUser?.role || null;
+  const role = storeRole || currentAuthRole || normalizeRole(effectiveUser?.role) || null;
 
   const isAuthenticated = Boolean(effectiveToken && effectiveUser);
   const isGuest = !isAuthenticated;

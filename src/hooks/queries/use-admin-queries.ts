@@ -33,8 +33,8 @@ import {
 } from "@/services/department-head.service";
 
 
-import { useAuthStore } from "@/stores/auth.store";
 import { userRoles } from "@/constants/roles";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 type AdminApplicationsParams = {
   page?: number;
@@ -43,13 +43,10 @@ type AdminApplicationsParams = {
 };
 
 function useStaffQueryGuard(allowedRoles: string[], extraCondition: boolean = true) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, role, isHydrated } = useCurrentAuth();
 
   return Boolean(
-    hasHydrated &&
+    isHydrated &&
       token &&
       user &&
       role &&
@@ -69,7 +66,7 @@ export function useAdminApplicationsQuery(params?: AdminApplicationsParams) {
 }
 
 export function useAdminApplicationDetailsQuery(applicationId: string | number) {
-  const role = useAuthStore((state) => state.role);
+  const { role } = useCurrentAuth();
   const isEnabled = useStaffQueryGuard(
     [userRoles.admin, userRoles.admissionDean, userRoles.admissionEmployee, userRoles.departmentHead],
     Boolean(applicationId)

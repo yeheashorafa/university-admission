@@ -36,6 +36,9 @@ export function useLogout() {
 
     // 6. redirect once to localized login
     router.replace(`${withLocale(locale, routes.login)}?reason=logout`);
+
+    // 7. safe reset of logout state
+    setTimeout(() => setLogoutInProgress(false), 1000);
   };
 
   return handleLogout;

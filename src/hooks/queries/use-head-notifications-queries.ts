@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@/stores/auth.store";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { queryKeys } from "@/constants/query-keys";
 import {
   getHeadNotifications,
@@ -9,14 +9,11 @@ import {
 } from "@/services/head-notifications.service";
 
 export function useHeadNotificationsQuery(options?: { enabled?: boolean }) {
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const role = useAuthStore((state) => state.role);
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { user, token, role, isHydrated } = useCurrentAuth();
 
   const isHead = role === "department_head";
   const isEnabled =
-    Boolean(hasHydrated && token && user && isHead) && (options?.enabled ?? true);
+    Boolean(isHydrated && token && user && isHead) && (options?.enabled ?? true);
 
   return useQuery({
     queryKey: queryKeys.departmentHead.notifications,
