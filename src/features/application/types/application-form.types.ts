@@ -19,6 +19,7 @@ export type QualificationData = {
   isQualificationVerified: boolean;
   verificationSource: "manual" | "ministry" | "pending_backend_api";
   lockedQualificationFields?: boolean;
+  isNationalIdReadOnly?: boolean;
 };
 
 export type AdmissionTypeData = {

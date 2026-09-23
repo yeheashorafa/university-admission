@@ -108,6 +108,7 @@ export function AdminApplicationDetailsPage({
               <ApplicationAdminActions
                 applicationId={applicationId}
                 status={initialApplication.currentStatus}
+                assignedReviewerId={initialApplication.assignedReviewerId}
               />
             )}
           </aside>

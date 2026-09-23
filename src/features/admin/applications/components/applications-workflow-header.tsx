@@ -19,26 +19,13 @@ export function ApplicationsWorkflowHeader({
   const t = useTranslations("admin.applications");
 
   const stats = useMemo(() => {
-    const countByStatus = (statuses: ApplicationStatus[]) => {
-      return applications.filter((application) =>
-        statuses.includes(application.currentStatus)
-      ).length;
-    };
-
     return {
-      total: applications.length,
-      pendingHeadReview: countByStatus([
-        applicationStatuses.employeeApproved,
-        applicationStatuses.headReview,
-      ]),
-      paymentPending: countByStatus([applicationStatuses.paymentPending]),
-      rejected: countByStatus([
-        applicationStatuses.employeeRejected,
-        applicationStatuses.headRejected,
-        applicationStatuses.aiRejected,
-      ]),
+      total: "Pending API",
+      pendingHeadReview: "Pending API",
+      paymentPending: "Pending API",
+      rejected: "Pending API",
     };
-  }, [applications]);
+  }, []);
 
   return (
     <section className="relative overflow-hidden rounded-[28px] border border-border bg-card p-6 shadow-[0px_12px_35px_rgba(118,188,33,0.08)] md:p-8">
@@ -92,7 +79,7 @@ export function ApplicationsWorkflowHeader({
 type StatCardProps = {
   icon: typeof BarChart3;
   label: string;
-  value: number;
+  value: number | string;
 };
 
 function StatCard({ icon: Icon, label, value }: StatCardProps) {
@@ -103,7 +90,7 @@ function StatCard({ icon: Icon, label, value }: StatCardProps) {
       </div>
 
       <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-1 text-3xl font-extrabold text-primary">{value}</p>
+      <p className="mt-1 text-2xl font-extrabold text-primary">{value}</p>
     </div>
   );
 }

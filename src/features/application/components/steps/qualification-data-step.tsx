@@ -400,7 +400,7 @@ export function QualificationDataStep({
             </label>
             <input
               type="text"
-              disabled={isLocked}
+              disabled={isLocked || (data.verification_method === "national_id" && data.isNationalIdReadOnly)}
               value={
                 data.verification_method === "seat_number"
                   ? data.seat_number || ""

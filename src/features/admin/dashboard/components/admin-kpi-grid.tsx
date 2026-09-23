@@ -28,28 +28,12 @@ export function AdminKpiGrid() {
   }, [isHead, isEmployee, headApps, empApps, adminApps]);
 
   const cards: KpiCardType[] = useMemo(() => {
-    const apps = Array.isArray(rawApplications) ? rawApplications : [];
-    const total = apps.length;
-
-    let review = 0;
-    let missing = 0;
-    let accepted = 0;
-    let rejected = 0;
-
-    for (const app of apps) {
-      const st = String(app.status || "").toLowerCase();
-      if (st === "accepted") accepted++;
-      else if (st === "rejected") rejected++;
-      else if (st === "returned_for_revision" || st === "returned_to_employee") missing++;
-      else if (st === "under_review" || st === "submitted" || st === "forwarded_to_department_head") review++;
-    }
-
     return [
-      { id: "total", label: "Total Applications", value: total.toLocaleString() },
-      { id: "review", label: "Under Review", value: review.toLocaleString(), variant: "warning" },
-      { id: "missing", label: "Returned / Revision", value: missing.toLocaleString() },
-      { id: "accepted", label: "Accepted", value: accepted.toLocaleString(), variant: "success" },
-      { id: "rejected", label: "Rejected", value: rejected.toLocaleString(), variant: "danger" },
+      { id: "total", label: "Total Applications", value: "Pending API" },
+      { id: "review", label: "Under Review", value: "Pending API", variant: "warning" },
+      { id: "missing", label: "Returned / Revision", value: "Pending API" },
+      { id: "accepted", label: "Accepted", value: "Pending API", variant: "success" },
+      { id: "rejected", label: "Rejected", value: "Pending API", variant: "danger" },
     ];
   }, [rawApplications]);
 

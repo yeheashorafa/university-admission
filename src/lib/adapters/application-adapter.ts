@@ -25,6 +25,13 @@ export type BackendApplicationRaw = {
   notes?: string;
   university_number?: string;
   universityNumber?: string;
+  assigned_reviewer_id?: string | number;
+  assignedReviewerId?: string | number;
+  assigned_reviewer?: {
+    id?: string | number;
+    name?: string;
+    email?: string;
+  };
   applicant?: {
     id?: string | number;
     name?: string;
@@ -126,6 +133,12 @@ export type StudentApplicationDetail = {
   applicantNationalId?: string;
   applicantEmail?: string;
   applicantPhone?: string;
+  assignedReviewerId?: string | number;
+  assignedReviewer?: {
+    id: string | number;
+    name: string;
+    email?: string;
+  };
   selectedPrograms?: (string | number)[];
   academicInfo?: {
     branch?: string;
@@ -227,6 +240,14 @@ export function adaptBackendApplication(
     applicantNationalId: applicant?.national_id,
     applicantEmail: applicant?.email,
     applicantPhone: applicant?.phone,
+    assignedReviewerId: raw.assigned_reviewer_id ?? raw.assignedReviewerId ?? raw.assigned_reviewer?.id,
+    assignedReviewer: raw.assigned_reviewer?.id
+      ? {
+          id: raw.assigned_reviewer.id,
+          name: raw.assigned_reviewer.name || "",
+          email: raw.assigned_reviewer.email,
+        }
+      : undefined,
     preferences: preferencesMapped,
   };
 }

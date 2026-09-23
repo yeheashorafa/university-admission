@@ -44,6 +44,9 @@ export const ENDPOINTS = {
     attachDocument: (applicationId: string | number, documentId: string | number) =>
       `/student/applications/${applicationId}/documents/${documentId}/attach`,
     notifications: "/student/notifications",
+    readNotification: (id: string | number) => `/student/notifications/${id}/read`,
+    readAllNotifications: "/student/notifications",
+    deleteNotification: (id: string | number) => `/student/notifications/${id}`,
   },
   admissionEmployee: {
     applications: "/admission_employee/applications",

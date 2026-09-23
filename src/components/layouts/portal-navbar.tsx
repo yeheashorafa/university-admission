@@ -209,7 +209,7 @@ export function PortalNavbar({ activePath = routes.home }: PortalNavbarProps) {
                 className={cn(
                   "inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-bold transition",
                   isStudentMenuActive
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
@@ -262,7 +262,7 @@ export function PortalNavbar({ activePath = routes.home }: PortalNavbarProps) {
                 className={cn(
                   "inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-bold transition",
                   isAccountMenuActive
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
@@ -556,7 +556,7 @@ function NavLink({ href, label, active }: NavLinkProps) {
       className={cn(
         "inline-flex h-10 items-center rounded-lg px-3 text-sm font-bold transition",
         active
-          ? "bg-primary text-primary-foreground"
+          ? "bg-primary/10 text-primary"
           : "text-muted-foreground hover:bg-muted hover:text-foreground"
       )}
     >

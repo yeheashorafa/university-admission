@@ -24,6 +24,7 @@ export type WorkflowApplication = {
   riskFlags?: string[];
   extractedDataSummary?: Record<string, string>;
   assignedEmployeeName?: string;
+  assignedReviewerId?: string | number;
   employeeDecisionBy?: string;
   departmentHeadDecisionBy?: string;
   rejectionNote?: string;
@@ -477,7 +478,15 @@ export function mapBackendApplicationToWorkflowApplication(
     recommendation: typeof app.recommendation === "string" ? app.recommendation : undefined,
     aiFailureReason: typeof app.aiFailureReason === "string" ? app.aiFailureReason : undefined,
     aiNotes: typeof app.aiNotes === "string" ? app.aiNotes : undefined,
-    assignedEmployeeName: typeof app.assignedEmployeeName === "string" ? app.assignedEmployeeName : undefined,
+    assignedEmployeeName:
+      typeof app.assignedEmployeeName === "string"
+        ? app.assignedEmployeeName
+        : (app.assigned_reviewer as Record<string, unknown>)?.name as string | undefined ??
+          (app.assigned_reviewer as Record<string, unknown>)?.name_ar as string | undefined,
+    assignedReviewerId:
+      (app.assigned_reviewer_id as string | number | undefined) ??
+      (app.assignedReviewerId as string | number | undefined) ??
+      (app.assigned_reviewer as Record<string, unknown>)?.id as string | number | undefined,
     createdAt,
     updatedAt: typeof app.updatedAt === "string" ? app.updatedAt : undefined,
     workflowLogs,

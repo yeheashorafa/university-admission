@@ -18,7 +18,7 @@ import {
   useUpdateAdminUserMutation,
   useDeleteAdminUserMutation,
 } from "@/hooks/queries/use-admin-users-queries";
-import { getApiErrorMessage } from "@/lib/api/api-error";
+import { extractApiError } from "@/lib/api/api-error";
 import type { AuthUser, UserRole } from "@/services/auth.service";
 import type { AdminUserPayload } from "@/services/admin-users.service";
 
@@ -141,9 +141,18 @@ export function AdminUsersPage() {
       setModalOpen(false);
       setEditingUser(null);
     } catch (err) {
+      const apiErr = extractApiError(err);
+      let errorMsg = apiErr.message;
+      if (apiErr.status === 422 && apiErr.errors) {
+        const firstError = Object.values(apiErr.errors)[0]?.[0];
+        if (firstError) {
+          errorMsg = firstError;
+        }
+      }
+
       await Swal.fire({
         title: "خطأ",
-        text: getApiErrorMessage(err),
+        text: errorMsg,
         icon: "error",
       });
     }
@@ -170,9 +179,10 @@ export function AdminUsersPage() {
         confirmButtonText: t("users.ok"),
       });
     } catch (err) {
+      const apiErr = extractApiError(err);
       await Swal.fire({
         title: "خطأ",
-        text: getApiErrorMessage(err),
+        text: apiErr.message,
         icon: "error",
       });
     }

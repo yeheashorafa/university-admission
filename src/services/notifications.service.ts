@@ -52,7 +52,7 @@ export async function markNotificationAsRead(
 }
 
 export async function markAllNotificationsAsRead(): Promise<void> {
-  await apiClient.patch("/student/notifications/read-all");
+  await apiClient.patch(ENDPOINTS.student.readAllNotifications);
 }
 
 export async function deleteNotification(

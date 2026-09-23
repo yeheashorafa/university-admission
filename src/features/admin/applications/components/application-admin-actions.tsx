@@ -17,11 +17,13 @@ import { getApiErrorMessage } from "@/lib/api/api-error";
 type ApplicationAdminActionsProps = {
   applicationId: string | number;
   status: string;
+  assignedReviewerId?: string | number;
 };
 
 export function ApplicationAdminActions({
   applicationId,
   status,
+  assignedReviewerId,
 }: ApplicationAdminActionsProps) {
   const t = useTranslations("admin.applicationWorkflow");
   const { role } = useCurrentAuth();
@@ -119,26 +121,28 @@ export function ApplicationAdminActions({
         {t("adminActionsDescription")}
       </p>
 
-      <div className="mt-5 flex flex-col gap-3">
-        <label className="text-sm font-bold text-foreground">{t("assignReviewer")}</label>
-        <input
-          type="text"
-          value={reviewerId}
-          onChange={(event) => setReviewerId(event.target.value)}
-          placeholder={t("reviewerIdPlaceholder")}
-          disabled={isAssigning}
-          className="h-11 w-full rounded-[14px] border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
-        />
-        <button
-          type="button"
-          disabled={isAssigning}
-          onClick={handleAssignReviewer}
-          className="flex h-11 items-center justify-center gap-2 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
-        >
-          {isAssigning ? <Loader2 className="size-4 animate-spin" /> : <UserCheck className="size-4" />}
-          {isAssigning ? t("processing") : t("assignReviewer")}
-        </button>
-      </div>
+      {status === "submitted" && !assignedReviewerId && (
+        <div className="mt-5 flex flex-col gap-3">
+          <label className="text-sm font-bold text-foreground">{t("assignReviewer")}</label>
+          <input
+            type="text"
+            value={reviewerId}
+            onChange={(event) => setReviewerId(event.target.value)}
+            placeholder={t("reviewerIdPlaceholder")}
+            disabled={isAssigning}
+            className="h-11 w-full rounded-[14px] border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
+          />
+          <button
+            type="button"
+            disabled={isAssigning}
+            onClick={handleAssignReviewer}
+            className="flex h-11 items-center justify-center gap-2 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
+          >
+            {isAssigning ? <Loader2 className="size-4 animate-spin" /> : <UserCheck className="size-4" />}
+            {isAssigning ? t("processing") : t("assignReviewer")}
+          </button>
+        </div>
+      )}
 
       <div className="mt-5 flex flex-col gap-3">
         <label className="text-sm font-bold text-foreground">{t("cancelApplication")}</label>

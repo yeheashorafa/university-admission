@@ -187,6 +187,7 @@ export function ApplicationWizard() {
             qualificationData: {
               ...curr.qualificationData,
               national_id: curr.qualificationData.national_id || resolvedNationalId || "",
+              isNationalIdReadOnly: !!resolvedNationalId,
             },
             tawjihi: {
               ...curr.tawjihi,
@@ -790,6 +791,7 @@ export function ApplicationWizard() {
           queryClient.invalidateQueries({ queryKey: queryKeys.student.applicationDetail(activeId) }),
           queryClient.invalidateQueries({ queryKey: queryKeys.application.myApplication }),
           queryClient.invalidateQueries({ queryKey: queryKeys.application.status }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.notifications.myNotifications() }),
         ]);
 
         if (!listContainsId && refreshedList.length > 0) {

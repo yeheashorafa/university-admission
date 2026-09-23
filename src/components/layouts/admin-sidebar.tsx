@@ -171,7 +171,7 @@ export function AdminSidebar({ activePath = routes.admin }: AdminSidebarProps) {
                 className={cn(
                   "flex items-center gap-3 mx-4 rounded-[16px] px-4 py-3 text-sm font-bold transition",
                   isActive
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-primary",
                 )}
               >

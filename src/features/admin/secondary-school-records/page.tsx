@@ -27,10 +27,14 @@ export function AdminSecondarySchoolRecordsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [graduationYear, setGraduationYear] = useState<string>("");
   const [isDragOver, setIsDragOver] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1990 + 1 }, (_, i) => currentYear - i);
 
   const importMutation = useImportSecondarySchoolRecordsMutation();
 
@@ -76,12 +80,22 @@ export function AdminSecondarySchoolRecordsPage() {
   async function handleUpload() {
     if (!selectedFile) return;
 
+    if (!graduationYear) {
+      const msg = locale === "ar" ? "يرجى تحديد سنة التخرج" : "Please select a graduation year";
+      setErrorMessage(msg);
+      toast.error(msg);
+      return;
+    }
+
     setErrorMessage(null);
     setIsSuccess(false);
     setSuccessMessage(null);
 
     try {
-      const res = await importMutation.mutateAsync(selectedFile);
+      const res = await importMutation.mutateAsync({ 
+        file: selectedFile, 
+        graduationYear: parseInt(graduationYear, 10) 
+      });
       const displayMsg = res?.message || t("fileReceivedProcessing");
       setSuccessMessage(displayMsg);
       setIsSuccess(true);
@@ -165,6 +179,24 @@ export function AdminSecondarySchoolRecordsPage() {
 
         {/* Upload Form Card */}
         <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-[0px_10px_35px_rgba(0,77,64,0.05)] space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground">
+              {locale === "ar" ? "سنة التخرج" : "Graduation Year"} <span className="text-destructive">*</span>
+            </label>
+            <select
+              value={graduationYear}
+              onChange={(e) => setGraduationYear(e.target.value)}
+              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm font-semibold shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="">{locale === "ar" ? "اختر سنة التخرج" : "Select Graduation Year"}</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div
             onDragOver={(e) => {
               e.preventDefault();

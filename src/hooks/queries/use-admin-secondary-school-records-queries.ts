@@ -5,7 +5,8 @@ export function useImportSecondarySchoolRecordsMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (file: File) => importSecondarySchoolRecords(file),
+    mutationFn: ({ file, graduationYear }: { file: File; graduationYear: number }) =>
+      importSecondarySchoolRecords(file, graduationYear),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "notifications"] });
     },
