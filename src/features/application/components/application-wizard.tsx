@@ -14,7 +14,6 @@ import { isAccountVerificationBypassed } from "@/lib/auth-verification";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   getMyProfile,
-  updateMyProfile,
   hasVerifiedTawjihiRecord,
   getStudentNationalId,
   getSocialInformationFromProfile,
@@ -574,9 +573,10 @@ export function ApplicationWizard() {
           street: state.contact.street,
           phone_landline: state.contact.phone,
         });
-        if (state.contact.mobile) {
-          await updateMyProfile({ phone: state.contact.mobile });
-        }
+        // Do not update the student profile here with a partial PUT payload to avoid 422 errors.
+        // if (state.contact.mobile) {
+        //   await updateMyProfile({ phone: state.contact.mobile });
+        // }
       } else if (currentStep === 7) {
         if (!activeCycleId) {
           toast.error(

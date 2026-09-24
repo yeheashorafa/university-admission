@@ -78,6 +78,7 @@ function UserFormModalContent({
 
     if (password) {
       payload.password = password;
+      payload.password_confirmation = password;
     }
 
     onSubmit(payload, user?.id);

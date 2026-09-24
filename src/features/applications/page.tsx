@@ -53,6 +53,7 @@ export function StudentApplicationsPage() {
     currentStatus: app.status || "draft",
     createdAt: app.createdAt || app.submittedAt || new Date().toISOString().split("T")[0],
     statusConfig: getStatusConfig(app.status),
+    assignedReviewer: app.assignedReviewer,
   }));
 
   // Calculate Metrics
@@ -396,6 +397,14 @@ export function StudentApplicationsPage() {
                           </span>
                           <p className="text-sm font-bold text-foreground">{app.average}</p>
                         </div>
+                        {app.assignedReviewer && (
+                          <div className="space-y-1">
+                            <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">
+                              {isAr ? "المراجع" : "Reviewer"}
+                            </span>
+                            <p className="text-sm font-bold text-foreground">{app.assignedReviewer.name}</p>
+                          </div>
+                        )}
                       </div>
 
                       {/* Footer Actions */}

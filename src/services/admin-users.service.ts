@@ -7,6 +7,7 @@ export type AdminUserPayload = {
   email?: string;
   phone?: string;
   password?: string;
+  password_confirmation?: string;
   is_active?: boolean;
   roles?: UserRole[];
 };

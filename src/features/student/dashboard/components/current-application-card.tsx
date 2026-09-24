@@ -141,6 +141,12 @@ export function CurrentApplicationCard() {
                         <p className="text-sm font-bold text-foreground">
                           {app.programName || (isAr ? "طلب الالتحاق" : "Admission Application")}
                         </p>
+                        {app.assignedReviewer && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {isAr ? "المراجع المسؤول: " : "Assigned Reviewer: "}
+                            <span className="font-semibold text-foreground/80">{app.assignedReviewer.name}</span>
+                          </p>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-2">

@@ -3,19 +3,11 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { BarChart3, Clock3, FileCheck2, FileX2 } from "lucide-react";
-import {
-  applicationStatuses,
-  type ApplicationStatus,
-} from "@/constants/application-workflow";
 import type { WorkflowApplication } from "../data/applications-workflow.data";
 
-type ApplicationsWorkflowHeaderProps = {
-  applications: WorkflowApplication[];
-};
 
-export function ApplicationsWorkflowHeader({
-  applications,
-}: ApplicationsWorkflowHeaderProps) {
+
+export function ApplicationsWorkflowHeader() {
   const t = useTranslations("admin.applications");
 
   const stats = useMemo(() => {
