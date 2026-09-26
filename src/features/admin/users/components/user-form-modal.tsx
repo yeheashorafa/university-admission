@@ -64,7 +64,9 @@ function UserFormModalContent({
   const [phone, setPhone] = useState(user?.phone ?? "");
   const [role, setRole] = useState<UserRole>(user?.role ?? userRoles.student);
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,8 +79,12 @@ function UserFormModalContent({
     };
 
     if (password) {
+      if (password !== passwordConfirmation) {
+        alert("Passwords do not match");
+        return;
+      }
       payload.password = password;
-      payload.password_confirmation = password;
+      payload.password_confirmation = passwordConfirmation;
     }
 
     onSubmit(payload, user?.id);
@@ -127,7 +133,7 @@ function UserFormModalContent({
             />
           </FormField>
 
-          <FormField label="Phone Number">
+          <FormField label={t("users.form.phone")}>
             <input
               type="tel"
               value={phone}
@@ -137,33 +143,55 @@ function UserFormModalContent({
           </FormField>
 
           {(mode === "create" || password.length > 0) ? (
-            <FormField label={t("users.form.password") || "Password"}>
-              <div className="relative">
-                <input
-                  required={mode === "create"}
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder={mode === "edit" ? "Leave empty to keep current" : ""}
-                  className="h-12 w-full rounded-xl border border-border bg-card px-4 pe-11 text-sm font-semibold text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-primary/15"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((current) => !current)}
-                  className="absolute inset-y-0 end-3 flex items-center text-muted-foreground transition hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-                </button>
-              </div>
-            </FormField>
+            <>
+              <FormField label={t("users.form.password")}>
+                <div className="relative">
+                  <input
+                    required={mode === "create"}
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder={mode === "edit" ? t("users.form.leaveEmpty") : ""}
+                    className="h-12 w-full rounded-xl border border-border bg-card px-4 pe-11 text-sm font-semibold text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-primary/15"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    className="absolute inset-y-0 end-3 flex items-center text-muted-foreground transition hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                  </button>
+                </div>
+              </FormField>
+
+              <FormField label={t("users.form.passwordConfirmation")}>
+                <div className="relative">
+                  <input
+                    required={mode === "create"}
+                    type={showPasswordConfirmation ? "text" : "password"}
+                    value={passwordConfirmation}
+                    onChange={(event) => setPasswordConfirmation(event.target.value)}
+                    placeholder={mode === "edit" ? t("users.form.leaveEmpty") : ""}
+                    className="h-12 w-full rounded-xl border border-border bg-card px-4 pe-11 text-sm font-semibold text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-primary/15"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordConfirmation((current) => !current)}
+                    className="absolute inset-y-0 end-3 flex items-center text-muted-foreground transition hover:text-foreground"
+                  >
+                    {showPasswordConfirmation ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                  </button>
+                </div>
+              </FormField>
+            </>
           ) : (
-            <FormField label={t("users.form.password") || "Password"}>
+            <FormField label={t("users.form.password")}>
                <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Leave empty to keep current"
+                  placeholder={t("users.form.leaveEmpty")}
                   className="h-12 w-full rounded-xl border border-border bg-card px-4 pe-11 text-sm font-semibold text-foreground outline-none transition hover:border-primary/50 hover:bg-muted/40 focus:border-primary focus:ring-2 focus:ring-primary/15"
                 />
                 <button

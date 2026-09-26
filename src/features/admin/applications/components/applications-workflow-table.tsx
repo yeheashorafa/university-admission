@@ -16,6 +16,8 @@ type ApplicationsWorkflowTableProps = {
   applications: WorkflowApplication[];
   search: string;
   onSearchChange: (value: string) => void;
+  status: string;
+  onStatusChange: (value: string) => void;
 };
 
 function normalizeSearchText(value: string) {
@@ -32,17 +34,26 @@ export function ApplicationsWorkflowTable({
   applications,
   search,
   onSearchChange,
+  status,
+  onStatusChange,
 }: ApplicationsWorkflowTableProps) {
   const locale = useLocale();
   const t = useTranslations("admin.applications");
   const workflowT = useTranslations("admin.applicationWorkflow");
 
   const filteredApplications = useMemo(() => {
+    let result = applications;
+    
+    // Apply client-side status filtering if backend doesn't support it or for consistency
+    if (status !== "all") {
+      result = result.filter(app => app.currentStatus === status);
+    }
+
     const searchValue = normalizeSearchText(search);
 
-    if (!searchValue) return applications;
+    if (!searchValue) return result;
 
-    return applications.filter((application) => {
+    return result.filter((application) => {
       const searchableText = normalizeSearchText(
         [
           application.applicationNo,
@@ -70,16 +81,54 @@ export function ApplicationsWorkflowTable({
           </p>
         </div>
 
-        <div className="relative w-full md:max-w-sm">
-          <Search className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+        <div className="flex w-full flex-col gap-3 md:max-w-xl md:flex-row md:items-center">
+          <div className="relative w-full">
+            <Search className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => onSearchChange(event.target.value)}
+              placeholder={t("searchPlaceholder")}
+              className="h-12 w-full rounded-[16px] border border-input bg-background px-4 ps-10 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+            />
+          </div>
 
-          <input
-            type="text"
-            value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            className="h-12 w-full rounded-[16px] border border-input bg-background px-4 ps-10 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-          />
+          <div className="w-full md:w-64">
+            <select
+              value={status}
+              onChange={(e) => onStatusChange(e.target.value)}
+              className="h-12 w-full appearance-none rounded-[16px] border border-input bg-background px-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+            >
+              <option value="all">{t("allStatuses")}</option>
+              {[
+                "draft",
+                "submitted",
+                "under_review",
+                "returned_for_revision",
+                "forwarded_to_department_head",
+                "returned_to_employee",
+                "accepted",
+                "rejected",
+                "cancelled"
+              ].map((s) => (
+                <option key={s} value={s}>
+                  {workflowT(`statuses.${s}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(search !== "" || status !== "all") && (
+            <button
+              onClick={() => {
+                onSearchChange("");
+                onStatusChange("all");
+              }}
+              className="h-12 whitespace-nowrap rounded-[16px] border border-border px-4 text-sm font-medium text-muted-foreground transition hover:bg-muted/50"
+            >
+              {t("resetFilters")}
+            </button>
+          )}
         </div>
       </div>
 

@@ -43,28 +43,16 @@ export function AdminReportsPage() {
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-bold text-amber-800 dark:text-amber-300">
           <span>تنبيه النظام (PENDING_BACKEND_API):</span>
-          <span>تصدير التقارير المفصلة PDF/Excel قيد تطوير خدمات الإحصائيات المباشرة في الخلفية.</span>
+          <span>واجهة التقارير تعتمد على الـ Backend، وهي غير متاحة حالياً.</span>
         </div>
 
         <ReportsHeader />
-        <ReportsFilterBar
-          onApply={(nextRange) => setRange(nextRange)}
-        />
-
-        <ReportsStats analytics={analytics} />
-
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-          <section className="flex flex-col gap-6 xl:col-span-8">
-            <ApplicationStatusReport data={analytics.statusDistribution} />
-
-            <FacultyReportTable data={analytics.facultyDistribution} />
-          </section>
-
-          <aside className="flex flex-col gap-6 xl:col-span-4">
-            <AiAlertsReport data={analytics.aiConfidenceDistribution} />
-
-            <RecentExportsCard />
-          </aside>
+        
+        <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-[28px] border border-border shadow-sm">
+          <h3 className="text-xl font-bold text-muted-foreground mb-2">Pending Backend API</h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            لم يتم تفعيل روابط التقارير في الخلفية بعد. ستظهر الإحصائيات والرسوم البيانية هنا بمجرد توفر البيانات.
+          </p>
         </div>
       </div>
     </AdminLayout>

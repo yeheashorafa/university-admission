@@ -143,26 +143,10 @@ export function AdminNotificationsPage() {
         <NotificationStats notifications={notifications} />
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-          <section className="xl:col-span-5">
-            <NotificationComposer />
-          </section>
-
-          <section className="xl:col-span-7">
-            {isLoading ? (
-              <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground font-semibold">
-                جاري تحميل الإشعارات من الخادم...
-              </div>
-            ) : isDean ? (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center text-amber-800 font-semibold dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
-                لا توجد نقطة نهاية لإشعارات عميد القبول والتسجيل حتى الآن (PENDING_BACKEND_API)
-              </div>
-            ) : (
-              <NotificationsList
-                notifications={notifications}
-                onChangeStatus={handleChangeStatus}
-                onDeleteNotification={handleDeleteNotification}
-              />
-            )}
+          <section className="xl:col-span-12">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center text-amber-800 font-semibold dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+              لا توجد نقطة نهاية لإشعارات {isAdmin ? "الإدارة" : isDean ? "عميد القبول والتسجيل" : "الموظفين"} حتى الآن (PENDING_BACKEND_API)
+            </div>
           </section>
         </div>
       </div>

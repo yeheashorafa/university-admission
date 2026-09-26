@@ -21,13 +21,16 @@ import {
 export function AdminApplicationsPage() {
   const { role } = useCurrentAuth();
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<string>("all");
 
   const isEmployee = role === userRoles.admissionEmployee;
   const isHead = role === userRoles.departmentHead;
 
-  const { data: empApps, isLoading: empLoading } = useEmployeeApplicationsQuery({ search });
-  const { data: headApps, isLoading: headLoading } = useHeadApplicationsQuery({ search });
-  const { data: adminApps, isLoading: adminLoading } = useAdminApplicationsQuery({ search });
+  const queryStatus = status !== "all" ? status : undefined;
+  const { data: empApps, isLoading: empLoading } = useEmployeeApplicationsQuery({ search, status: queryStatus });
+  const { data: headApps, isLoading: headLoading } = useHeadApplicationsQuery({ search, status: queryStatus });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: adminApps, isLoading: adminLoading } = useAdminApplicationsQuery({ search, status: queryStatus as any });
 
   const rawApps = isEmployee ? empApps : isHead ? headApps : adminApps;
   const isLoading = isEmployee ? empLoading : isHead ? headLoading : adminLoading;
@@ -61,7 +64,7 @@ export function AdminApplicationsPage() {
   return (
     <AdminLayout activePath={routes.adminApplications}>
       <div className="flex flex-col gap-6">
-        <ApplicationsWorkflowHeader applications={applications} />
+        <ApplicationsWorkflowHeader />
 
         {isLoading ? (
           <TableSkeleton columns={5} rows={6} />
@@ -70,6 +73,8 @@ export function AdminApplicationsPage() {
             applications={applications}
             search={search}
             onSearchChange={setSearch}
+            status={status}
+            onStatusChange={setStatus}
           />
         )}
       </div>

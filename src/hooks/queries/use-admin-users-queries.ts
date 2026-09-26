@@ -43,7 +43,7 @@ export function useCreateAdminUserMutation() {
   return useMutation({
     mutationFn: (payload: AdminUserPayload) => createAdminUser(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: ["admin", "users"],
       });
     },
@@ -62,7 +62,7 @@ export function useUpdateAdminUserMutation() {
       payload: Partial<AdminUserPayload>;
     }) => updateAdminUser(userId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: ["admin", "users"],
       });
     },
@@ -75,7 +75,7 @@ export function useDeleteAdminUserMutation() {
   return useMutation({
     mutationFn: (userId: string) => deleteAdminUser(userId),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: ["admin", "users"],
       });
     },

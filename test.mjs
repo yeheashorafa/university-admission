@@ -144,6 +144,7 @@ async function test4_tawjihiImport(browser) {
   await page.waitForTimeout(2000); 
 
   // Create a dummy CSV file
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs');
   fs.writeFileSync('dummy.csv', 'seat_number,percentage,total_marks,branch,study_year\n123,90,900,Science,2023');
 

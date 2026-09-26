@@ -27,7 +27,10 @@ export function NotificationStats({ notifications }: NotificationStatsProps) {
       (notification) => notification.status === "draft"
     ).length;
 
-    const recipientsReached = notifications.length * 24;
+    const recipientsReached = notifications.reduce(
+      (total, notification) => total + (notification.data?.total_rows ?? 0),
+      0
+    );
 
     return [
       {

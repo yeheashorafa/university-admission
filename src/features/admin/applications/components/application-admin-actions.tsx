@@ -117,30 +117,39 @@ export function ApplicationAdminActions({
     <section className="rounded-[28px] border border-border bg-card p-6 shadow-[0px_12px_35px_rgba(118,188,33,0.07)]">
       <h2 className="text-xl font-bold text-primary">{t("adminActionsTitle")}</h2>
 
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {t("adminActionsDescription")}
-      </p>
-
-      {status === "submitted" && !assignedReviewerId && (
-        <div className="mt-5 flex flex-col gap-3">
-          <label className="text-sm font-bold text-foreground">{t("assignReviewer")}</label>
-          <input
-            type="text"
-            value={reviewerId}
-            onChange={(event) => setReviewerId(event.target.value)}
-            placeholder={t("reviewerIdPlaceholder")}
-            disabled={isAssigning}
-            className="h-11 w-full rounded-[14px] border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
-          />
-          <button
-            type="button"
-            disabled={isAssigning}
-            onClick={handleAssignReviewer}
-            className="flex h-11 items-center justify-center gap-2 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
-          >
-            {isAssigning ? <Loader2 className="size-4 animate-spin" /> : <UserCheck className="size-4" />}
-            {isAssigning ? t("processing") : t("assignReviewer")}
-          </button>
+      {(status === "submitted" && !assignedReviewerId) ? (
+        <>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            {t("adminActionsDescription")}
+          </p>
+          <div className="mt-5 flex flex-col gap-3">
+            <label className="text-sm font-bold text-foreground">{t("assignReviewer")}</label>
+            <input
+              type="text"
+              value={reviewerId}
+              onChange={(event) => setReviewerId(event.target.value)}
+              placeholder={t("reviewerIdPlaceholder")}
+              disabled={isAssigning}
+              className="h-11 w-full rounded-[14px] border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
+            />
+            <button
+              type="button"
+              disabled={isAssigning}
+              onClick={handleAssignReviewer}
+              className="flex h-11 items-center justify-center gap-2 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
+            >
+              {isAssigning ? <Loader2 className="size-4 animate-spin" /> : <UserCheck className="size-4" />}
+              {isAssigning ? t("processing") : t("assignReviewer")}
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="mt-5 rounded-[14px] border border-border bg-muted/40 p-4">
+          <p className="text-sm font-medium text-muted-foreground text-center">
+            {assignedReviewerId 
+              ? "تم تعيين مراجع لهذا الطلب بالفعل" 
+              : "لا يمكن تعيين مراجع إلا للطلبات الجديدة غير المعيّنة (في حالة 'مقدم')"}
+          </p>
         </div>
       )}
 

@@ -1162,7 +1162,7 @@
     "academicInformation": "البيانات الأكاديمية",
     "documentsUploaded": "تم رفع المستندات",
     "personalInformationDescription": "حافظ على دقة بياناتك الشخصية الرسمية وحدّثها عند الحاجة.",
-    "readOnlyNationalId": "رقم الهوية للقراءة فقط",
+    "readOnlyNationalId": "رقم الهوية مسجل ومحفوظ تلقائياً من التسجيل",
     "secondarySchoolRecord": "سجل الثانوية العامة",
     "secondarySchoolRecordDescription": "أضف نتائج التوجيهي (الثانوية العامة). هذا إلزامي قبل تقديم الطلب.",
     "schoolId": "الرقم التعريفي للمدرسة",
@@ -1219,7 +1219,6 @@
     "familyNameEn": "اسم العائلة بالإنجليزية",
     "placeOfBirth": "مكان الميلاد",
     "officialAddress": "العنوان الرسمي",
-    "readOnlyNationalId": "رقم الهوية مسجل ومحفوظ تلقائياً من التسجيل",
     "missingBaseFieldsError": "يرجى تعبئة جميع بياناتك الشخصية الأساسية قبل الحفظ."
   },
   "payment": {
@@ -1668,7 +1667,9 @@
       "actions": "الإجراءات",
       "viewAiResult": "عرض نتيجة الذكاء الاصطناعي",
       "view": "عرض التفاصيل",
-      "emptyDescription": "لم يتم العثور على طلبات مطابقة للبحث."
+      "emptyDescription": "لم يتم العثور على طلبات مطابقة للبحث.",
+      "allStatuses": "جميع الحالات",
+      "resetFilters": "إلغاء التصفيات"
     },
     "applicationWorkflow": {
       "timelineTitle": "مسار تدقيق الطلب",
@@ -2433,7 +2434,11 @@
         "name": "الاسم الكامل",
         "email": "البريد الإلكتروني",
         "role": "الدور",
-        "status": "الحالة"
+        "status": "الحالة",
+        "password": "كلمة المرور",
+        "passwordConfirmation": "تأكيد كلمة المرور",
+        "phone": "رقم الجوال",
+        "leaveEmpty": "اتركه فارغاً للاحتفاظ بكلمة المرور الحالية"
       }
     },
     "notifications": {

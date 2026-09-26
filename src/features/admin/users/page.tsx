@@ -21,6 +21,7 @@ import {
 import { extractApiError } from "@/lib/api/api-error";
 import type { AuthUser, UserRole } from "@/services/auth.service";
 import type { AdminUserPayload } from "@/services/admin-users.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PAGE_SIZE = 4;
 
@@ -45,10 +46,11 @@ export function AdminUsersPage() {
   const role = (searchParams.get("role") || undefined) as UserRole | undefined;
   const page = Number(searchParams.get("page") ?? "1");
 
-  const { data: apiUsers } = useAdminUsersQuery({ search, role });
+  const { data: apiUsers, refetch } = useAdminUsersQuery({ search, role });
   const createMutation = useCreateAdminUserMutation();
   const updateMutation = useUpdateAdminUserMutation();
   const deleteMutation = useDeleteAdminUserMutation();
+  const queryClient = useQueryClient();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -138,8 +140,13 @@ export function AdminUsersPage() {
           confirmButtonText: t("users.ok"),
         });
       }
+      
       setModalOpen(false);
       setEditingUser(null);
+      
+      // Ensure the table refreshes
+      await queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      refetch();
     } catch (err) {
       const apiErr = extractApiError(err);
       let errorMsg = apiErr.message;

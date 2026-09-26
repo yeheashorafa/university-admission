@@ -39,8 +39,8 @@ export function ApplicationWorkflowActions({
     returnToEmployeeMutation,
   } = useHeadWorkflowMutations();
 
-  const isEmployee = role === userRoles.admissionEmployee || role === userRoles.admin;
-  const isDepartmentHead = role === userRoles.departmentHead || role === userRoles.admin;
+  const isEmployee = role === userRoles.admissionEmployee;
+  const isDepartmentHead = role === userRoles.departmentHead;
 
   const showEmployeeActions =
     isEmployee && (status === "under_review" || status === "returned_to_employee" || status === "submitted");
