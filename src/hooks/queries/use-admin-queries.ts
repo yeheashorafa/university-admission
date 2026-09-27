@@ -149,8 +149,8 @@ export function useEmployeeWorkflowMutations() {
   };
 
   const forwardMutation = useMutation({
-    mutationFn: ({ id }: { id: string | number }) =>
-      forwardApplicationToDepartment(id),
+    mutationFn: ({ id, note }: { id: string | number; note?: string }) =>
+      forwardApplicationToDepartment(id, note),
     onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
   });
 

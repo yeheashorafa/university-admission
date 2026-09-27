@@ -54,10 +54,12 @@ export async function acceptEmployeeApplication(
 }
 
 export async function forwardApplicationToDepartment(
-  id: string | number
+  id: string | number,
+  note?: string
 ): Promise<EmployeeApplication> {
   const response = await apiClient.post<EmployeeApplication | { data: EmployeeApplication }>(
-    ENDPOINTS.admissionEmployee.forward(id)
+    ENDPOINTS.admissionEmployee.forward(id),
+    note ? { decision_reason: note } : undefined
   );
   return extractResource<EmployeeApplication>(response.data);
 }

@@ -106,21 +106,30 @@ export function ApplicationWorkflowActions({
   }
 
   async function handleEmployeeForward() {
+    if (!note.trim() || note.trim().length < 5) {
+      await Swal.fire({
+        title: "تنبيه",
+        text: "يرجى كتابة سبب التحويل قبل إرسال الطلب لرئيس القسم (5 أحرف على الأقل)",
+        icon: "warning",
+      });
+      return;
+    }
+
     const res = await Swal.fire({
-      title: t("confirmTitle"),
-      text: t("confirmDescription"),
+      title: "تأكيد التحويل",
+      text: "هل أنت متأكد من تحويل الطلب لرئيس القسم؟",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: t("confirm"),
+      confirmButtonText: "تحويل",
       cancelButtonText: t("cancel"),
     });
     if (!res.isConfirmed) return;
 
     setIsSubmitting(true);
     try {
-      await forwardMutation.mutateAsync({ id: applicationId });
+      await forwardMutation.mutateAsync({ id: applicationId, note: note.trim() });
       setNote("");
-      await Swal.fire({ title: t("successTitle"), text: "تم تحويل الطلب بنجاح", icon: "success" });
+      await Swal.fire({ title: t("successTitle"), text: "تم تحويل الطلب لرئيس القسم بنجاح", icon: "success" });
       onSuccessAction?.();
     } catch (err) {
       await Swal.fire({ title: "خطأ", text: getApiErrorMessage(err), icon: "error" });
@@ -263,14 +272,14 @@ export function ApplicationWorkflowActions({
 
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {showEmployeeActions
-          ? t("employeeActionsDescription")
+          ? "راجع الطلب والمستندات. يمكنك قبول الطلب مباشرة إذا كان مكتملًا، أو تحويله لرئيس القسم مع ملاحظة إذا كان يحتاج مراجعة أكاديمية."
           : t("headActionsDescription")}
       </p>
 
       <textarea
         value={note}
         onChange={(event) => setNote(event.target.value)}
-        placeholder={t("notePlaceholder")}
+        placeholder={showEmployeeActions ? "سبب التحويل / ملاحظة للعميد أو رئيس القسم" : t("notePlaceholder")}
         disabled={isSubmitting}
         className="mt-5 min-h-[120px] w-full rounded-[18px] border border-input bg-background p-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
       />
