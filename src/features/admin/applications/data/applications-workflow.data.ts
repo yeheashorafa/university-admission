@@ -374,22 +374,60 @@ export function mapBackendApplicationToWorkflowApplication(
   
   if (applicantObj && typeof applicantObj === "object") {
     const s = applicantObj as Record<string, unknown>;
-    
-    if (typeof s.name === "string" && s.name) studentName = s.name;
-    else if (typeof s.name_ar === "string" && s.name_ar) studentName = s.name_ar;
-    else if (typeof s.full_name === "string" && s.full_name) studentName = s.full_name;
-    else if (typeof s.first_name === "string" && s.first_name) studentName = `${s.first_name} ${s.last_name || ""}`.trim();
-    
     if (typeof s.email === "string" && s.email) studentEmail = s.email;
     if (typeof s.phone === "string" && s.phone) studentPhone = s.phone;
+  }
+
+  // We should import extractStudentName and extractNationalId at the top, but we can't easily without editing the top.
+  // Instead I'll just inline the advanced fallback here since this is the data mapper.
+  const objectsToSearch = [
+    app.applicant,
+    app.student,
+    app.user,
+    app.profile,
+  ].filter(Boolean) as Record<string, unknown>[];
+
+  let foundName = false;
+  for (const obj of objectsToSearch) {
+    if (typeof obj.name === "string" && obj.name) { studentName = obj.name; foundName = true; break; }
+    if (typeof obj.name_ar === "string" && obj.name_ar) { studentName = obj.name_ar; foundName = true; break; }
+    if (typeof obj.full_name === "string" && obj.full_name) { studentName = obj.full_name; foundName = true; break; }
+    
+    const pi = obj.personal_information as Record<string, unknown> | undefined;
+    if (pi) {
+      const parts = [pi.first_name_ar, pi.father_name_ar, pi.grandfather_name_ar, pi.family_name_ar].filter(Boolean) as string[];
+      if (parts.length > 0) { studentName = parts.join(" "); foundName = true; break; }
+    }
+  }
+
+  if (!foundName) {
+    const piTop = app.personal_information as Record<string, unknown> | undefined;
+    if (piTop) {
+      const parts = [piTop.first_name_ar, piTop.father_name_ar, piTop.grandfather_name_ar, piTop.family_name_ar].filter(Boolean) as string[];
+      if (parts.length > 0) studentName = parts.join(" ");
+    }
   }
 
   let nationalId = "—";
   if (typeof app.nationalId === "string" && app.nationalId) nationalId = app.nationalId;
   else if (typeof app.national_id === "string" && app.national_id) nationalId = app.national_id;
-  else if (applicantObj && typeof applicantObj === "object") {
-    const s = applicantObj as Record<string, unknown>;
-    if (typeof s.national_id === "string" && s.national_id) nationalId = s.national_id;
+  else {
+    let foundNi = false;
+    for (const obj of objectsToSearch) {
+      if (typeof obj.national_id === "string" && obj.national_id) { nationalId = obj.national_id; foundNi = true; break; }
+      const pi = obj.personal_information as Record<string, unknown> | undefined;
+      if (pi && typeof pi.national_id === "string" && pi.national_id) { nationalId = pi.national_id; foundNi = true; break; }
+      const prof = obj.profile as Record<string, unknown> | undefined;
+      if (prof && typeof prof.national_id === "string" && prof.national_id) { nationalId = prof.national_id; foundNi = true; break; }
+      if (prof) {
+          const profPi = prof.personal_information as Record<string, unknown> | undefined;
+          if (profPi && typeof profPi.national_id === "string" && profPi.national_id) { nationalId = profPi.national_id; foundNi = true; break; }
+      }
+    }
+    if (!foundNi) {
+      const piTop = app.personal_information as Record<string, unknown> | undefined;
+      if (piTop && typeof piTop.national_id === "string" && piTop.national_id) nationalId = piTop.national_id;
+    }
   }
 
   let selectedProgram = "غير متوفر";

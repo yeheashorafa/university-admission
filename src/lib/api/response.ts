@@ -8,6 +8,12 @@ export function extractArray<T>(responseData: unknown): T[] {
     if (Array.isArray(obj.data)) return obj.data as T[];
     if (Array.isArray(obj.items)) return obj.items as T[];
     if (Array.isArray(obj.results)) return obj.results as T[];
+    if (Array.isArray(obj.users)) return obj.users as T[];
+
+    if (obj.users && typeof obj.users === "object" && obj.users !== null) {
+      const usersInner = obj.users as Record<string, unknown>;
+      if (Array.isArray(usersInner.data)) return usersInner.data as T[];
+    }
 
     if (obj.data && typeof obj.data === "object" && obj.data !== null) {
       const inner = obj.data as Record<string, unknown>;
@@ -15,6 +21,12 @@ export function extractArray<T>(responseData: unknown): T[] {
       if (Array.isArray(inner.data)) return inner.data as T[];
       if (Array.isArray(inner.items)) return inner.items as T[];
       if (Array.isArray(inner.results)) return inner.results as T[];
+      if (Array.isArray(inner.users)) return inner.users as T[];
+
+      if (inner.users && typeof inner.users === "object" && inner.users !== null) {
+        const usersInner = inner.users as Record<string, unknown>;
+        if (Array.isArray(usersInner.data)) return usersInner.data as T[];
+      }
 
       if (inner.data && typeof inner.data === "object" && inner.data !== null) {
         const inner2 = inner.data as Record<string, unknown>;

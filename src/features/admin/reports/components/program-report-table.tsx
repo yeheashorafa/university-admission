@@ -3,11 +3,11 @@
 import { useTranslations } from "next-intl";
 import type { ReportsChartItem } from "../utils/admin-reports-analytics";
 
-type FacultyReportTableProps = {
+type ProgramReportTableProps = {
   data: ReportsChartItem[] | null;
 };
 
-export function FacultyReportTable({ data }: FacultyReportTableProps) {
+export function ProgramReportTable({ data }: ProgramReportTableProps) {
   const t = useTranslations("reports");
 
   const total = data ? data.reduce((sum, item) => sum + item.value, 0) : 0;
@@ -16,11 +16,11 @@ export function FacultyReportTable({ data }: FacultyReportTableProps) {
     <section className="overflow-hidden rounded-[28px] border border-border bg-card shadow-[0px_12px_35px_rgba(118,188,33,0.07)]">
       <div className="border-b border-border bg-muted/60 px-5 py-4">
         <h2 className="text-xl font-bold text-primary">
-          {t("facultyChart.title")}
+          {t("programChart.title")}
         </h2>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          {t("facultyChart.description")}
+          {t("programChart.description")}
         </p>
       </div>
 
@@ -29,7 +29,7 @@ export function FacultyReportTable({ data }: FacultyReportTableProps) {
           <thead className="border-b border-border bg-card text-sm text-muted-foreground">
             <tr>
               <th className="px-5 py-4 text-start font-semibold">
-                {t("table.faculty")}
+                {t("table.program")}
               </th>
               <th className="px-5 py-4 text-center font-semibold">
                 {t("table.applications")}
@@ -45,7 +45,7 @@ export function FacultyReportTable({ data }: FacultyReportTableProps) {
               <tr>
                 <td colSpan={3} className="px-5 py-8 text-center">
                   <p className="text-sm font-bold text-destructive">
-                    تعذر تحميل تقرير الكليات من الخادم
+                    تعذر تحميل تقرير البرامج من الخادم
                   </p>
                 </td>
               </tr>

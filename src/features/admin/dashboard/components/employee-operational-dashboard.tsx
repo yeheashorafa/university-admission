@@ -19,7 +19,7 @@ import {
 } from "@/features/admin/document-verification/utils/document-verification-filter";
 import {
   getProgramLabel,
-  getApplicantLabel,
+  extractStudentName,
   getApplicationNumber,
 } from "@/lib/utils/application-formatters";
 
@@ -205,7 +205,7 @@ export function EmployeeOperationalDashboard() {
                   const appRecord = app as unknown as Record<string, unknown>;
                   
                   const appNo = getApplicationNumber(appRecord);
-                  const name = getApplicantLabel(appRecord);
+                  const name = extractStudentName(appRecord);
                   const prog = getProgramLabel(appRecord, isAr);
                   const appStatus = String(app.status || "under_review");
 

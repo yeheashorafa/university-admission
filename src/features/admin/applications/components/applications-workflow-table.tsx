@@ -11,6 +11,7 @@ import {
   type ApplicationStatus,
 } from "@/constants/application-workflow";
 import type { WorkflowApplication } from "../data/applications-workflow.data";
+import { formatDateTime } from "@/lib/utils/application-formatters";
 
 type ApplicationsWorkflowTableProps = {
   applications: WorkflowApplication[];
@@ -171,7 +172,7 @@ export function ApplicationsWorkflowTable({
                       {application.applicationNo}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {application.createdAt}
+                      {formatDateTime(application.createdAt, locale)}
                     </p>
                   </td>
 

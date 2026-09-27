@@ -21,7 +21,7 @@ import { getNotificationTitle } from "@/services/notifications.service";
 import type { NotificationDataSummary } from "@/services/admin-notifications.service";
 import { AdminNotificationsHeader } from "./components/admin-notifications-header";
 import { NotificationStats } from "./components/notification-stats";
-import { NotificationComposer } from "./components/notification-composer";
+
 import { NotificationsList } from "./components/notifications-list";
 import type { AdminNotification, NotificationType } from "./data/admin-notifications.data";
 
@@ -144,9 +144,17 @@ export function AdminNotificationsPage() {
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
           <section className="xl:col-span-12">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center text-amber-800 font-semibold dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
-              لا توجد نقطة نهاية لإشعارات {isAdmin ? "الإدارة" : isDean ? "عميد القبول والتسجيل" : "الموظفين"} حتى الآن (PENDING_BACKEND_API)
-            </div>
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-[28px] border border-border shadow-sm">
+                <h3 className="text-xl font-bold text-muted-foreground mb-2">جاري التحميل...</h3>
+              </div>
+            ) : (
+              <NotificationsList
+                notifications={notifications}
+                onChangeStatus={handleChangeStatus}
+                onDeleteNotification={handleDeleteNotification}
+              />
+            )}
           </section>
         </div>
       </div>

@@ -4,13 +4,13 @@ import { useTranslations } from "next-intl";
 import type { ReportsChartItem } from "../utils/admin-reports-analytics";
 
 type ApplicationStatusReportProps = {
-  data: ReportsChartItem[];
+  data: ReportsChartItem[] | null;
 };
 
 export function ApplicationStatusReport({ data }: ApplicationStatusReportProps) {
   const t = useTranslations("reports");
 
-  const maxValue = Math.max(1, ...data.map((item) => item.value));
+  const maxValue = data ? Math.max(1, ...data.map((item) => item.value)) : 1;
 
   return (
     <section className="rounded-[28px] border border-border bg-card p-6 shadow-[0px_12px_35px_rgba(118,188,33,0.07)]">
@@ -25,7 +25,12 @@ export function ApplicationStatusReport({ data }: ApplicationStatusReportProps) 
       </div>
 
       <div className="space-y-5">
-        {data.map((item) => {
+        {!data ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="text-sm font-bold text-destructive">تعذر تحميل تقرير الحالات من الخادم</p>
+          </div>
+        ) : (
+          data.map((item) => {
           const percentage = Math.round((item.value / maxValue) * 100);
 
           return (
@@ -54,7 +59,8 @@ export function ApplicationStatusReport({ data }: ApplicationStatusReportProps) 
               </div>
             </div>
           );
-        })}
+           })
+            )}
       </div>
     </section>
   );

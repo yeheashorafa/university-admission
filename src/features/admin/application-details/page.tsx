@@ -16,6 +16,7 @@ import {
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { formatDateTime } from "@/lib/utils/application-formatters";
 import {
   mapBackendApplicationToWorkflowApplication,
   type WorkflowApplication,
@@ -208,13 +209,13 @@ function ApplicationSummaryCard({ application }: ApplicationCardProps) {
         <SummaryItem
           icon={Calendar}
           label={isAr ? "تاريخ التقديم" : "Submitted At"}
-          value={application.createdAt}
+          value={formatDateTime(application.createdAt, locale)}
         />
 
         <SummaryItem
           icon={Calendar}
           label={isAr ? "تاريخ التحديث" : "Updated At"}
-          value={application.updatedAt ?? application.createdAt}
+          value={formatDateTime(application.updatedAt ?? application.createdAt, locale)}
         />
 
         <SummaryItem

@@ -18,6 +18,8 @@ import {
   type ApplicationWorkflowLog,
   type WorkflowActor,
 } from "@/constants/application-workflow";
+import { formatDateTime } from "@/lib/utils/application-formatters";
+import { useLocale } from "next-intl";
 
 type ApplicationWorkflowTimelineProps = {
   logs: ApplicationWorkflowLog[];
@@ -38,6 +40,7 @@ export function ApplicationWorkflowTimeline({
   currentStatus,
 }: ApplicationWorkflowTimelineProps) {
   const t = useTranslations("admin.applicationWorkflow");
+  const locale = useLocale();
 
   return (
     <section className="rounded-[28px] border border-border bg-card p-6 shadow-[0px_12px_35px_rgba(118,188,33,0.07)]">
@@ -96,8 +99,8 @@ export function ApplicationWorkflowTimeline({
                     </p>
                   </div>
 
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {log.createdAt}
+                  <span className="text-xs font-medium text-muted-foreground whitespace-nowrap" dir="ltr">
+                    {formatDateTime(log.createdAt, locale)}
                   </span>
                 </div>
 

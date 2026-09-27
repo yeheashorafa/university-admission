@@ -24,7 +24,12 @@ function countByStatuses(
 
 export function buildAdminReportsAnalytics(
   applications: WorkflowApplication[],
-  reports?: { byStatus?: ReportLabelCount[]; byFaculty?: ReportLabelCount[] }
+  reports?: { 
+    byStatus?: ReportLabelCount[] | null; 
+    byFaculty?: ReportLabelCount[] | null;
+    byDepartment?: ReportLabelCount[] | null;
+    byProgram?: ReportLabelCount[] | null;
+  }
 ) {
   const rejectedStatuses: ApplicationStatus[] = [
     applicationStatuses.aiRejected,
@@ -71,17 +76,42 @@ export function buildAdminReportsAnalytics(
     {}
   );
 
-  const facultyDistribution: ReportsChartItem[] = reports?.byFaculty?.length
-    ? reports.byFaculty.map((item) => ({
-        key: item.label,
-        label: item.label,
-        value: item.count,
-      }))
-    : Object.entries(facultyMap).map(([faculty, count]) => ({
-        key: faculty,
-        label: faculty,
-        value: count,
-      }));
+  let facultyDistribution: ReportsChartItem[] | null = null;
+  if (reports?.byFaculty) {
+    facultyDistribution = reports.byFaculty.map((item) => ({
+      key: item.label,
+      label: item.label,
+      value: item.count,
+    }));
+  } else if (reports?.byFaculty === undefined) {
+    facultyDistribution = Object.entries(facultyMap).map(([faculty, count]) => ({
+      key: faculty,
+      label: faculty,
+      value: count,
+    }));
+  }
+
+  let departmentDistribution: ReportsChartItem[] | null = null;
+  if (reports?.byDepartment) {
+    departmentDistribution = reports.byDepartment.map((item) => ({
+      key: item.label,
+      label: item.label,
+      value: item.count,
+    }));
+  } else if (reports?.byDepartment === undefined) {
+    departmentDistribution = []; // Fallback empty if not provided and not failed
+  }
+
+  let programDistribution: ReportsChartItem[] | null = null;
+  if (reports?.byProgram) {
+    programDistribution = reports.byProgram.map((item) => ({
+      key: item.label,
+      label: item.label,
+      value: item.count,
+    }));
+  } else if (reports?.byProgram === undefined) {
+    programDistribution = []; // Fallback empty
+  }
 
   const aiConfidenceDistribution: ReportsChartItem[] = [
     {
@@ -103,13 +133,15 @@ export function buildAdminReportsAnalytics(
     },
   ];
 
-  const statusDistribution: ReportsChartItem[] = reports?.byStatus?.length
-    ? reports.byStatus.map((item) => ({
-        key: item.label,
-        label: item.label,
-        value: item.count,
-      }))
-    : [
+  let statusDistribution: ReportsChartItem[] | null = null;
+  if (reports?.byStatus) {
+    statusDistribution = reports.byStatus.map((item) => ({
+      key: item.label,
+      label: item.label,
+      value: item.count,
+    }));
+  } else if (reports?.byStatus === undefined) {
+    statusDistribution = [
         {
           key: "aiFailed",
           value: countByStatuses(applications, [applicationStatuses.aiFailed]),
@@ -139,6 +171,7 @@ export function buildAdminReportsAnalytics(
           value: countByStatuses(applications, rejectedStatuses),
         },
       ];
+  }
 
   const recentApplications = [...applications]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -161,6 +194,8 @@ export function buildAdminReportsAnalytics(
     averageAiConfidence,
     statusDistribution,
     facultyDistribution,
+    departmentDistribution,
+    programDistribution,
     aiConfidenceDistribution,
     recentApplications,
   };

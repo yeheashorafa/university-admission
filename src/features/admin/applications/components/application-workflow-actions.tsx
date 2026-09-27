@@ -222,9 +222,18 @@ export function ApplicationWorkflowActions({
           <>
             <button
               type="button"
+              disabled={true}
+              title="قبول الطلب من موظف القبول بانتظار تفعيل endpoint من الباك إند"
+              className="h-11 rounded-[16px] bg-secondary/50 text-sm font-bold text-secondary-foreground transition cursor-not-allowed"
+            >
+              قبول الطلب
+            </button>
+            
+            <button
+              type="button"
               disabled={isSubmitting}
               onClick={handleEmployeeForward}
-              className="h-11 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
+              className="h-11 rounded-[16px] border border-secondary/40 bg-secondary/10 text-sm font-bold text-secondary transition hover:bg-secondary/15 disabled:opacity-50"
             >
               {isSubmitting ? "جاري المعالجة..." : "تحويل لرئيس القسم"}
             </button>
