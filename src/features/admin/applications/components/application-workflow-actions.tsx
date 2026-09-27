@@ -10,17 +10,20 @@ import {
 } from "@/hooks/queries/use-admin-queries";
 import { getApiErrorMessage } from "@/lib/api/api-error";
 
+import type { WorkflowApplication } from "../data/applications-workflow.data";
+import type { AuthUser } from "@/services/auth.service";
+
 type ApplicationWorkflowActionsProps = {
-  applicationId: string | number;
-  status: string;
+  application: WorkflowApplication;
   role?: string | null;
+  currentUser?: AuthUser | null;
   onSuccessAction?: () => void;
 };
 
 export function ApplicationWorkflowActions({
-  applicationId,
-  status,
+  application,
   role,
+  currentUser,
   onSuccessAction,
 }: ApplicationWorkflowActionsProps) {
   const t = useTranslations("admin.applicationWorkflow");
@@ -28,24 +31,79 @@ export function ApplicationWorkflowActions({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
+    acceptMutation: employeeAcceptMutation,
     forwardMutation,
     requestRevisionMutation,
     rejectMutation: employeeRejectMutation,
   } = useEmployeeWorkflowMutations();
 
   const {
-    acceptMutation,
+    acceptMutation: headAcceptMutation,
     rejectMutation: headRejectMutation,
     returnToEmployeeMutation,
   } = useHeadWorkflowMutations();
 
   const isEmployee = role === userRoles.admissionEmployee;
   const isDepartmentHead = role === userRoles.departmentHead;
+  const status = application.currentStatus;
+  const applicationId = application.id;
+
+  const isAssignedToCurrentUser =
+    String(application.assignedReviewerId) === String(currentUser?.id);
 
   const showEmployeeActions =
-    isEmployee && (status === "under_review" || status === "returned_to_employee" || status === "submitted");
+    isEmployee &&
+    (status === "under_review" || status === "returned_to_employee") &&
+    isAssignedToCurrentUser;
+
   const showDepartmentHeadActions =
     isDepartmentHead && status === "forwarded_to_department_head";
+
+  async function handleEmployeeAccept() {
+    const res = await Swal.fire({
+      title: "تأكيد القبول",
+      text: "هل أنت متأكد من قبول هذا الطلب؟",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "تأكيد القبول",
+      cancelButtonText: t("cancel"),
+    });
+    if (!res.isConfirmed) return;
+
+    setIsSubmitting(true);
+    try {
+      await employeeAcceptMutation.mutateAsync({ id: applicationId });
+      await Swal.fire({
+        title: t("successTitle"),
+        text: "تم قبول الطلب بنجاح",
+        icon: "success",
+      });
+      onSuccessAction?.();
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 403) {
+        await Swal.fire({
+          title: "خطأ",
+          text: "لا يمكنك قبول هذا الطلب لأنه غير معيّن لك أو حالته لا تسمح بالقبول.",
+          icon: "error",
+        });
+      } else if (status === 404) {
+        await Swal.fire({
+          title: "خطأ",
+          text: "BACKEND_ENDPOINT_NOT_DEPLOYED_OR_ROUTE_MISMATCH",
+          icon: "error",
+        });
+      } else {
+        await Swal.fire({
+          title: "خطأ",
+          text: getApiErrorMessage(err),
+          icon: "error",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   async function handleEmployeeForward() {
     const res = await Swal.fire({
@@ -136,7 +194,7 @@ export function ApplicationWorkflowActions({
 
     setIsSubmitting(true);
     try {
-      await acceptMutation.mutateAsync({ id: applicationId });
+      await headAcceptMutation.mutateAsync({ id: applicationId });
       setNote("");
       await Swal.fire({ title: t("successTitle"), text: "تم قبول الطلب بنجاح", icon: "success" });
       onSuccessAction?.();
@@ -222,11 +280,11 @@ export function ApplicationWorkflowActions({
           <>
             <button
               type="button"
-              disabled={true}
-              title="قبول الطلب من موظف القبول بانتظار تفعيل endpoint من الباك إند"
-              className="h-11 rounded-[16px] bg-secondary/50 text-sm font-bold text-secondary-foreground transition cursor-not-allowed"
+              disabled={isSubmitting}
+              onClick={handleEmployeeAccept}
+              className="h-11 rounded-[16px] border border-primary/40 bg-primary/10 text-sm font-bold text-primary transition hover:bg-primary/15 disabled:opacity-50"
             >
-              قبول الطلب
+              {isSubmitting ? "جاري المعالجة..." : "قبول الطلب"}
             </button>
             
             <button

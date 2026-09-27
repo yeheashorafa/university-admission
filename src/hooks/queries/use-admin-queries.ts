@@ -14,6 +14,7 @@ import {
 import {
   getEmployeeApplicationById,
   getEmployeeApplications,
+  acceptEmployeeApplication,
   forwardApplicationToDepartment,
   requestApplicationRevision,
   rejectApplicationByEmployee,
@@ -153,6 +154,12 @@ export function useEmployeeWorkflowMutations() {
     onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
   });
 
+  const acceptMutation = useMutation({
+    mutationFn: ({ id }: { id: string | number }) =>
+      acceptEmployeeApplication(id),
+    onSuccess: (_, variables) => invalidateAllWorkflowQueries(variables.id),
+  });
+
   const requestRevisionMutation = useMutation({
     mutationFn: ({ id }: { id: string | number }) =>
       requestApplicationRevision(id),
@@ -222,6 +229,7 @@ export function useEmployeeWorkflowMutations() {
 
   return {
     forwardMutation,
+    acceptMutation,
     requestRevisionMutation,
     rejectMutation,
     verifyAiMutation,

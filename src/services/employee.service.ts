@@ -44,6 +44,15 @@ export async function getEmployeeApplicationById(
   return extractResource<EmployeeApplication>(response.data);
 }
 
+export async function acceptEmployeeApplication(
+  id: string | number
+): Promise<EmployeeApplication> {
+  const response = await apiClient.post<EmployeeApplication | { data: EmployeeApplication }>(
+    ENDPOINTS.admissionEmployee.accept(id)
+  );
+  return extractResource<EmployeeApplication>(response.data);
+}
+
 export async function forwardApplicationToDepartment(
   id: string | number
 ): Promise<EmployeeApplication> {

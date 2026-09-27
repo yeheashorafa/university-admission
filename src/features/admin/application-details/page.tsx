@@ -35,7 +35,7 @@ type AdminApplicationDetailsPageProps = {
 export function AdminApplicationDetailsPage({
   applicationId,
 }: AdminApplicationDetailsPageProps) {
-  const { role } = useCurrentAuth();
+  const { role, user } = useCurrentAuth();
   const activeSidebarPath =
     role === userRoles.admissionEmployee
       ? routes.adminManualReview
@@ -91,9 +91,9 @@ export function AdminApplicationDetailsPage({
           <aside className="flex flex-col gap-6">
 
             <ApplicationWorkflowActions
-              applicationId={applicationId}
-              status={initialApplication.currentStatus}
+              application={initialApplication}
               role={role}
+              currentUser={user}
             />
 
             {role === userRoles.admissionEmployee && (

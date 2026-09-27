@@ -52,6 +52,8 @@ export const ENDPOINTS = {
     applications: "/admission_employee/applications",
     applicationDetail: (id: string | number) =>
       `/admission_employee/applications/${id}`,
+    accept: (id: string | number) =>
+      `/admission_employee/applications/${id}/accept`,
     forward: (id: string | number) =>
       `/admission_employee/applications/${id}/forward`,
     requestRevision: (id: string | number) =>
