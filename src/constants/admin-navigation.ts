@@ -38,7 +38,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     labelKey: "reports",
     href: routes.adminReports,
     icon: BarChart3,
-    allowedRoles: [userRoles.admin, userRoles.admissionDean],
+    allowedRoles: [userRoles.admin],
   },
   {
     labelKey: "headReports",
@@ -80,13 +80,13 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     labelKey: "users",
     href: routes.adminUsers,
     icon: Users,
-    allowedRoles: [userRoles.admin, userRoles.admissionDean, userRoles.departmentHead],
+    allowedRoles: [userRoles.admin],
   },
   {
     labelKey: "notifications",
     href: routes.adminNotifications,
     icon: Bell,
-    allowedRoles: [userRoles.admin, userRoles.admissionDean, userRoles.departmentHead, userRoles.admissionEmployee],
+    allowedRoles: [userRoles.admin],
   },
   {
     labelKey: "employeeNotifications",
@@ -104,7 +104,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     labelKey: "settings",
     href: routes.adminSettings,
     icon: Settings,
-    allowedRoles: [userRoles.admin, userRoles.admissionDean],
+    allowedRoles: [userRoles.admin],
   },
   {
     labelKey: "masterData.faculties",

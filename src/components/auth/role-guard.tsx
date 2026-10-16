@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { routes, withLocale } from "@/constants/routes";
 import { canAccessRole } from "@/lib/auth-helpers";
-import type { UserRole } from "@/constants/roles";
+import { type UserRole, isStudentRole } from "@/constants/roles";
+import { getDashboardRouteByRole } from "@/constants/role-navigation";
 
 type RoleGuardProps = {
   children: React.ReactNode;
@@ -40,9 +41,15 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
 
     if (!isAllowed) {
       didRedirectRef.current = true;
-      router.replace(withLocale(locale, routes.dashboard));
+      const target = getDashboardRouteByRole(role);
+      // Non-students must NEVER be redirected to the student dashboard
+      if (!isStudentRole(role) && target === routes.dashboard) {
+        router.replace(withLocale(locale, routes.admin));
+      } else {
+        router.replace(withLocale(locale, target));
+      }
     }
-  }, [isHydrated, isAuthenticated, isAllowed, router, locale]);
+  }, [isHydrated, isAuthenticated, isAllowed, router, locale, role]);
 
   if (!isHydrated) {
     return (

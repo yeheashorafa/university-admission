@@ -430,15 +430,23 @@ export function mapBackendApplicationToWorkflowApplication(
     }
   }
 
+  const progObj =
+    (app.program && typeof app.program === "object" ? (app.program as Record<string, unknown>) : null) ||
+    (app.selected_program && typeof app.selected_program === "object" ? (app.selected_program as Record<string, unknown>) : null) ||
+    (app.selectedProgram && typeof app.selectedProgram === "object" ? (app.selectedProgram as Record<string, unknown>) : null) ||
+    (Array.isArray(app.preferences) && app.preferences[0]?.program && typeof app.preferences[0].program === "object"
+      ? (app.preferences[0].program as Record<string, unknown>)
+      : null);
+
   let selectedProgram = "غير متوفر";
   if (typeof app.program === "string" && app.program) selectedProgram = app.program;
   else if (typeof app.selectedProgram === "string" && app.selectedProgram) selectedProgram = app.selectedProgram;
+  else if (typeof app.selected_program === "string" && app.selected_program) selectedProgram = app.selected_program;
   else if (typeof app.program_name === "string" && app.program_name) selectedProgram = app.program_name;
-  else if (app.program && typeof app.program === "object") {
-    const p = app.program as Record<string, unknown>;
-    if (typeof p.name_ar === "string" && p.name_ar) selectedProgram = p.name_ar;
-    else if (typeof p.name_en === "string" && p.name_en) selectedProgram = p.name_en;
-    else if (typeof p.name === "string" && p.name) selectedProgram = p.name;
+  else if (progObj) {
+    if (typeof progObj.name_ar === "string" && progObj.name_ar) selectedProgram = progObj.name_ar;
+    else if (typeof progObj.name_en === "string" && progObj.name_en) selectedProgram = progObj.name_en;
+    else if (typeof progObj.name === "string" && progObj.name) selectedProgram = progObj.name;
   }
 
   let admissionCycle = "غير متوفر";
@@ -448,8 +456,6 @@ export function mapBackendApplicationToWorkflowApplication(
     if (typeof ac.name === "string" && ac.name) admissionCycle = ac.name;
     else if (typeof ac.academic_year === "string" && ac.academic_year) admissionCycle = ac.academic_year;
   }
-
-
 
   let faculty = "—";
   if (typeof app.faculty === "string" && app.faculty) faculty = app.faculty;
@@ -463,14 +469,36 @@ export function mapBackendApplicationToWorkflowApplication(
     const d = app.department as Record<string, unknown>;
     if (typeof d.name_ar === "string" && d.name_ar) faculty = d.name_ar;
     else if (typeof d.name === "string" && d.name) faculty = d.name;
+  } else if (progObj) {
+    const deptObj = progObj.department as Record<string, unknown> | undefined;
+    const facObj = (deptObj?.faculty ?? progObj.faculty) as Record<string, unknown> | undefined;
+    if (facObj) {
+      if (typeof facObj.name_ar === "string" && facObj.name_ar) faculty = facObj.name_ar;
+      else if (typeof facObj.name_en === "string" && facObj.name_en) faculty = facObj.name_en;
+      else if (typeof facObj.name === "string" && facObj.name) faculty = facObj.name;
+    } else if (deptObj) {
+      if (typeof deptObj.name_ar === "string" && deptObj.name_ar) faculty = deptObj.name_ar;
+      else if (typeof deptObj.name_en === "string" && deptObj.name_en) faculty = deptObj.name_en;
+      else if (typeof deptObj.name === "string" && deptObj.name) faculty = deptObj.name;
+    }
   }
 
+  const academicObj = (app.academic_information ?? app.academic_info ?? app.academicInfo) as Record<string, unknown> | undefined;
   const average =
     (typeof app.average === "string" && app.average) ||
+    (typeof app.average === "number" ? `${app.average}%` : undefined) ||
     (typeof app.highSchoolPercentage === "string" && app.highSchoolPercentage) ||
     (typeof app.highSchoolPercentage === "number" ? `${app.highSchoolPercentage}%` : undefined) ||
     (typeof app.tawjihi_percentage === "number" ? `${app.tawjihi_percentage}%` : undefined) ||
+    (typeof app.tawjihi_percentage === "string" && app.tawjihi_percentage) ||
     (typeof app.gpa === "number" ? `${app.gpa}%` : undefined) ||
+    (typeof app.gpa === "string" && app.gpa) ||
+    (academicObj && (
+      (typeof academicObj.average === "number" ? `${academicObj.average}%` : (typeof academicObj.average === "string" ? academicObj.average : undefined)) ||
+      (typeof academicObj.high_school_percentage === "number" ? `${academicObj.high_school_percentage}%` : (typeof academicObj.high_school_percentage === "string" ? academicObj.high_school_percentage : undefined)) ||
+      (typeof academicObj.tawjihi_percentage === "number" ? `${academicObj.tawjihi_percentage}%` : (typeof academicObj.tawjihi_percentage === "string" ? academicObj.tawjihi_percentage : undefined)) ||
+      (typeof academicObj.gpa === "number" ? `${academicObj.gpa}%` : (typeof academicObj.gpa === "string" ? academicObj.gpa : undefined))
+    )) ||
     "—";
 
   const currentStatus =

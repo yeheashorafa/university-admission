@@ -17,6 +17,8 @@ import {
   type WorkflowApplication,
 } from "../applications/data/applications-workflow.data";
 
+import { AlertCircle } from "lucide-react";
+
 export function AdminManualReviewPage() {
   const { role } = useCurrentAuth();
   const [search, setSearch] = useState("");
@@ -24,15 +26,15 @@ export function AdminManualReviewPage() {
   const isHead = role === userRoles.departmentHead;
   const isEmployee = role === userRoles.admissionEmployee;
 
-  const { data: employeeApps, isLoading: loadingEmp } = useEmployeeApplicationsQuery();
-  const { data: headApps, isLoading: loadingHead } = useHeadApplicationsQuery();
-  const { data: adminApps, isLoading: loadingAdmin } = useAdminApplicationsQuery();
+  const empQuery = useEmployeeApplicationsQuery();
+  const headQuery = useHeadApplicationsQuery();
+  const adminQuery = useAdminApplicationsQuery();
 
-  const rawApplications = useMemo(() => {
-    if (isHead) return headApps || [];
-    if (isEmployee) return employeeApps || [];
-    return adminApps || [];
-  }, [isHead, isEmployee, headApps, employeeApps, adminApps]);
+  const activeQuery = isHead ? headQuery : isEmployee ? empQuery : adminQuery;
+  const rawApplications = activeQuery.data;
+  const isLoading = activeQuery.isLoading;
+  const isError = activeQuery.isError;
+  const error = activeQuery.error;
 
   const reviewApplications = useMemo<WorkflowApplication[]>(() => {
     const list = Array.isArray(rawApplications) ? rawApplications : [];
@@ -59,8 +61,6 @@ export function AdminManualReviewPage() {
       );
   }, [rawApplications, isHead, isEmployee]);
 
-  const isLoading = isHead ? loadingHead : isEmployee ? loadingEmp : loadingAdmin;
-
   return (
     <AdminLayout activePath={routes.adminManualReview}>
       <div className="flex flex-col gap-6">
@@ -72,6 +72,21 @@ export function AdminManualReviewPage() {
         {isLoading ? (
           <div className="rounded-[28px] border border-border bg-card p-12 text-center text-muted-foreground">
             جاري تحميل طلبات المراجعة من الخادم...
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center text-destructive">
+            <AlertCircle className="size-10" />
+            <h3 className="text-lg font-bold">تعذر تحميل طلبات المراجعة اليدوية</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              {error instanceof Error ? error.message : "حدث خطأ أثناء استرجاع قائمة المراجعة من الخادم."}
+            </p>
+            <button
+              type="button"
+              onClick={() => activeQuery.refetch()}
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              إعادة المحاولة
+            </button>
           </div>
         ) : (
           <ManualReviewWorkflowQueue

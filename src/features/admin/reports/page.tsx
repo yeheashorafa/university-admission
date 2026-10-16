@@ -14,7 +14,6 @@ import { ReportsFilterBar } from "./components/reports-filter-bar";
 import { ReportsStats } from "./components/reports-stats";
 import { ApplicationStatusReport } from "./components/application-status-report";
 import { AiAlertsReport } from "./components/ai-alerts-report";
-import { RecentExportsCard } from "./components/recent-exports-card";
 import { FacultyReportTable } from "./components/faculty-report-table";
 import { DepartmentReportTable } from "./components/department-report-table";
 import { ProgramReportTable } from "./components/program-report-table";
@@ -58,13 +57,8 @@ export function AdminReportsPage() {
               <AiAlertsReport data={analytics.aiConfidenceDistribution} />
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <FacultyReportTable data={analytics.facultyDistribution} />
-              </div>
-              <div className="xl:col-span-1">
-                <RecentExportsCard />
-              </div>
+            <div className="grid grid-cols-1 gap-6">
+              <FacultyReportTable data={analytics.facultyDistribution} />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">

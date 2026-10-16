@@ -54,17 +54,23 @@ export function buildAdminReportsAnalytics(
     applicationStatuses.headReview,
   ];
 
-  const totalApplications = applications.length;
+  const totalApplications = reports?.byStatus
+    ? reports.byStatus.reduce((acc, curr) => acc + curr.count, 0)
+    : applications.length;
+
+  const applicationsWithConfidence = applications.filter(
+    (app) => typeof app.aiConfidence === "number" && app.aiConfidence > 0
+  );
 
   const averageAiConfidence =
-    totalApplications === 0
+    applicationsWithConfidence.length === 0
       ? 0
       : Math.round(
-          (applications.reduce(
-            (total, application) => total + application.aiConfidence,
+          (applicationsWithConfidence.reduce(
+            (total, app) => total + app.aiConfidence,
             0
           ) /
-            totalApplications) *
+            applicationsWithConfidence.length) *
             10
         ) / 10;
 
@@ -116,20 +122,17 @@ export function buildAdminReportsAnalytics(
   const aiConfidenceDistribution: ReportsChartItem[] = [
     {
       key: "low",
-      value: applications.filter((application) => application.aiConfidence < 70)
-        .length,
+      value: applicationsWithConfidence.filter((app) => app.aiConfidence < 70).length,
     },
     {
       key: "medium",
-      value: applications.filter(
-        (application) =>
-          application.aiConfidence >= 70 && application.aiConfidence < 90
+      value: applicationsWithConfidence.filter(
+        (app) => app.aiConfidence >= 70 && app.aiConfidence < 90
       ).length,
     },
     {
       key: "high",
-      value: applications.filter((application) => application.aiConfidence >= 90)
-        .length,
+      value: applicationsWithConfidence.filter((app) => app.aiConfidence >= 90).length,
     },
   ];
 
@@ -173,18 +176,61 @@ export function buildAdminReportsAnalytics(
       ];
   }
 
+  const acceptedCount = reports?.byStatus
+    ? reports.byStatus
+        .filter((item) =>
+          [
+            "accepted",
+            "approved",
+            "head_approved",
+            "payment_pending",
+            "payment_completed",
+            "completed",
+          ].includes(item.label.toLowerCase())
+        )
+        .reduce((sum, item) => sum + item.count, 0)
+    : countByStatuses(applications, acceptedStatuses);
+
+  const rejectedCount = reports?.byStatus
+    ? reports.byStatus
+        .filter((item) =>
+          [
+            "rejected",
+            "cancelled",
+            "ai_rejected",
+            "employee_rejected",
+            "head_rejected",
+          ].includes(item.label.toLowerCase())
+        )
+        .reduce((sum, item) => sum + item.count, 0)
+    : countByStatuses(applications, rejectedStatuses);
+
+  const pendingReviewCount = reports?.byStatus
+    ? reports.byStatus
+        .filter((item) =>
+          [
+            "under_review",
+            "submitted",
+            "ai_failed",
+            "employee_review",
+            "head_review",
+            "returned_to_employee",
+            "returned_for_revision",
+            "forwarded_to_department_head",
+          ].includes(item.label.toLowerCase())
+        )
+        .reduce((sum, item) => sum + item.count, 0)
+    : countByStatuses(applications, pendingReviewStatuses);
+
   const recentApplications = [...applications]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, 5);
 
   return {
     totalApplications,
-    acceptedApplications: countByStatuses(applications, acceptedStatuses),
-    rejectedApplications: countByStatuses(applications, rejectedStatuses),
-    pendingReviewApplications: countByStatuses(
-      applications,
-      pendingReviewStatuses
-    ),
+    acceptedApplications: acceptedCount,
+    rejectedApplications: rejectedCount,
+    pendingReviewApplications: pendingReviewCount,
     aiFailedApplications: countByStatuses(applications, [
       applicationStatuses.aiFailed,
     ]),

@@ -4,6 +4,11 @@ export function getProgramLabel(app: Record<string, unknown>, isAr: boolean): st
     return selectedProgram;
   }
 
+  const selectedProgramUnder = app.selected_program;
+  if (typeof selectedProgramUnder === "string" && selectedProgramUnder.trim()) {
+    return selectedProgramUnder;
+  }
+
   const programName = app.program_name;
   if (typeof programName === "string" && programName.trim()) {
     return programName;
@@ -15,12 +20,19 @@ export function getProgramLabel(app: Record<string, unknown>, isAr: boolean): st
     return program;
   }
 
-  if (program && typeof program === "object") {
-    const p = program as Record<string, unknown>;
+  const progObj =
+    (program && typeof program === "object" ? (program as Record<string, unknown>) : null) ||
+    (selectedProgramUnder && typeof selectedProgramUnder === "object"
+      ? (selectedProgramUnder as Record<string, unknown>)
+      : null) ||
+    (selectedProgram && typeof selectedProgram === "object"
+      ? (selectedProgram as Record<string, unknown>)
+      : null);
 
-    const nameAr = typeof p.name_ar === "string" ? p.name_ar : "";
-    const nameEn = typeof p.name_en === "string" ? p.name_en : "";
-    const name = typeof p.name === "string" ? p.name : "";
+  if (progObj) {
+    const nameAr = typeof progObj.name_ar === "string" ? progObj.name_ar : "";
+    const nameEn = typeof progObj.name_en === "string" ? progObj.name_en : "";
+    const name = typeof progObj.name === "string" ? progObj.name : "";
 
     return (
       (isAr ? nameAr || nameEn || name : nameEn || nameAr || name) ||

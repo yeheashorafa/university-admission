@@ -15,35 +15,36 @@ export function NotificationStats({ notifications }: NotificationStatsProps) {
   const t = useTranslations("admin");
 
   const stats = useMemo(() => {
-    const sentToday = notifications.filter(
-      (notification) => notification.status === "sent"
+    const unread = notifications.filter(
+      (notification) =>
+        notification.status === "unread" || notification.status === "scheduled"
     ).length;
 
-    const scheduled = notifications.filter(
-      (notification) => notification.status === "scheduled"
+    const read = notifications.filter(
+      (notification) =>
+        notification.status === "read" || notification.status === "sent"
     ).length;
 
-    const drafts = notifications.filter(
-      (notification) => notification.status === "draft"
-    ).length;
+    const total = notifications.length;
 
     const recipientsReached = notifications.reduce(
-      (total, notification) => total + (notification.data?.total_rows ?? 0),
+      (totalRows, notification) =>
+        totalRows + (notification.data?.total_rows ?? 0),
       0
     );
 
     return [
       {
-        key: "sentToday",
-        value: sentToday.toLocaleString(),
+        key: "unreadCount",
+        value: unread.toLocaleString(),
       },
       {
-        key: "scheduled",
-        value: scheduled.toLocaleString(),
+        key: "readCount",
+        value: read.toLocaleString(),
       },
       {
-        key: "drafts",
-        value: drafts.toLocaleString(),
+        key: "totalCount",
+        value: total.toLocaleString(),
       },
       {
         key: "recipientsReached",

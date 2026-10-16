@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { X, Eye, EyeOff } from "lucide-react";
 import { AdminCustomSelect } from "@/components/ui/admin-custom-select";
 import type { AuthUser, UserRole } from "@/services/auth.service";
 import type { AdminUserPayload } from "@/services/admin-users.service";
 import { userRoles } from "@/constants/roles";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 
 type UserFormModalProps = {
   open: boolean;
@@ -58,6 +59,14 @@ function UserFormModalContent({
   onSubmit,
 }: UserFormModalContentProps) {
   const t = useTranslations("admin");
+  const { role: currentUserRole } = useCurrentAuth();
+
+  const availableRoles = useMemo(() => {
+    if (currentUserRole !== userRoles.admin) {
+      return roles.filter((r) => r !== userRoles.admin && r !== userRoles.admissionDean);
+    }
+    return roles;
+  }, [currentUserRole]);
 
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
@@ -211,7 +220,7 @@ function UserFormModalContent({
               label={t("users.form.role")}
               value={role}
               onChange={(value) => setRole(value as UserRole)}
-              options={roles.map((item) => ({
+              options={availableRoles.map((item) => ({
                 value: item,
                 label: item,
               }))}

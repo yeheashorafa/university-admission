@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
-import { ReportsFilterBar } from "@/features/admin/reports/components/reports-filter-bar";
 
 export function HeadReportsPage() {
-  const [range, setRange] = useState<{ from?: string; to?: string }>({});
 
   return (
     <AdminLayout activePath={routes.adminHeadReports}>

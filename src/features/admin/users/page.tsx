@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
@@ -46,7 +47,13 @@ export function AdminUsersPage() {
   const role = (searchParams.get("role") || undefined) as UserRole | undefined;
   const page = Number(searchParams.get("page") ?? "1");
 
-  const { data: apiUsers, refetch } = useAdminUsersQuery({ search, role });
+  const {
+    data: apiUsers,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useAdminUsersQuery({ search, role });
   const createMutation = useCreateAdminUserMutation();
   const updateMutation = useUpdateAdminUserMutation();
   const deleteMutation = useDeleteAdminUserMutation();
@@ -210,18 +217,38 @@ export function AdminUsersPage() {
           onReset={handleReset}
         />
 
-        <UsersTable
-          users={paginatedUsers}
-          totalUsers={filteredUsers.length}
-          currentPage={safePage}
-          totalPages={totalPages}
-          from={from}
-          to={to}
-          onPageChange={handlePageChange}
-          onEditUser={handleOpenEdit}
-          onDeleteUser={handleDeleteUser}
-
-        />
+        {isLoading ? (
+          <div className="rounded-[28px] border border-border bg-card p-12 text-center text-muted-foreground">
+            جاري تحميل قائمة المستخدمين من الخادم...
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center text-destructive">
+            <AlertCircle className="size-10" />
+            <h3 className="text-lg font-bold">تعذر تحميل بيانات المستخدمين</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              {error instanceof Error ? error.message : "حدث خطأ أثناء استرجاع المستخدمين من الخادم."}
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              إعادة المحاولة
+            </button>
+          </div>
+        ) : (
+          <UsersTable
+            users={paginatedUsers}
+            totalUsers={filteredUsers.length}
+            currentPage={safePage}
+            totalPages={totalPages}
+            from={from}
+            to={to}
+            onPageChange={handlePageChange}
+            onEditUser={handleOpenEdit}
+            onDeleteUser={handleDeleteUser}
+          />
+        )}
       </div>
 
       <UserFormModal

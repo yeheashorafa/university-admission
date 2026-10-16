@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { BarChart3, Clock3, FileCheck2, FileX2 } from "lucide-react";
-import type { WorkflowApplication } from "../data/applications-workflow.data";
 
 
 

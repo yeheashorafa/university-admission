@@ -2474,13 +2474,18 @@
       "statuses": {
         "sent": "تم الإرسال",
         "scheduled": "مجدول",
-        "draft": "مسودة"
+        "draft": "مسودة",
+        "read": "مقروء",
+        "unread": "غير مقروء"
       },
       "stats": {
         "sentToday": "أُرسلت اليوم",
         "scheduled": "مجدولة",
         "drafts": "مسودات",
-        "recipientsReached": "المستلمون"
+        "recipientsReached": "المستلمون",
+        "totalCount": "إجمالي الإشعارات",
+        "readCount": "مقروءة",
+        "unreadCount": "غير مقروءة"
       },
       "historyTitle": "سجل الإشعارات",
       "historyDescription": "راجع الإشعارات المرسلة والمجدولة والمسودات الأخيرة.",
@@ -2549,7 +2554,8 @@
       "failedRowsDetails": "تفاصيل الأخطاء (أول 200 صف)",
       "rowIndex": "الصف",
       "nationalIdColumn": "رقم الهوية",
-      "errorDetailsColumn": "الأخطاء"
+      "errorDetailsColumn": "الأخطاء",
+      "markAsRead": "تحديد كمقروء"
     },
     "settings": {
       "systemConfiguration": "إعدادات النظام",

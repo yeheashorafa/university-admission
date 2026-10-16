@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, MessageSquare, Send, Sparkles, Trash2, Pencil, X } from "lucide-react";
+import { Loader2, MessageSquare, Sparkles, Trash2, Pencil } from "lucide-react";
 import Swal from "sweetalert2";
 import { userRoles } from "@/constants/roles";
 import {
@@ -29,7 +29,6 @@ export function ApplicationEmployeeActions({
 
   const {
     verifyAiMutation,
-    reForwardMutation,
     addCommentMutation,
     updateCommentMutation,
     deleteCommentMutation,
@@ -38,9 +37,8 @@ export function ApplicationEmployeeActions({
   const [comments, setComments] = useState<EmployeeComment[]>(initialComments ?? []);
   const [newComment, setNewComment] = useState("");
 
-  const [isReForwardOpen, setIsReForwardOpen] = useState(false);
-
-  const canReForward = isEmployee && status !== "cancelled" && status !== "rejected";
+  const isTerminal = ["accepted", "approved", "rejected", "cancelled"].includes(status);
+  const canVerifyAi = isEmployee && !isTerminal && (status === "under_review" || status === "returned_to_employee" || status === "ai_failed" || status === "submitted");
 
   async function handleVerifyAi() {
     const res = await Swal.fire({
@@ -58,20 +56,6 @@ export function ApplicationEmployeeActions({
       await Swal.fire({
         title: t("successTitle"),
         text: t("verifyAiSuccess"),
-        icon: "success",
-      });
-    } catch (err) {
-      await Swal.fire({ title: t("errorTitle"), text: getApiErrorMessage(err), icon: "error" });
-    }
-  }
-
-  async function handleReForward() {
-    try {
-      await reForwardMutation.mutateAsync({ id: applicationId });
-      setIsReForwardOpen(false);
-      await Swal.fire({
-        title: t("successTitle"),
-        text: t("reForwardSuccess"),
         icon: "success",
       });
     } catch (err) {
@@ -151,35 +135,23 @@ export function ApplicationEmployeeActions({
     <section className="rounded-[28px] border border-border bg-card p-6 shadow-[0px_12px_35px_rgba(118,188,33,0.07)]">
       <h2 className="text-xl font-bold text-primary">{t("employeeExtraTitle")}</h2>
 
-      <div className="mt-5 flex flex-col gap-3">
-        <button
-          type="button"
-          disabled={verifyAiMutation.isPending}
-          onClick={handleVerifyAi}
-          className="flex h-11 items-center justify-center gap-2 rounded-[16px] border border-primary/40 bg-primary/10 text-sm font-bold text-primary transition hover:bg-primary/15 disabled:opacity-50"
-        >
-          {verifyAiMutation.isPending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Sparkles className="size-4" />
-          )}
-          {verifyAiMutation.isPending ? t("verifyingAi") : t("verifyAi")}
-        </button>
-
-        <button
-          type="button"
-          disabled={!canReForward || reForwardMutation.isPending}
-          onClick={() => setIsReForwardOpen(true)}
-          className="flex h-11 items-center justify-center gap-2 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
-        >
-          {reForwardMutation.isPending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Send className="size-4" />
-          )}
-          {reForwardMutation.isPending ? t("processing") : t("reForward")}
-        </button>
-      </div>
+      {canVerifyAi && (
+        <div className="mt-5 flex flex-col gap-3">
+          <button
+            type="button"
+            disabled={verifyAiMutation.isPending}
+            onClick={handleVerifyAi}
+            className="flex h-11 items-center justify-center gap-2 rounded-[16px] border border-primary/40 bg-primary/10 text-sm font-bold text-primary transition hover:bg-primary/15 disabled:opacity-50"
+          >
+            {verifyAiMutation.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Sparkles className="size-4" />
+            )}
+            {verifyAiMutation.isPending ? t("verifyingAi") : t("verifyAi")}
+          </button>
+        </div>
+      )}
 
       {/* Comments */}
       <div className="mt-6">
@@ -245,46 +217,6 @@ export function ApplicationEmployeeActions({
           </button>
         </div>
       </div>
-
-      {/* Re-forward modal */}
-      {isReForwardOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-[24px] border border-border bg-card p-6 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-primary">{t("reForward")}</h3>
-              <button
-                type="button"
-                onClick={() => setIsReForwardOpen(false)}
-                className="text-muted-foreground transition hover:text-foreground"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-
-            <p className="mb-5 text-sm leading-6 text-muted-foreground">
-              {t("reForwardConfirmDescription")}
-            </p>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={handleReForward}
-                disabled={reForwardMutation.isPending}
-                className="h-11 flex-1 rounded-[16px] bg-secondary text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90 disabled:opacity-50"
-              >
-                {reForwardMutation.isPending ? t("processing") : t("confirmReForward")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsReForwardOpen(false)}
-                className="h-11 flex-1 rounded-[16px] border border-border bg-background text-sm font-bold text-foreground transition hover:bg-background/80"
-              >
-                {t("cancel")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
