@@ -80,7 +80,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     labelKey: "users",
     href: routes.adminUsers,
     icon: Users,
-    allowedRoles: [userRoles.admin],
+    allowedRoles: [userRoles.admin, userRoles.departmentHead],
   },
   {
     labelKey: "notifications",

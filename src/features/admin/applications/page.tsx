@@ -68,7 +68,10 @@ export function AdminApplicationsPage() {
   return (
     <AdminLayout activePath={routes.adminApplications}>
       <div className="flex flex-col gap-6">
-        <ApplicationsWorkflowHeader />
+        <ApplicationsWorkflowHeader
+          applications={applications}
+          isLoading={isLoading}
+        />
 
         {isLoading ? (
           <TableSkeleton columns={5} rows={6} />

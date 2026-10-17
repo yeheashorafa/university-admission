@@ -23,6 +23,8 @@ import { extractApiError } from "@/lib/api/api-error";
 import type { AuthUser, UserRole } from "@/services/auth.service";
 import type { AdminUserPayload } from "@/services/admin-users.service";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { userRoles } from "@/constants/roles";
 
 const PAGE_SIZE = 4;
 
@@ -42,6 +44,9 @@ export function AdminUsersPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const { role: currentUserRole } = useCurrentAuth();
+  const isDeptHead = currentUserRole === userRoles.departmentHead;
 
   const search = searchParams.get("search") ?? "";
   const role = (searchParams.get("role") || undefined) as UserRole | undefined;
@@ -207,6 +212,15 @@ export function AdminUsersPage() {
       <div className="flex flex-col gap-8">
         <AdminUsersHeader onAddUser={handleOpenCreate} />
 
+        {isDeptHead && (
+          <div className="flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-amber-800 dark:text-amber-200">
+            <AlertCircle className="size-5 shrink-0" />
+            <p className="text-sm font-medium">
+              تم الإبقاء على صلاحية إدارة موظفي القسم وظيفياً. بانتظار توفير نقطة نهاية مخصصة من الخادم (مثل <code>/api/v1/department_head/users</code>) حيث أن مسار <code>/admin/users</code> مقتصر على مشرف النظام.
+            </p>
+          </div>
+        )}
+
         <UsersStats users={users} />
 
         <UsersFilterBar
@@ -224,17 +238,27 @@ export function AdminUsersPage() {
         ) : isError ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center text-destructive">
             <AlertCircle className="size-10" />
-            <h3 className="text-lg font-bold">تعذر تحميل بيانات المستخدمين</h3>
-            <p className="text-sm text-muted-foreground max-w-md">
-              {error instanceof Error ? error.message : "حدث خطأ أثناء استرجاع المستخدمين من الخادم."}
+            <h3 className="text-lg font-bold">
+              {isDeptHead
+                ? "إدارة موظفي القسم تتطلب نقطة نهاية مخصصة بالخادم"
+                : "تعذر تحميل بيانات المستخدمين"}
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-lg">
+              {isDeptHead
+                ? "تم الحفاظ على الصلاحية في الواجهة، لكن مسار /api/v1/admin/users يرفض طلب رئيس القسم حالياً (403 Forbidden). نحتاج Backend endpoint مناسباً (مثل /api/v1/department_head/users)."
+                : error instanceof Error
+                  ? error.message
+                  : "حدث خطأ أثناء استرجاع المستخدمين من الخادم."}
             </p>
-            <button
-              type="button"
-              onClick={() => refetch()}
-              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
-            >
-              إعادة المحاولة
-            </button>
+            {!isDeptHead && (
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+              >
+                إعادة المحاولة
+              </button>
+            )}
           </div>
         ) : (
           <UsersTable

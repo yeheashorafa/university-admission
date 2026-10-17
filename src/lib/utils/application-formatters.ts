@@ -45,13 +45,27 @@ export function getProgramLabel(app: Record<string, unknown>, isAr: boolean): st
 
 export function extractStudentName(app: Record<string, unknown>): string {
   const direct =
-    typeof app.studentName === "string"
-      ? app.studentName
-      : typeof app.student_name === "string"
-        ? app.student_name
-        : "";
+    typeof app.studentName === "string" && app.studentName.trim()
+      ? app.studentName.trim()
+      : typeof app.student_name === "string" && app.student_name.trim()
+        ? app.student_name.trim()
+        : typeof app.applicant_name === "string" && app.applicant_name.trim()
+          ? app.applicant_name.trim()
+          : typeof app.applicantName === "string" && app.applicantName.trim()
+            ? app.applicantName.trim()
+            : typeof app.applicant === "string" && app.applicant.trim()
+              ? app.applicant.trim()
+              : "";
 
-  if (direct.trim()) return direct;
+  if (direct) return direct;
+
+  const applicant = app.applicant;
+  if (applicant && typeof applicant === "object") {
+    const a = applicant as Record<string, unknown>;
+    if (typeof a.name === "string" && a.name.trim()) return a.name.trim();
+    if (typeof a.name_ar === "string" && a.name_ar.trim()) return a.name_ar.trim();
+    if (typeof a.full_name === "string" && a.full_name.trim()) return a.full_name.trim();
+  }
 
   const objectsToSearch = [
     app.applicant,

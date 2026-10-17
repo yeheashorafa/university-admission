@@ -369,11 +369,19 @@ export function mapBackendApplicationToWorkflowApplication(
   let studentEmail = "غير متوفر";
   let studentPhone = "غير متوفر";
   
-  if (typeof app.studentName === "string" && app.studentName) studentName = app.studentName;
-  else if (typeof app.student_name === "string" && app.student_name) studentName = app.student_name;
+  if (typeof app.studentName === "string" && app.studentName.trim()) studentName = app.studentName.trim();
+  else if (typeof app.student_name === "string" && app.student_name.trim()) studentName = app.student_name.trim();
+  else if (typeof app.applicant_name === "string" && app.applicant_name.trim()) studentName = app.applicant_name.trim();
+  else if (typeof app.applicantName === "string" && app.applicantName.trim()) studentName = app.applicantName.trim();
+  else if (typeof app.applicant === "string" && app.applicant.trim()) studentName = app.applicant.trim();
   
   if (applicantObj && typeof applicantObj === "object") {
     const s = applicantObj as Record<string, unknown>;
+    if (studentName === "غير متوفر") {
+      if (typeof s.name === "string" && s.name.trim()) studentName = s.name.trim();
+      else if (typeof s.name_ar === "string" && s.name_ar.trim()) studentName = s.name_ar.trim();
+      else if (typeof s.full_name === "string" && s.full_name.trim()) studentName = s.full_name.trim();
+    }
     if (typeof s.email === "string" && s.email) studentEmail = s.email;
     if (typeof s.phone === "string" && s.phone) studentPhone = s.phone;
   }

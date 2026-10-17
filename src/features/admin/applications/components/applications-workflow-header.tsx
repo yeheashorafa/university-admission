@@ -6,17 +6,54 @@ import { BarChart3, Clock3, FileCheck2, FileX2 } from "lucide-react";
 
 
 
-export function ApplicationsWorkflowHeader() {
+import type { WorkflowApplication } from "../data/applications-workflow.data";
+import { applicationStatuses } from "@/constants/application-workflow";
+
+type ApplicationsWorkflowHeaderProps = {
+  applications?: WorkflowApplication[];
+  isLoading?: boolean;
+};
+
+export function ApplicationsWorkflowHeader({
+  applications = [],
+  isLoading = false,
+}: ApplicationsWorkflowHeaderProps) {
   const t = useTranslations("admin.applications");
 
   const stats = useMemo(() => {
+    if (isLoading) {
+      return {
+        total: "...",
+        pendingHeadReview: "...",
+        paymentPending: "...",
+        rejected: "...",
+      };
+    }
+
+    const total = applications.length;
+    const pendingHeadReview = applications.filter(
+      (app) =>
+        app.currentStatus === applicationStatuses.headReview ||
+        app.currentStatus === "forwarded_to_department_head"
+    ).length;
+    const paymentPending = applications.filter(
+      (app) => app.currentStatus === applicationStatuses.paymentPending
+    ).length;
+    const rejected = applications.filter(
+      (app) =>
+        app.currentStatus === "rejected" ||
+        app.currentStatus === applicationStatuses.aiRejected ||
+        app.currentStatus === applicationStatuses.employeeRejected ||
+        app.currentStatus === applicationStatuses.headRejected
+    ).length;
+
     return {
-      total: "Pending API",
-      pendingHeadReview: "Pending API",
-      paymentPending: "Pending API",
-      rejected: "Pending API",
+      total,
+      pendingHeadReview,
+      paymentPending,
+      rejected,
     };
-  }, []);
+  }, [applications, isLoading]);
 
   return (
     <section className="relative overflow-hidden rounded-[28px] border border-border bg-card p-6 shadow-[0px_12px_35px_rgba(118,188,33,0.08)] md:p-8">
