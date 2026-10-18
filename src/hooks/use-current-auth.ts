@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import React, { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 import type { AuthUser } from "@/services/auth.service";
 import { clearAuthStorage, getAccessToken, getStoredUser } from "@/lib/api/auth-token";
 import { normalizeRole } from "@/constants/roles";
@@ -111,7 +111,28 @@ function parseAuthStorage(snapshot: string): StoredAuth {
   }
 }
 
-export function useCurrentAuth() {
+export type CurrentAuthState = {
+  isHydrated: boolean;
+  user: AuthUser | null;
+  token: string | null;
+  role: AuthUser["role"] | null;
+  isAuthenticated: boolean;
+};
+
+export const AuthContext = createContext<CurrentAuthState | null>(null);
+
+export function AuthProvider({
+  value,
+  children,
+}: {
+  value: CurrentAuthState;
+  children: React.ReactNode;
+}) {
+  return React.createElement(AuthContext.Provider, { value }, children);
+}
+
+export function useCurrentAuth(): CurrentAuthState {
+  const contextAuth = useContext(AuthContext);
   const snapshot = useSyncExternalStore(
     subscribeToAuthStorage,
     getAuthStorageSnapshot,
@@ -124,6 +145,10 @@ export function useCurrentAuth() {
     () => true,
     () => false
   );
+
+  if (contextAuth) {
+    return contextAuth;
+  }
 
   const isHydrated = mounted && parsed.isHydrated;
 

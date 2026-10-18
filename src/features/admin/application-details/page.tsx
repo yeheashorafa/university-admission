@@ -259,8 +259,8 @@ export function ApplicationSummaryCard({ application }: ApplicationCardProps) {
           </p>
           <p className="mt-1">
             {isAr
-              ? "لم يقم موظف القبول بإرفاق ملاحظات إضافية مع طلب التحويل (حقل decision_reason غير متوفر في استجابة الخادم)."
-              : "No additional forwarding notes provided by admission employee (decision_reason field omitted in backend response)."}
+              ? "سبب التحويل غير متوفر في استجابة الخادم."
+              : "Forwarding reason is not available in the server response."}
           </p>
         </div>
       ) : null}

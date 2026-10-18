@@ -210,14 +210,14 @@ export function normalizeHeadApplication(
 
   const isForwarded = isForwardedToHead(status);
   const forwardReason = isForwarded
-    ? explicitForwardReason || employeeNotes || decisionReason
+    ? explicitForwardReason || decisionReason || employeeNotes
     : undefined;
 
   // If application is forwarded to head but no note field was provided in response, report the missing field
   const isForwardNoteMissing = isForwarded && !forwardReason;
   if (isForwardNoteMissing && typeof console !== "undefined") {
     console.warn(
-      `[DepartmentHeadService] Forwarded application #${raw.id ?? applicationNo} is missing forwarding note field (decision_reason / employee_notes omitted in backend response).`
+      `[DepartmentHeadService] Forwarded application #${raw.id ?? applicationNo}: سبب التحويل غير متوفر في استجابة الخادم.`
     );
   }
 

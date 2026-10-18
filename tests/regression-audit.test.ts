@@ -19,6 +19,8 @@ import {
 import { mapBackendApplicationToWorkflowApplication } from "../src/features/admin/applications/data/applications-workflow.data";
 import { ApplicationSummaryCard } from "../src/features/admin/application-details/page";
 import { RoleGuard } from "../src/components/auth/role-guard";
+import { AuthProvider, type CurrentAuthState } from "../src/hooks/use-current-auth";
+import { calculateAvgTimeToDecisionHours } from "../src/features/admin/head-reports/page";
 import { apiClient } from "../src/lib/api/client";
 import { ENDPOINTS } from "../src/lib/api/endpoints";
 import arMessages from "../src/messages/ar.json" with { type: "json" };
@@ -33,7 +35,17 @@ const mockRouter = {
   prefetch: () => {},
 };
 
-function renderWithProviders(element: React.ReactElement, locale = "ar") {
+function renderWithProviders(
+  element: React.ReactElement,
+  options?: { locale?: string; auth?: CurrentAuthState }
+) {
+  const locale = options?.locale ?? "ar";
+  let content = element;
+
+  if (options?.auth) {
+    content = React.createElement(AuthProvider, { value: options.auth }, content);
+  }
+
   return renderToStaticMarkup(
     React.createElement(
       AppRouterContext.Provider,
@@ -41,13 +53,13 @@ function renderWithProviders(element: React.ReactElement, locale = "ar") {
       React.createElement(
         NextIntlClientProvider,
         { locale, messages: arMessages },
-        element
+        content
       )
     )
   );
 }
 
-test("1. Department Head view makes zero Admin Users requests (Implementation Test)", async () => {
+test("1. Department Head query guard prevents Admin Users requests", async () => {
   // 1. Role-level isolation guarantee
   assert.equal(isSuperAdmin(userRoles.departmentHead), false);
   assert.equal(isSuperAdmin(userRoles.admissionDean), false);
@@ -91,7 +103,7 @@ test("1. Department Head view makes zero Admin Users requests (Implementation Te
   }
 });
 
-test("2. RoleGuard behavior with mounted components (Implementation Test)", () => {
+test("2. RoleGuard SSR authorization rendering and redirect routing logic", () => {
   // Setup storage and window simulation for test environment
   const storage = new Map<string, string>();
   const mockStorage = {
@@ -115,89 +127,103 @@ test("2. RoleGuard behavior with mounted components (Implementation Test)", () =
     configurable: true,
   });
 
-  // Case A: Unauthenticated user -> Children NOT rendered
+  // Case A: Unauthenticated user -> Protected children NOT rendered during SSR; guard loading screen rendered
   const unauthMarkup = renderWithProviders(
     React.createElement(
       RoleGuard,
-      {
-        allowedRoles: [userRoles.superAdmin],
-        authOverride: { user: null, role: null },
-      },
+      { allowedRoles: [userRoles.superAdmin] },
       React.createElement("div", { id: "secret" }, "SECRET_SUPER_ADMIN_CONTENT")
-    )
+    ),
+    {
+      auth: {
+        user: null,
+        token: null,
+        role: null,
+        isAuthenticated: false,
+        isHydrated: true,
+      },
+    }
   );
   assert.equal(
     unauthMarkup.includes("SECRET_SUPER_ADMIN_CONTENT"),
     false,
-    "Unauthenticated RoleGuard must not render children"
+    "Unauthenticated user must not render protected children during SSR"
+  );
+  assert.ok(
+    unauthMarkup.includes("checkingAccess") || unauthMarkup.includes("التحقق من الصلاحيات") || unauthMarkup.includes("Loader2"),
+    "Unauthenticated user must render guard loading screen"
   );
 
-  // Case B: Authenticated as Student accessing Admin -> Children NOT rendered
+  // Case B: Authenticated as Student accessing Admin -> Protected children NOT rendered during SSR
   const studentMarkup = renderWithProviders(
     React.createElement(
       RoleGuard,
-      {
-        allowedRoles: [userRoles.superAdmin],
-        authOverride: {
-          user: { id: 1, role: userRoles.student, name: "Student User" },
-          role: userRoles.student,
-        },
-      },
+      { allowedRoles: [userRoles.superAdmin] },
       React.createElement("div", { id: "secret" }, "SECRET_SUPER_ADMIN_CONTENT")
-    )
+    ),
+    {
+      auth: {
+        user: { id: 1, role: userRoles.student, name: "Student User" },
+        token: "mock-token",
+        role: userRoles.student,
+        isAuthenticated: true,
+        isHydrated: true,
+      },
+    }
   );
   assert.equal(
     studentMarkup.includes("SECRET_SUPER_ADMIN_CONTENT"),
     false,
-    "Student must not render admin children"
+    "Student must not render admin protected children during SSR"
   );
 
-  // Case C: Authenticated as Department Head accessing SuperAdmin -> Children NOT rendered
+  // Case C: Authenticated as Department Head accessing SuperAdmin -> Protected children NOT rendered during SSR
   const headUnauthorizedMarkup = renderWithProviders(
     React.createElement(
       RoleGuard,
-      {
-        allowedRoles: [userRoles.superAdmin],
-        authOverride: {
-          user: { id: 2, role: userRoles.departmentHead, name: "Head User" },
-          role: userRoles.departmentHead,
-        },
-      },
+      { allowedRoles: [userRoles.superAdmin] },
       React.createElement("div", { id: "secret" }, "SECRET_SUPER_ADMIN_CONTENT")
-    )
+    ),
+    {
+      auth: {
+        user: { id: 2, role: userRoles.departmentHead, name: "Head User" },
+        token: "mock-token",
+        role: userRoles.departmentHead,
+        isAuthenticated: true,
+        isHydrated: true,
+      },
+    }
   );
   assert.equal(
     headUnauthorizedMarkup.includes("SECRET_SUPER_ADMIN_CONTENT"),
     false,
-    "Department Head must not render super admin children"
+    "Department Head must not render super admin protected children during SSR"
   );
 
-  // Case D: Authenticated as Department Head accessing authorized route -> Children RENDERED
+  // Case D: Authenticated as Department Head accessing authorized route -> Protected children RENDERED during SSR
   const headAuthorizedMarkup = renderWithProviders(
     React.createElement(
       RoleGuard,
-      {
-        allowedRoles: [userRoles.departmentHead, userRoles.superAdmin],
-        authOverride: {
-          user: { id: 2, role: userRoles.departmentHead, name: "Head User" },
-          role: userRoles.departmentHead,
-        },
-      },
+      { allowedRoles: [userRoles.departmentHead, userRoles.superAdmin] },
       React.createElement("div", { id: "head-content" }, "DEPARTMENT_HEAD_WORKSPACE")
-    )
+    ),
+    {
+      auth: {
+        user: { id: 2, role: userRoles.departmentHead, name: "Head User" },
+        token: "mock-token",
+        role: userRoles.departmentHead,
+        isAuthenticated: true,
+        isHydrated: true,
+      },
+    }
   );
   assert.equal(
     headAuthorizedMarkup.includes("DEPARTMENT_HEAD_WORKSPACE"),
     true,
-    "Authorized Department Head must render children"
-  );
-  assert.equal(
-    headAuthorizedMarkup.includes("DEPARTMENT_HEAD_WORKSPACE"),
-    true,
-    "Authorized Department Head must render children"
+    "Authorized Department Head must render protected children during SSR"
   );
 
-  // Case E: RoleGuard safeguard: Non-students must NEVER be redirected to the student dashboard
+  // Case E: Role-based redirect destination routing logic (Non-students route to admin, never student dashboard)
   for (const role of [
     userRoles.admissionEmployee,
     userRoles.departmentHead,
@@ -210,7 +236,7 @@ test("2. RoleGuard behavior with mounted components (Implementation Test)", () =
     assert.equal(
       safeTarget,
       routes.admin,
-      `${role} must redirect to admin, never student dashboard`
+      `${role} routing target must resolve to admin, never student dashboard`
     );
   }
 });
@@ -585,9 +611,9 @@ test("9. Forward note survives API normalization and reaches the details UI (End
     React.createElement(ApplicationSummaryCard, { application: workflowAppD })
   );
   assert.ok(
-    markupD.includes("لم يقم موظف القبول بإرفاق ملاحظات إضافية مع طلب التحويل") ||
-    markupD.includes("decision_reason غير متوفر"),
-    "UI must report the missing note field when omitted by backend"
+    markupD.includes("سبب التحويل غير متوفر في استجابة الخادم") ||
+    markupD.includes("Forwarding reason is not available"),
+    "UI must report that forward reason is not available in server response"
   );
 
   // Case E: Rejected application with employee_notes must NOT set forwardReason
@@ -651,30 +677,52 @@ test("9. Forward note survives API normalization and reaches the details UI (End
     false,
     "Under-review app must NEVER render forward reason label"
   );
+
+  // Case G: Forwarded application with both decision_reason and employee_notes prioritizes decision_reason
+  const rawPriorityApp = {
+    id: 507,
+    application_number: "ADM-2026-5007",
+    status: "forwarded_to_department_head",
+    applicant: { full_name: "أمير سمير", national_id: "403334445" },
+    decision_reason: "يتطلب اعتماد رئيس القسم على معادلة 12 ساعة معتمدة.",
+    employee_notes: "تم مراجعة الشهادة الثانوية وتدقيق البيانات الأساسية.",
+  };
+
+  const headNormalizedG = normalizeHeadApplication(rawPriorityApp);
+  assert.equal(
+    headNormalizedG.forwardReason,
+    "يتطلب اعتماد رئيس القسم على معادلة 12 ساعة معتمدة.",
+    "Confirmed decision_reason must take precedence over generic employee_notes"
+  );
+  assert.equal(headNormalizedG.employeeNotes, "تم مراجعة الشهادة الثانوية وتدقيق البيانات الأساسية.");
+
+  const workflowAppG = mapBackendApplicationToWorkflowApplication(headNormalizedG as unknown as RawInput);
+  assert.equal(
+    workflowAppG.forwardReason,
+    "يتطلب اعتماد رئيس القسم على معادلة 12 ساعة معتمدة."
+  );
+  assert.equal(
+    workflowAppG.employeeNotes,
+    "تم مراجعة الشهادة الثانوية وتدقيق البيانات الأساسية."
+  );
+
+  const markupG = renderWithProviders(
+    React.createElement(ApplicationSummaryCard, { application: workflowAppG })
+  );
+  assert.ok(
+    markupG.includes("يتطلب اعتماد رئيس القسم على معادلة 12 ساعة معتمدة."),
+    "UI must render the confirmed decision reason"
+  );
+  assert.ok(
+    markupG.includes("data-testid=\"forward-reason-box\"")
+  );
 });
 
-test("10. Time-to-decision units and report retry semantics (Implementation Test)", () => {
-  // Part A: Time to decision unit conversion
-  function computeAvgTimeToDecisionHours(timeToDecisionMetrics: { label: string; value: number }[] | null) {
-    if (!Array.isArray(timeToDecisionMetrics)) return null;
-    if (timeToDecisionMetrics.length === 0) return 0;
-
-    const secondsItem = timeToDecisionMetrics.find((m) => m.label.toLowerCase().includes("second"));
-    const minutesItem = timeToDecisionMetrics.find((m) => m.label.toLowerCase().includes("minute"));
-    const hoursItem = timeToDecisionMetrics.find((m) => m.label.toLowerCase().includes("hour"));
-
-    if (hoursItem) return Math.round(hoursItem.value);
-    if (minutesItem) return Math.round((minutesItem.value / 60) * 10) / 10;
-    if (secondsItem) return Math.round((secondsItem.value / 3600) * 10) / 10;
-    return 0;
-  }
-
-  // 7200 seconds -> 2 hours
-  assert.equal(computeAvgTimeToDecisionHours([{ label: "average_seconds", value: 7200 }]), 2);
-  // 180 minutes -> 3 hours
-  assert.equal(computeAvgTimeToDecisionHours([{ label: "average_minutes", value: 180 }]), 3);
-  // 5 hours direct -> 5 hours
-  assert.equal(computeAvgTimeToDecisionHours([{ label: "average_hours", value: 5 }]), 5);
+test("10. Time-to-decision unit conversions using production calculateAvgTimeToDecisionHours and retry semantics", () => {
+  // Part A: Time to decision unit conversion using production calculateAvgTimeToDecisionHours
+  assert.equal(calculateAvgTimeToDecisionHours([{ label: "average_seconds", value: 7200 }]), 2);
+  assert.equal(calculateAvgTimeToDecisionHours([{ label: "average_minutes", value: 180 }]), 3);
+  assert.equal(calculateAvgTimeToDecisionHours([{ label: "average_hours", value: 5 }]), 5);
 
   // total_decisions must NEVER be averaged into hours
   const laravelMetrics = [
@@ -682,8 +730,17 @@ test("10. Time-to-decision units and report retry semantics (Implementation Test
     { label: "average_minutes", value: 2880 },
     { label: "total_decisions", value: 15 },
   ];
-  // 172800 / 3600 = 48 hours (NOT (172800 + 2880 + 15)/3)
-  assert.equal(computeAvgTimeToDecisionHours(laravelMetrics), 48);
+  // 172800 / 3600 = 48 hours
+  assert.equal(calculateAvgTimeToDecisionHours(laravelMetrics), 48);
+
+  // Unknown units must return null (unavailable state), never averaged as hours
+  assert.equal(
+    calculateAvgTimeToDecisionHours([{ label: "arbitrary_metric", value: 100 }]),
+    null,
+    "Unknown metric unit must return null, never averaged as hours"
+  );
+  assert.equal(calculateAvgTimeToDecisionHours(null), null);
+  assert.equal(calculateAvgTimeToDecisionHours([]), 0);
 
   // Unit labeling verification: total_decisions must be labeled as decisions, not hours
   function getMetricUnit(label: string, isAr = true) {

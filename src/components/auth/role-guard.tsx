@@ -9,36 +9,20 @@ import { canAccessRole } from "@/lib/auth-helpers";
 import { type UserRole, isStudentRole } from "@/constants/roles";
 import { getDashboardRouteByRole } from "@/constants/role-navigation";
 
-import type { AuthUser } from "@/services/auth.service";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { getLogoutInProgress } from "@/lib/auth/logout-state";
 
 type RoleGuardProps = {
   children: React.ReactNode;
   allowedRoles: UserRole[];
-  authOverride?: {
-    user: AuthUser | null;
-    role: UserRole | null;
-    isHydrated?: boolean;
-  };
 };
 
-import { useCurrentAuth } from "@/hooks/use-current-auth";
-import { getLogoutInProgress } from "@/lib/auth/logout-state";
-
-export function RoleGuard({ children, allowedRoles, authOverride }: RoleGuardProps) {
+export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("common");
 
-  const hookAuth = useCurrentAuth();
-  const user = authOverride !== undefined ? authOverride.user : hookAuth.user;
-  const role = authOverride !== undefined ? authOverride.role : hookAuth.role;
-  const isHydrated = authOverride?.isHydrated !== undefined
-    ? authOverride.isHydrated
-    : authOverride !== undefined
-      ? true
-      : hookAuth.isHydrated;
-
-  const isAuthenticated = Boolean(user);
+  const { role, isHydrated, isAuthenticated } = useCurrentAuth();
   const isAllowed = canAccessRole(role, allowedRoles);
 
   const didRedirectRef = useRef(false);

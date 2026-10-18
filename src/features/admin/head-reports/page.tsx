@@ -19,6 +19,40 @@ import {
   Info,
 } from "lucide-react";
 
+export function calculateAvgTimeToDecisionHours(
+  metrics: { label: string; value: number }[] | null | undefined
+): number | null {
+  if (!Array.isArray(metrics)) return null;
+  if (metrics.length === 0) return 0;
+
+  const hoursItem = metrics.find((m) => {
+    const l = m.label.toLowerCase();
+    return l === "average_hours" || l === "hours" || l === "avg_hours";
+  });
+  if (hoursItem) {
+    return Math.round(hoursItem.value * 10) / 10;
+  }
+
+  const minutesItem = metrics.find((m) => {
+    const l = m.label.toLowerCase();
+    return l === "average_minutes" || l === "minutes" || l === "avg_minutes";
+  });
+  if (minutesItem) {
+    return Math.round((minutesItem.value / 60) * 10) / 10;
+  }
+
+  const secondsItem = metrics.find((m) => {
+    const l = m.label.toLowerCase();
+    return l === "average_seconds" || l === "seconds" || l === "avg_seconds";
+  });
+  if (secondsItem) {
+    return Math.round((secondsItem.value / 3600) * 10) / 10;
+  }
+
+  // Never assume or average unknown units as hours; return null (unavailable state)
+  return null;
+}
+
 export function HeadReportsPage() {
   const locale = useLocale();
   const isAr = locale === "ar";
@@ -43,36 +77,7 @@ export function HeadReportsPage() {
     ? reports.throughput.reduce((acc, curr) => acc + curr.count, 0)
     : null;
 
-  let avgTimeToDecisionHours: number | null = null;
-  if (Array.isArray(reports?.timeToDecision)) {
-    if (reports.timeToDecision.length === 0) {
-      avgTimeToDecisionHours = 0;
-    } else {
-      const secondsItem = reports.timeToDecision.find(
-        (m) => m.label.toLowerCase() === "average_seconds" || m.label.toLowerCase() === "seconds"
-      );
-      const minutesItem = reports.timeToDecision.find(
-        (m) => m.label.toLowerCase() === "average_minutes" || m.label.toLowerCase() === "minutes"
-      );
-      const hoursItem = reports.timeToDecision.find(
-        (m) => m.label.toLowerCase() === "average_hours" || m.label.toLowerCase() === "hours"
-      );
-
-      if (hoursItem) {
-        avgTimeToDecisionHours = Math.round(hoursItem.value);
-      } else if (minutesItem) {
-        avgTimeToDecisionHours = Math.round((minutesItem.value / 60) * 10) / 10;
-      } else if (secondsItem) {
-        avgTimeToDecisionHours = Math.round((secondsItem.value / 3600) * 10) / 10;
-      } else {
-        const nonTotalItems = reports.timeToDecision.filter((m) => !m.label.toLowerCase().includes("total"));
-        if (nonTotalItems.length > 0) {
-          const sum = nonTotalItems.reduce((acc, curr) => acc + curr.value, 0);
-          avgTimeToDecisionHours = Math.round(sum / nonTotalItems.length);
-        }
-      }
-    }
-  }
+  const avgTimeToDecisionHours = calculateAvgTimeToDecisionHours(reports?.timeToDecision);
 
   let overallAcceptanceRate: number | null = null;
   if (Array.isArray(reports?.acceptanceRate)) {

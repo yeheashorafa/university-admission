@@ -537,7 +537,7 @@ export function mapBackendApplicationToWorkflowApplication(
     undefined;
 
   const forwardReason = isForwarded
-    ? explicitForwardReason || rawEmployeeNotes || rawDecisionReason
+    ? explicitForwardReason || rawDecisionReason || rawEmployeeNotes
     : undefined;
 
   const isForwardNoteMissing = isForwarded && !forwardReason;
