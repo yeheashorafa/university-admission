@@ -529,15 +529,17 @@ export function mapBackendApplicationToWorkflowApplication(
     (typeof app.notes === "string" && app.notes.trim()) ||
     undefined;
 
-  const rawForwardReason =
+  const explicitForwardReason =
     (typeof app.forwardReason === "string" && app.forwardReason.trim()) ||
     (typeof app.forward_reason === "string" && app.forward_reason.trim()) ||
     (typeof app.forward_note === "string" && app.forward_note.trim()) ||
     (typeof app.forwardNote === "string" && app.forwardNote.trim()) ||
-    rawEmployeeNotes ||
-    (isForwarded ? rawDecisionReason : undefined);
+    undefined;
 
-  const forwardReason = rawForwardReason;
+  const forwardReason = isForwarded
+    ? explicitForwardReason || rawEmployeeNotes || rawDecisionReason
+    : undefined;
+
   const isForwardNoteMissing = isForwarded && !forwardReason;
 
   const rejectionNote =

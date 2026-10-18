@@ -589,6 +589,68 @@ test("9. Forward note survives API normalization and reaches the details UI (End
     markupD.includes("decision_reason غير متوفر"),
     "UI must report the missing note field when omitted by backend"
   );
+
+  // Case E: Rejected application with employee_notes must NOT set forwardReason
+  const rawRejectedWithEmployeeNotes = {
+    id: 505,
+    application_number: "ADM-2026-5005",
+    status: "rejected",
+    applicant: { full_name: "سامي فؤاد", national_id: "408889990" },
+    employee_notes: "ملاحظة تدقيق الموظف: المستندات غير مكتملة.",
+  };
+
+  const headNormalizedE = normalizeHeadApplication(rawRejectedWithEmployeeNotes);
+  assert.equal(
+    headNormalizedE.forwardReason,
+    undefined,
+    "Rejected app must NOT set forwardReason even if employee_notes are present"
+  );
+  assert.equal(headNormalizedE.employeeNotes, "ملاحظة تدقيق الموظف: المستندات غير مكتملة.");
+  assert.equal(headNormalizedE.isForwardNoteMissing, false);
+
+  const workflowAppE = mapBackendApplicationToWorkflowApplication(headNormalizedE as unknown as RawInput);
+  assert.equal(workflowAppE.forwardReason, undefined);
+  assert.equal(workflowAppE.employeeNotes, "ملاحظة تدقيق الموظف: المستندات غير مكتملة.");
+
+  const markupE = renderWithProviders(
+    React.createElement(ApplicationSummaryCard, { application: workflowAppE })
+  );
+  assert.equal(
+    markupE.includes("سبب التحويل من موظف القبول"),
+    false,
+    "Rejected app must NEVER render forward reason label"
+  );
+
+  // Case F: Under review application with employee_notes must NOT set forwardReason
+  const rawUnderReviewWithNotes = {
+    id: 506,
+    application_number: "ADM-2026-5006",
+    status: "under_review",
+    applicant: { full_name: "رنا يوسف", national_id: "401112223" },
+    employee_notes: "بانتظار نتائج الثانوية العامة.",
+  };
+
+  const headNormalizedF = normalizeHeadApplication(rawUnderReviewWithNotes);
+  assert.equal(
+    headNormalizedF.forwardReason,
+    undefined,
+    "Under-review app must NOT set forwardReason from employee_notes"
+  );
+  assert.equal(headNormalizedF.employeeNotes, "بانتظار نتائج الثانوية العامة.");
+  assert.equal(headNormalizedF.isForwardNoteMissing, false);
+
+  const workflowAppF = mapBackendApplicationToWorkflowApplication(headNormalizedF as unknown as RawInput);
+  assert.equal(workflowAppF.forwardReason, undefined);
+  assert.equal(workflowAppF.employeeNotes, "بانتظار نتائج الثانوية العامة.");
+
+  const markupF = renderWithProviders(
+    React.createElement(ApplicationSummaryCard, { application: workflowAppF })
+  );
+  assert.equal(
+    markupF.includes("سبب التحويل من موظف القبول"),
+    false,
+    "Under-review app must NEVER render forward reason label"
+  );
 });
 
 test("10. Time-to-decision units and report retry semantics (Implementation Test)", () => {

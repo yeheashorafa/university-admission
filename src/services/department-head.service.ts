@@ -209,7 +209,9 @@ export function normalizeHeadApplication(
     undefined;
 
   const isForwarded = isForwardedToHead(status);
-  const forwardReason = explicitForwardReason || employeeNotes || (isForwarded ? decisionReason : undefined);
+  const forwardReason = isForwarded
+    ? explicitForwardReason || employeeNotes || decisionReason
+    : undefined;
 
   // If application is forwarded to head but no note field was provided in response, report the missing field
   const isForwardNoteMissing = isForwarded && !forwardReason;
