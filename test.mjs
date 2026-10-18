@@ -25,19 +25,22 @@ async function test1_notifications(browser) {
   });
   console.log("Unread badge before opening:", badgeText);
   
-  let putRequestStatus = null;
+  let patchRequestStatus = null;
   page.on('response', response => {
-    if (response.url().includes('/api/v1/notifications/read-all') && response.request().method() === 'PUT') {
-      putRequestStatus = response.status();
-      console.log("PUT /api/v1/notifications/read-all status:", putRequestStatus);
+    if (
+      (response.url().includes('/notifications/read-all') || response.url().includes('/read')) &&
+      response.request().method() === 'PATCH'
+    ) {
+      patchRequestStatus = response.status();
+      console.log(`PATCH ${response.url()} status:`, patchRequestStatus);
     }
   });
 
   await page.goto('https://university-admission-rqiu.onrender.com/ar/notifications');
   await page.waitForTimeout(3000); // wait for request
 
-  if (putRequestStatus === null) {
-      console.log("No PUT /api/v1/notifications/read-all request captured.");
+  if (patchRequestStatus === null) {
+      console.log("No PATCH notifications read/read-all request captured.");
   }
   
   // badge after
@@ -83,7 +86,7 @@ async function test2_createUser(browser) {
       postRequestStatus = response.status();
       try {
         postResponseBody = await response.json();
-      } catch(e) {}
+      } catch {}
       console.log("POST /api/v1/admin/users status:", postRequestStatus);
       console.log("POST /api/v1/admin/users response:", postResponseBody);
     }

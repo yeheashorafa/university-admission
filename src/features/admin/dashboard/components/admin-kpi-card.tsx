@@ -24,6 +24,7 @@ const kpiIconMap: Record<AdminKpiCardType["id"], LucideIcon> = {
   "ai-alerts": AlertTriangle,
   accepted: CheckCircle2,
   rejected: CircleX,
+  cancelled: FileWarning,
 };
 
 const variantClasses = {

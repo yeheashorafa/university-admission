@@ -4,6 +4,11 @@ export function getProgramLabel(app: Record<string, unknown>, isAr: boolean): st
     return selectedProgram;
   }
 
+  const selectedProgramUnder = app.selected_program;
+  if (typeof selectedProgramUnder === "string" && selectedProgramUnder.trim()) {
+    return selectedProgramUnder;
+  }
+
   const programName = app.program_name;
   if (typeof programName === "string" && programName.trim()) {
     return programName;
@@ -15,12 +20,19 @@ export function getProgramLabel(app: Record<string, unknown>, isAr: boolean): st
     return program;
   }
 
-  if (program && typeof program === "object") {
-    const p = program as Record<string, unknown>;
+  const progObj =
+    (program && typeof program === "object" ? (program as Record<string, unknown>) : null) ||
+    (selectedProgramUnder && typeof selectedProgramUnder === "object"
+      ? (selectedProgramUnder as Record<string, unknown>)
+      : null) ||
+    (selectedProgram && typeof selectedProgram === "object"
+      ? (selectedProgram as Record<string, unknown>)
+      : null);
 
-    const nameAr = typeof p.name_ar === "string" ? p.name_ar : "";
-    const nameEn = typeof p.name_en === "string" ? p.name_en : "";
-    const name = typeof p.name === "string" ? p.name : "";
+  if (progObj) {
+    const nameAr = typeof progObj.name_ar === "string" ? progObj.name_ar : "";
+    const nameEn = typeof progObj.name_en === "string" ? progObj.name_en : "";
+    const name = typeof progObj.name === "string" ? progObj.name : "";
 
     return (
       (isAr ? nameAr || nameEn || name : nameEn || nameAr || name) ||
@@ -31,15 +43,29 @@ export function getProgramLabel(app: Record<string, unknown>, isAr: boolean): st
   return "برنامج غير محدد";
 }
 
-export function extractStudentName(app: Record<string, unknown>): string {
+export function extractStudentName(app: Record<string, unknown>, fallback = "—"): string {
   const direct =
-    typeof app.studentName === "string"
-      ? app.studentName
-      : typeof app.student_name === "string"
-        ? app.student_name
-        : "";
+    typeof app.studentName === "string" && app.studentName.trim()
+      ? app.studentName.trim()
+      : typeof app.student_name === "string" && app.student_name.trim()
+        ? app.student_name.trim()
+        : typeof app.applicant_name === "string" && app.applicant_name.trim()
+          ? app.applicant_name.trim()
+          : typeof app.applicantName === "string" && app.applicantName.trim()
+            ? app.applicantName.trim()
+            : typeof app.applicant === "string" && app.applicant.trim()
+              ? app.applicant.trim()
+              : "";
 
-  if (direct.trim()) return direct;
+  if (direct) return direct;
+
+  const applicant = app.applicant;
+  if (applicant && typeof applicant === "object") {
+    const a = applicant as Record<string, unknown>;
+    if (typeof a.full_name === "string" && a.full_name.trim()) return a.full_name.trim();
+    if (typeof a.name_ar === "string" && a.name_ar.trim()) return a.name_ar.trim();
+    if (typeof a.name === "string" && a.name.trim()) return a.name.trim();
+  }
 
   const objectsToSearch = [
     app.applicant,
@@ -49,9 +75,9 @@ export function extractStudentName(app: Record<string, unknown>): string {
   ].filter(Boolean) as Record<string, unknown>[];
 
   for (const obj of objectsToSearch) {
-    if (typeof obj.name === "string" && obj.name) return obj.name;
-    if (typeof obj.name_ar === "string" && obj.name_ar) return obj.name_ar;
-    if (typeof obj.full_name === "string" && obj.full_name) return obj.full_name;
+    if (typeof obj.full_name === "string" && obj.full_name.trim()) return obj.full_name.trim();
+    if (typeof obj.name_ar === "string" && obj.name_ar.trim()) return obj.name_ar.trim();
+    if (typeof obj.name === "string" && obj.name.trim()) return obj.name.trim();
     
     const pi = obj.personal_information as Record<string, unknown> | undefined;
     if (pi) {
@@ -76,7 +102,7 @@ export function extractStudentName(app: Record<string, unknown>): string {
     if (parts.length > 0) return parts.join(" ");
   }
 
-  return "غير متوفر";
+  return fallback;
 }
 
 export function extractNationalId(app: Record<string, unknown>): string {

@@ -1,5 +1,4 @@
 import xlsx from 'xlsx';
-import fs from 'fs';
 
 const BASE_URL = 'https://university-admission-backend.onrender.com';
 const ADMIN_EMAIL = 'admin@admission.test';

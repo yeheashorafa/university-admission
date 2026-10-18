@@ -1,3 +1,5 @@
+import { RoleGuard } from "@/components/auth/role-guard";
+import { userRoles } from "@/constants/roles";
 import { AdminBranchesPage } from "@/features/admin/branches/page";
 import { getTranslations } from "next-intl/server";
 
@@ -15,5 +17,9 @@ export async function generateMetadata({
 }
 
 export default function Page() {
-  return <AdminBranchesPage />;
+  return (
+    <RoleGuard allowedRoles={[userRoles.admin]}>
+      <AdminBranchesPage />
+    </RoleGuard>
+  );
 }

@@ -4,6 +4,7 @@ export const userRoles = {
   departmentHead: "department_head",
   admissionEmployee: "admission_employee",
   admin: "admin",
+  superAdmin: "admin",
 } as const;
 
 export type UserRole = (typeof userRoles)[keyof typeof userRoles];
@@ -40,7 +41,7 @@ export function isAdmissionEmployee(role?: string | null) {
 }
 
 export function canManageEmployees(role?: string | null) {
-  return isDepartmentHead(role) || isSuperAdmin(role);
+  return isSuperAdmin(role);
 }
 
 export function canReviewAiFailedApplications(role?: string | null) {
@@ -52,7 +53,7 @@ export function canReviewEmployeeDecision(role?: string | null) {
 }
 
 export function canViewAllStatistics(role?: string | null) {
-  return isAdmissionDean(role) || isDepartmentHead(role) || isSuperAdmin(role);
+  return isAdmissionDean(role) || isSuperAdmin(role);
 }
 
 export function canAccessAdmin(role?: string | null) {

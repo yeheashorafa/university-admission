@@ -1653,10 +1653,13 @@
       "badge": "مسار تدقيق الطلبات",
       "title": "متابعة مسار الطلبات",
       "description": "تابع وراجع وأدر مسار تدقيق طلبات الطلاب المتقدمين عبر جميع مراحل القبول.",
-      "totalApplications": "إجمالي الطلبات",
+      "totalApplications": "إجمالي الطلبات (في الصفحة الحالية)",
       "pendingHeadReview": "بانتظار رئيس القسم",
       "paymentPending": "بانتظار الدفع",
-      "rejectedApplications": "الطلبات المرفوضة",
+      "rejectedApplications": "الطلبات المرفوضة (الصفحة الحالية)",
+      "cancelledApplications": "الطلبات الملغاة (الصفحة الحالية)",
+      "pageScopedBadge": "في الصفحة الحالية",
+      "currentPageNotice": "الأرقام المعروضة أدناه خاصة بالطلبات المعروضة في الصفحة الحالية فقط وليست إجماليات شاملة للجامعة.",
       "tableTitle": "قائمة الطلبات",
       "tableDescription": "قائمة بجميع طلبات الالتحاق قيد مسار التدقيق حاليًا. انقر على عرض لمراجعة التفاصيل واتخاذ الإجراءات.",
       "application": "الطلب",
@@ -2474,13 +2477,18 @@
       "statuses": {
         "sent": "تم الإرسال",
         "scheduled": "مجدول",
-        "draft": "مسودة"
+        "draft": "مسودة",
+        "read": "مقروء",
+        "unread": "غير مقروء"
       },
       "stats": {
         "sentToday": "أُرسلت اليوم",
         "scheduled": "مجدولة",
         "drafts": "مسودات",
-        "recipientsReached": "المستلمون"
+        "recipientsReached": "المستلمون",
+        "totalCount": "إجمالي الإشعارات",
+        "readCount": "مقروءة",
+        "unreadCount": "غير مقروءة"
       },
       "historyTitle": "سجل الإشعارات",
       "historyDescription": "راجع الإشعارات المرسلة والمجدولة والمسودات الأخيرة.",
@@ -2549,7 +2557,8 @@
       "failedRowsDetails": "تفاصيل الأخطاء (أول 200 صف)",
       "rowIndex": "الصف",
       "nationalIdColumn": "رقم الهوية",
-      "errorDetailsColumn": "الأخطاء"
+      "errorDetailsColumn": "الأخطاء",
+      "markAsRead": "تحديد كمقروء"
     },
     "settings": {
       "systemConfiguration": "إعدادات النظام",

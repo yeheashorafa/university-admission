@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
   AlertTriangle,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -74,13 +75,21 @@ const statusConfig: Record<
     className: string;
   }
 > = {
+  read: {
+    labelKey: "notifications.statuses.read",
+    className: "bg-muted text-muted-foreground",
+  },
+  unread: {
+    labelKey: "notifications.statuses.unread",
+    className: "bg-primary/10 text-primary font-bold",
+  },
   sent: {
-    labelKey: "notifications.statuses.sent",
-    className: "bg-primary/10 text-primary",
+    labelKey: "notifications.statuses.read",
+    className: "bg-muted text-muted-foreground",
   },
   scheduled: {
-    labelKey: "notifications.statuses.scheduled",
-    className: "bg-secondary/10 text-secondary",
+    labelKey: "notifications.statuses.unread",
+    className: "bg-primary/10 text-primary font-bold",
   },
   draft: {
     labelKey: "notifications.statuses.draft",
@@ -255,15 +264,16 @@ export function NotificationListItem({
           </div>
         </div>
 
-        <div className="flex w-max items-center gap-1">
-          {notification.status !== "sent" && (
+        <div className="flex w-max items-center gap-2">
+          {notification.status === "unread" && (
             <button
               type="button"
               onClick={onSend}
-              title={t("notifications.sendNow")}
-              className="rounded-lg p-2 text-primary transition hover:bg-primary/10"
+              title={t("notifications.markAsRead")}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/20"
             >
-              <Send className="size-5" />
+              <Check className="size-4" />
+              <span>{t("notifications.markAsRead")}</span>
             </button>
           )}
 

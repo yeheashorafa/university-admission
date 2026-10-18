@@ -12,6 +12,8 @@ import {
 } from "@/constants/application-workflow";
 import type { WorkflowApplication } from "../data/applications-workflow.data";
 import { formatDateTime } from "@/lib/utils/application-formatters";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { userRoles } from "@/constants/roles";
 
 type ApplicationsWorkflowTableProps = {
   applications: WorkflowApplication[];
@@ -41,6 +43,7 @@ export function ApplicationsWorkflowTable({
   const locale = useLocale();
   const t = useTranslations("admin.applications");
   const workflowT = useTranslations("admin.applicationWorkflow");
+  const { role } = useCurrentAuth();
 
   const filteredApplications = useMemo(() => {
     let result = applications;
@@ -70,7 +73,7 @@ export function ApplicationsWorkflowTable({
 
       return searchableText.includes(searchValue);
     });
-  }, [applications, search, workflowT]);
+  }, [applications, search, status, workflowT]);
 
   return (
     <section className="rounded-[28px] border border-border bg-card p-5 shadow-[0px_12px_35px_rgba(118,188,33,0.07)]">
@@ -215,16 +218,18 @@ export function ApplicationsWorkflowTable({
                       <Eye className="size-4" />
                       {t("view")}
                     </Link>
-                    <Link
-                      href={withLocale(
-                        locale,
-                        `${routes.adminDocumentVerification}/${application.id}`,
-                      )}
-                      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border px-3 text-xs font-bold text-primary transition hover:bg-primary/10"
-                    >
-                      <FileSearch className="size-4" />
-                      {t("viewAiResult")}
-                    </Link>
+                    {role === userRoles.admissionEmployee && (
+                      <Link
+                        href={withLocale(
+                          locale,
+                          `${routes.adminDocumentVerification}/${application.id}`,
+                        )}
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border px-3 text-xs font-bold text-primary transition hover:bg-primary/10"
+                      >
+                        <FileSearch className="size-4" />
+                        {t("viewAiResult")}
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ))}

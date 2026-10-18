@@ -3,10 +3,11 @@
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { useCurrentAuth } from "@/hooks/use-current-auth";
-import { isAdmissionEmployee, isAdmissionDean } from "@/constants/roles";
+import { isAdmissionEmployee, isAdmissionDean, isDepartmentHead } from "@/constants/roles";
 import { AdminDashboardHeader } from "./components/admin-dashboard-header";
 import { AdminKpiGrid } from "./components/admin-kpi-grid";
 import { EmployeeOperationalDashboard } from "./components/employee-operational-dashboard";
+import { DepartmentHeadOperationalDashboard } from "./components/department-head-operational-dashboard";
 import { DeanDashboard } from "./components/dean-dashboard";
 
 export function AdminDashboardPage() {
@@ -16,6 +17,14 @@ export function AdminDashboardPage() {
     return (
       <AdminLayout activePath={routes.admin}>
         <DeanDashboard />
+      </AdminLayout>
+    );
+  }
+
+  if (isDepartmentHead(role)) {
+    return (
+      <AdminLayout activePath={routes.admin}>
+        <DepartmentHeadOperationalDashboard />
       </AdminLayout>
     );
   }

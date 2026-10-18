@@ -10,7 +10,7 @@ export type NotificationType =
 
 export type NotificationAudience = "single_student" | "all_applicants" | "filtered_group";
 
-export type AdminNotificationStatus = "sent" | "scheduled" | "draft";
+export type AdminNotificationStatus = "read" | "unread" | "sent" | "scheduled" | "draft";
 
 export type AdminNotification = {
   id: string;

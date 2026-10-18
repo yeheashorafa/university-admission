@@ -4,12 +4,7 @@ import { AdminSettingsPage } from "@/features/admin/settings/page";
 
 export default function Page() {
   return (
-    <RoleGuard
-      allowedRoles={[
-        userRoles.admin,
-        userRoles.admissionDean,
-      ]}
-    >
+    <RoleGuard allowedRoles={[userRoles.admin]}>
       <AdminSettingsPage />
     </RoleGuard>
   );

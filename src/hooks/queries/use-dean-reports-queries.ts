@@ -21,13 +21,13 @@ import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { isAdmissionDean } from "@/constants/roles";
 
 export type DeanReportsData = {
-  byStatus: ReportLabelCount[];
-  byFaculty: ReportLabelCount[];
-  byDepartment: ReportLabelCount[];
-  byProgram: ReportLabelCount[];
-  timeInStatus: ReportTimeInStatus[];
-  uploadVolume: ReportDateCount[];
-  acceptanceRate: ReportAcceptanceRate[];
+  byStatus: ReportLabelCount[] | null;
+  byFaculty: ReportLabelCount[] | null;
+  byDepartment: ReportLabelCount[] | null;
+  byProgram: ReportLabelCount[] | null;
+  timeInStatus: ReportTimeInStatus[] | null;
+  uploadVolume: ReportDateCount[] | null;
+  acceptanceRate: ReportAcceptanceRate[] | null;
 };
 
 export function useDeanReportsQuery(range?: ReportDateRange) {
@@ -38,15 +38,7 @@ export function useDeanReportsQuery(range?: ReportDateRange) {
   return useQuery({
     queryKey: ["admissionDean", "reports", range?.from ?? "all", range?.to ?? "all"],
     queryFn: async (): Promise<DeanReportsData> => {
-      const [
-        byStatus,
-        byFaculty,
-        byDepartment,
-        byProgram,
-        timeInStatus,
-        uploadVolume,
-        acceptanceRate,
-      ] = await Promise.all([
+      const results = await Promise.allSettled([
         getDeanReportByStatus(range),
         getDeanReportByFaculty(range),
         getDeanReportByDepartment(range),
@@ -55,14 +47,21 @@ export function useDeanReportsQuery(range?: ReportDateRange) {
         getDeanReportUploadVolume(range),
         getDeanReportAcceptanceRate(range),
       ]);
+
+      const safeValue = <T>(res: PromiseSettledResult<T>, fallback: T): T => {
+        if (res.status === "fulfilled") return res.value;
+        console.error("Dean report endpoint failed:", res.reason);
+        return fallback;
+      };
+
       return {
-        byStatus,
-        byFaculty,
-        byDepartment,
-        byProgram,
-        timeInStatus,
-        uploadVolume,
-        acceptanceRate,
+        byStatus: safeValue(results[0], null),
+        byFaculty: safeValue(results[1], null),
+        byDepartment: safeValue(results[2], null),
+        byProgram: safeValue(results[3], null),
+        timeInStatus: safeValue(results[4], null),
+        uploadVolume: safeValue(results[5], null),
+        acceptanceRate: safeValue(results[6], null),
       };
     },
     enabled: isEnabled,

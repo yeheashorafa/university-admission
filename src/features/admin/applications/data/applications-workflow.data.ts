@@ -3,6 +3,9 @@ import {
   type ApplicationStatus,
   type ApplicationWorkflowLog,
 } from "@/constants/application-workflow";
+import { extractStudentName } from "@/lib/utils/application-formatters";
+import { normalizeStatus } from "@/lib/adapters/status-adapter";
+import { isForwardedToHead } from "@/services/department-head.service";
 
 export type WorkflowApplication = {
   id: string;
@@ -13,6 +16,7 @@ export type WorkflowApplication = {
   nationalId: string;
   selectedProgram: string;
   admissionCycle?: string;
+  department?: string;
   faculty: string;
   average: string;
   currentStatus: ApplicationStatus;
@@ -28,6 +32,10 @@ export type WorkflowApplication = {
   employeeDecisionBy?: string;
   departmentHeadDecisionBy?: string;
   rejectionNote?: string;
+  forwardReason?: string;
+  isForwardNoteMissing?: boolean;
+  employeeNotes?: string;
+  decisionReason?: string;
   missingDocumentsNote?: string;
   paymentReference?: string;
   universityNumber?: string;
@@ -341,12 +349,13 @@ export function mapBackendApplicationToWorkflowApplication(
     return {
       id: "",
       applicationNo: "—",
-      studentName: "غير متوفر",
-      studentEmail: "غير متوفر",
-      studentPhone: "غير متوفر",
-      nationalId: "غير متوفر",
-      selectedProgram: "غير متوفر",
-      admissionCycle: "غير متوفر",
+      studentName: "—",
+      studentEmail: "—",
+      studentPhone: "—",
+      nationalId: "—",
+      selectedProgram: "—",
+      admissionCycle: "—",
+      department: "—",
       faculty: "—",
       average: "—",
       currentStatus: "submitted" as ApplicationStatus,
@@ -365,21 +374,23 @@ export function mapBackendApplicationToWorkflowApplication(
 
   const applicantObj = app.applicant ?? app.student ?? app.user ?? null;
 
-  let studentName = "غير متوفر";
-  let studentEmail = "غير متوفر";
-  let studentPhone = "غير متوفر";
-  
-  if (typeof app.studentName === "string" && app.studentName) studentName = app.studentName;
-  else if (typeof app.student_name === "string" && app.student_name) studentName = app.student_name;
-  
+  const studentName = extractStudentName(app, "—");
+
+  let studentEmail = "—";
+  let studentPhone = "—";
+
+  if (typeof app.studentEmail === "string" && app.studentEmail.trim()) studentEmail = app.studentEmail.trim();
+  else if (typeof app.email === "string" && app.email.trim()) studentEmail = app.email.trim();
+
+  if (typeof app.studentPhone === "string" && app.studentPhone.trim()) studentPhone = app.studentPhone.trim();
+  else if (typeof app.phone === "string" && app.phone.trim()) studentPhone = app.phone.trim();
+
   if (applicantObj && typeof applicantObj === "object") {
     const s = applicantObj as Record<string, unknown>;
-    if (typeof s.email === "string" && s.email) studentEmail = s.email;
-    if (typeof s.phone === "string" && s.phone) studentPhone = s.phone;
+    if (studentEmail === "—" && typeof s.email === "string" && s.email.trim()) studentEmail = s.email.trim();
+    if (studentPhone === "—" && typeof s.phone === "string" && s.phone.trim()) studentPhone = s.phone.trim();
   }
 
-  // We should import extractStudentName and extractNationalId at the top, but we can't easily without editing the top.
-  // Instead I'll just inline the advanced fallback here since this is the data mapper.
   const objectsToSearch = [
     app.applicant,
     app.student,
@@ -387,96 +398,155 @@ export function mapBackendApplicationToWorkflowApplication(
     app.profile,
   ].filter(Boolean) as Record<string, unknown>[];
 
-  let foundName = false;
-  for (const obj of objectsToSearch) {
-    if (typeof obj.name === "string" && obj.name) { studentName = obj.name; foundName = true; break; }
-    if (typeof obj.name_ar === "string" && obj.name_ar) { studentName = obj.name_ar; foundName = true; break; }
-    if (typeof obj.full_name === "string" && obj.full_name) { studentName = obj.full_name; foundName = true; break; }
-    
-    const pi = obj.personal_information as Record<string, unknown> | undefined;
-    if (pi) {
-      const parts = [pi.first_name_ar, pi.father_name_ar, pi.grandfather_name_ar, pi.family_name_ar].filter(Boolean) as string[];
-      if (parts.length > 0) { studentName = parts.join(" "); foundName = true; break; }
-    }
-  }
-
-  if (!foundName) {
-    const piTop = app.personal_information as Record<string, unknown> | undefined;
-    if (piTop) {
-      const parts = [piTop.first_name_ar, piTop.father_name_ar, piTop.grandfather_name_ar, piTop.family_name_ar].filter(Boolean) as string[];
-      if (parts.length > 0) studentName = parts.join(" ");
-    }
-  }
-
   let nationalId = "—";
-  if (typeof app.nationalId === "string" && app.nationalId) nationalId = app.nationalId;
-  else if (typeof app.national_id === "string" && app.national_id) nationalId = app.national_id;
+  if (typeof app.nationalId === "string" && app.nationalId.trim()) nationalId = app.nationalId.trim();
+  else if (typeof app.national_id === "string" && app.national_id.trim()) nationalId = app.national_id.trim();
   else {
     let foundNi = false;
     for (const obj of objectsToSearch) {
-      if (typeof obj.national_id === "string" && obj.national_id) { nationalId = obj.national_id; foundNi = true; break; }
+      if (typeof obj.national_id === "string" && obj.national_id.trim()) { nationalId = obj.national_id.trim(); foundNi = true; break; }
       const pi = obj.personal_information as Record<string, unknown> | undefined;
-      if (pi && typeof pi.national_id === "string" && pi.national_id) { nationalId = pi.national_id; foundNi = true; break; }
+      if (pi && typeof pi.national_id === "string" && pi.national_id.trim()) { nationalId = pi.national_id.trim(); foundNi = true; break; }
       const prof = obj.profile as Record<string, unknown> | undefined;
-      if (prof && typeof prof.national_id === "string" && prof.national_id) { nationalId = prof.national_id; foundNi = true; break; }
+      if (prof && typeof prof.national_id === "string" && prof.national_id.trim()) { nationalId = prof.national_id.trim(); foundNi = true; break; }
       if (prof) {
-          const profPi = prof.personal_information as Record<string, unknown> | undefined;
-          if (profPi && typeof profPi.national_id === "string" && profPi.national_id) { nationalId = profPi.national_id; foundNi = true; break; }
+        const profPi = prof.personal_information as Record<string, unknown> | undefined;
+        if (profPi && typeof profPi.national_id === "string" && profPi.national_id.trim()) { nationalId = profPi.national_id.trim(); foundNi = true; break; }
       }
     }
     if (!foundNi) {
       const piTop = app.personal_information as Record<string, unknown> | undefined;
-      if (piTop && typeof piTop.national_id === "string" && piTop.national_id) nationalId = piTop.national_id;
+      if (piTop && typeof piTop.national_id === "string" && piTop.national_id.trim()) nationalId = piTop.national_id.trim();
     }
   }
 
-  let selectedProgram = "غير متوفر";
-  if (typeof app.program === "string" && app.program) selectedProgram = app.program;
-  else if (typeof app.selectedProgram === "string" && app.selectedProgram) selectedProgram = app.selectedProgram;
-  else if (typeof app.program_name === "string" && app.program_name) selectedProgram = app.program_name;
-  else if (app.program && typeof app.program === "object") {
-    const p = app.program as Record<string, unknown>;
-    if (typeof p.name_ar === "string" && p.name_ar) selectedProgram = p.name_ar;
-    else if (typeof p.name_en === "string" && p.name_en) selectedProgram = p.name_en;
-    else if (typeof p.name === "string" && p.name) selectedProgram = p.name;
+  const progObj =
+    (app.program && typeof app.program === "object" ? (app.program as Record<string, unknown>) : null) ||
+    (app.selected_program && typeof app.selected_program === "object" ? (app.selected_program as Record<string, unknown>) : null) ||
+    (app.selectedProgram && typeof app.selectedProgram === "object" ? (app.selectedProgram as Record<string, unknown>) : null) ||
+    (Array.isArray(app.preferences) && app.preferences[0]?.program && typeof app.preferences[0].program === "object"
+      ? (app.preferences[0].program as Record<string, unknown>)
+      : null);
+
+  let selectedProgram = "—";
+  if (typeof app.program === "string" && app.program.trim()) selectedProgram = app.program.trim();
+  else if (typeof app.selectedProgram === "string" && app.selectedProgram.trim()) selectedProgram = app.selectedProgram.trim();
+  else if (typeof app.selected_program === "string" && app.selected_program.trim()) selectedProgram = app.selected_program.trim();
+  else if (typeof app.program_name === "string" && app.program_name.trim()) selectedProgram = app.program_name.trim();
+  else if (progObj) {
+    if (typeof progObj.name_ar === "string" && progObj.name_ar.trim()) selectedProgram = progObj.name_ar.trim();
+    else if (typeof progObj.name_en === "string" && progObj.name_en.trim()) selectedProgram = progObj.name_en.trim();
+    else if (typeof progObj.name === "string" && progObj.name.trim()) selectedProgram = progObj.name.trim();
   }
 
-  let admissionCycle = "غير متوفر";
-  if (typeof app.admission_cycle === "string" && app.admission_cycle) admissionCycle = app.admission_cycle;
+  const deptObj =
+    progObj?.department && typeof progObj.department === "object"
+      ? (progObj.department as Record<string, unknown>)
+      : app.department && typeof app.department === "object"
+        ? (app.department as Record<string, unknown>)
+        : null;
+
+  let department = "—";
+  if (typeof app.department === "string" && app.department.trim()) {
+    department = app.department.trim();
+  } else if (deptObj) {
+    if (typeof deptObj.name_ar === "string" && deptObj.name_ar.trim()) department = deptObj.name_ar.trim();
+    else if (typeof deptObj.name_en === "string" && deptObj.name_en.trim()) department = deptObj.name_en.trim();
+    else if (typeof deptObj.name === "string" && deptObj.name.trim()) department = deptObj.name.trim();
+  }
+
+  let admissionCycle = "—";
+  if (typeof app.admission_cycle === "string" && app.admission_cycle.trim()) admissionCycle = app.admission_cycle.trim();
   else if (app.admission_cycle && typeof app.admission_cycle === "object") {
     const ac = app.admission_cycle as Record<string, unknown>;
-    if (typeof ac.name === "string" && ac.name) admissionCycle = ac.name;
-    else if (typeof ac.academic_year === "string" && ac.academic_year) admissionCycle = ac.academic_year;
+    if (typeof ac.name === "string" && ac.name.trim()) admissionCycle = ac.name.trim();
+    else if (typeof ac.academic_year === "string" && ac.academic_year.trim()) admissionCycle = ac.academic_year.trim();
   }
-
-
 
   let faculty = "—";
-  if (typeof app.faculty === "string" && app.faculty) faculty = app.faculty;
-  else if (typeof app.faculty_name === "string" && app.faculty_name) faculty = app.faculty_name;
-  else if (typeof app.department === "string" && app.department) faculty = app.department;
-  else if (app.faculty && typeof app.faculty === "object") {
+  if (typeof app.faculty === "string" && app.faculty.trim()) {
+    faculty = app.faculty.trim();
+  } else if (typeof app.faculty_name === "string" && app.faculty_name.trim()) {
+    faculty = app.faculty_name.trim();
+  } else if (app.faculty && typeof app.faculty === "object") {
     const f = app.faculty as Record<string, unknown>;
-    if (typeof f.name_ar === "string" && f.name_ar) faculty = f.name_ar;
-    else if (typeof f.name === "string" && f.name) faculty = f.name;
-  } else if (app.department && typeof app.department === "object") {
-    const d = app.department as Record<string, unknown>;
-    if (typeof d.name_ar === "string" && d.name_ar) faculty = d.name_ar;
-    else if (typeof d.name === "string" && d.name) faculty = d.name;
+    if (typeof f.name_ar === "string" && f.name_ar.trim()) faculty = f.name_ar.trim();
+    else if (typeof f.name === "string" && f.name.trim()) faculty = f.name.trim();
+    else if (typeof f.name_en === "string" && f.name_en.trim()) faculty = f.name_en.trim();
+  } else if (deptObj?.faculty && typeof deptObj.faculty === "object") {
+    const f = deptObj.faculty as Record<string, unknown>;
+    if (typeof f.name_ar === "string" && f.name_ar.trim()) faculty = f.name_ar.trim();
+    else if (typeof f.name_en === "string" && f.name_en.trim()) faculty = f.name_en.trim();
+    else if (typeof f.name === "string" && f.name.trim()) faculty = f.name.trim();
+  } else if (progObj?.faculty && typeof progObj.faculty === "object") {
+    const f = progObj.faculty as Record<string, unknown>;
+    if (typeof f.name_ar === "string" && f.name_ar.trim()) faculty = f.name_ar.trim();
+    else if (typeof f.name_en === "string" && f.name_en.trim()) faculty = f.name_en.trim();
+    else if (typeof f.name === "string" && f.name.trim()) faculty = f.name.trim();
   }
 
+  const academicObj = (app.academic_information ?? app.academic_info ?? app.academicInfo) as Record<string, unknown> | undefined;
   const average =
     (typeof app.average === "string" && app.average) ||
+    (typeof app.average === "number" ? `${app.average}%` : undefined) ||
     (typeof app.highSchoolPercentage === "string" && app.highSchoolPercentage) ||
     (typeof app.highSchoolPercentage === "number" ? `${app.highSchoolPercentage}%` : undefined) ||
     (typeof app.tawjihi_percentage === "number" ? `${app.tawjihi_percentage}%` : undefined) ||
+    (typeof app.tawjihi_percentage === "string" && app.tawjihi_percentage) ||
     (typeof app.gpa === "number" ? `${app.gpa}%` : undefined) ||
+    (typeof app.gpa === "string" && app.gpa) ||
+    (academicObj && (
+      (typeof academicObj.average === "number" ? `${academicObj.average}%` : (typeof academicObj.average === "string" ? academicObj.average : undefined)) ||
+      (typeof academicObj.high_school_percentage === "number" ? `${academicObj.high_school_percentage}%` : (typeof academicObj.high_school_percentage === "string" ? academicObj.high_school_percentage : undefined)) ||
+      (typeof academicObj.tawjihi_percentage === "number" ? `${academicObj.tawjihi_percentage}%` : (typeof academicObj.tawjihi_percentage === "string" ? academicObj.tawjihi_percentage : undefined)) ||
+      (typeof academicObj.gpa === "number" ? `${academicObj.gpa}%` : (typeof academicObj.gpa === "string" ? academicObj.gpa : undefined))
+    )) ||
     "—";
 
-  const currentStatus =
-    ((typeof app.status === "string" && app.status) ||
+  const rawStatus =
+    (typeof app.status === "string" && app.status) ||
     (typeof app.currentStatus === "string" && app.currentStatus) ||
-    "submitted") as ApplicationStatus;
+    undefined;
+
+  const currentStatus = (rawStatus ? normalizeStatus(rawStatus) : "submitted") as ApplicationStatus;
+
+  const isForwarded = isForwardedToHead(currentStatus) || isForwardedToHead(rawStatus);
+  const isRejected =
+    currentStatus === "rejected" ||
+    rawStatus === "rejected" ||
+    rawStatus === "employee_rejected" ||
+    rawStatus === "head_rejected" ||
+    rawStatus === "ai_rejected";
+
+  const rawDecisionReason =
+    (typeof app.decisionReason === "string" && app.decisionReason.trim()) ||
+    (typeof app.decision_reason === "string" && app.decision_reason.trim()) ||
+    undefined;
+
+  const rawEmployeeNotes =
+    (typeof app.employeeNotes === "string" && app.employeeNotes.trim()) ||
+    (typeof app.employee_notes === "string" && app.employee_notes.trim()) ||
+    (typeof app.notes === "string" && app.notes.trim()) ||
+    undefined;
+
+  const explicitForwardReason =
+    (typeof app.forwardReason === "string" && app.forwardReason.trim()) ||
+    (typeof app.forward_reason === "string" && app.forward_reason.trim()) ||
+    (typeof app.forward_note === "string" && app.forward_note.trim()) ||
+    (typeof app.forwardNote === "string" && app.forwardNote.trim()) ||
+    undefined;
+
+  const forwardReason = isForwarded
+    ? explicitForwardReason || rawDecisionReason || rawEmployeeNotes
+    : undefined;
+
+  const isForwardNoteMissing = isForwarded && !forwardReason;
+
+  const rejectionNote =
+    (typeof app.rejectionNote === "string" && app.rejectionNote.trim()) ||
+    (typeof app.rejection_note === "string" && app.rejection_note.trim()) ||
+    (typeof app.rejection_reason === "string" && app.rejection_reason.trim()) ||
+    (isRejected ? rawDecisionReason : undefined);
 
   const aiConfidence =
     typeof app.aiConfidence === "number"
@@ -508,9 +578,15 @@ export function mapBackendApplicationToWorkflowApplication(
     nationalId,
     selectedProgram,
     admissionCycle,
+    department,
     faculty,
     average,
     currentStatus,
+    rejectionNote,
+    forwardReason,
+    isForwardNoteMissing,
+    employeeNotes: rawEmployeeNotes,
+    decisionReason: rawDecisionReason,
     aiConfidence,
     aiStatus: typeof app.aiStatus === "string" ? app.aiStatus : typeof app.ai_status === "string" ? app.ai_status : undefined,
     recommendation: typeof app.recommendation === "string" ? app.recommendation : undefined,

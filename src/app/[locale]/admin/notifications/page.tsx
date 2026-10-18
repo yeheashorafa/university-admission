@@ -4,14 +4,7 @@ import { AdminNotificationsPage } from "@/features/admin/notifications/page";
 
 export default function Page() {
   return (
-    <RoleGuard
-      allowedRoles={[
-        userRoles.admin,
-        userRoles.admissionDean,
-        userRoles.departmentHead,
-        userRoles.admissionEmployee,
-      ]}
-    >
+    <RoleGuard allowedRoles={[userRoles.admin]}>
       <AdminNotificationsPage />
     </RoleGuard>
   );

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { AlertCircle, Users } from "lucide-react";
 import Swal from "sweetalert2";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
@@ -22,6 +23,8 @@ import { extractApiError } from "@/lib/api/api-error";
 import type { AuthUser, UserRole } from "@/services/auth.service";
 import type { AdminUserPayload } from "@/services/admin-users.service";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { userRoles } from "@/constants/roles";
 
 const PAGE_SIZE = 4;
 
@@ -35,7 +38,53 @@ function normalizeSearchText(value: string) {
     .replace(/[ًٌٍَُِّْ]/g, "");
 }
 
-export function AdminUsersPage() {
+function DepartmentHeadUsersPendingView() {
+  const t = useTranslations("admin");
+
+  return (
+    <AdminLayout activePath={routes.adminUsers}>
+      <div className="flex flex-col gap-8">
+        <header className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Users className="size-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-primary sm:text-3xl">
+                {t("users")} - إدارة موظفي القسم
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                متابعة وتكليف موظفي القبول المعنيين بمراجعة طلبات القسم الأكاديمي
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <div className="flex flex-col items-center justify-center gap-4 rounded-[28px] border border-border bg-card p-12 text-center shadow-sm">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600">
+            <AlertCircle className="size-8" />
+          </div>
+          <div className="max-w-xl space-y-3">
+            <span className="inline-flex items-center rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+              في انتظار توفير نقطة النهاية من الخادم (Backend Endpoint Pending)
+            </span>
+            <h3 className="text-xl font-bold text-foreground">
+              واجهة موظفي القسم قيد التطوير في الخادم
+            </h3>
+            <p className="text-sm leading-6 text-muted-foreground">
+              تم الاحتفاظ بالصلاحية الوظيفية لرئيس القسم في بنية النظام والواجهة. نظراً لأن مسار <code>/api/v1/admin/users</code> مقصور حصرياً على مشرف النظام (Super Admin) ويرفض صلاحيات رئيس القسم (403 Forbidden)، تتطلب هذه الشاشة توفير نقطة نهاية مخصصة ومحددة النطاق من الخادم (مثل <code>/api/v1/department_head/users</code>).
+            </p>
+            <p className="text-xs text-muted-foreground">
+              تم حجب أدوات التعديل والإضافة والحذف في هذه الواجهة حتى تفعيل نقطة النهاية المخصصة لضمان أمن وسلامة الصلاحيات وعدم تنفيذ أي استدعاءات غير مصرح بها.
+            </p>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
+
+function SuperAdminUsersContent() {
   const t = useTranslations("admin");
 
   const router = useRouter();
@@ -46,7 +95,13 @@ export function AdminUsersPage() {
   const role = (searchParams.get("role") || undefined) as UserRole | undefined;
   const page = Number(searchParams.get("page") ?? "1");
 
-  const { data: apiUsers, refetch } = useAdminUsersQuery({ search, role });
+  const {
+    data: apiUsers,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useAdminUsersQuery({ search, role });
   const createMutation = useCreateAdminUserMutation();
   const updateMutation = useUpdateAdminUserMutation();
   const deleteMutation = useDeleteAdminUserMutation();
@@ -210,18 +265,38 @@ export function AdminUsersPage() {
           onReset={handleReset}
         />
 
-        <UsersTable
-          users={paginatedUsers}
-          totalUsers={filteredUsers.length}
-          currentPage={safePage}
-          totalPages={totalPages}
-          from={from}
-          to={to}
-          onPageChange={handlePageChange}
-          onEditUser={handleOpenEdit}
-          onDeleteUser={handleDeleteUser}
-
-        />
+        {isLoading ? (
+          <div className="rounded-[28px] border border-border bg-card p-12 text-center text-muted-foreground">
+            جاري تحميل قائمة المستخدمين من الخادم...
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center text-destructive">
+            <AlertCircle className="size-10" />
+            <h3 className="text-lg font-bold">تعذر تحميل بيانات المستخدمين</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              {error instanceof Error ? error.message : "حدث خطأ أثناء استرجاع المستخدمين من الخادم."}
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              إعادة المحاولة
+            </button>
+          </div>
+        ) : (
+          <UsersTable
+            users={paginatedUsers}
+            totalUsers={filteredUsers.length}
+            currentPage={safePage}
+            totalPages={totalPages}
+            from={from}
+            to={to}
+            onPageChange={handlePageChange}
+            onEditUser={handleOpenEdit}
+            onDeleteUser={handleDeleteUser}
+          />
+        )}
       </div>
 
       <UserFormModal
@@ -233,4 +308,15 @@ export function AdminUsersPage() {
       />
     </AdminLayout>
   );
+}
+
+export function AdminUsersPage() {
+  const { role: currentUserRole } = useCurrentAuth();
+  const isDeptHead = currentUserRole === userRoles.departmentHead;
+
+  if (isDeptHead) {
+    return <DepartmentHeadUsersPendingView />;
+  }
+
+  return <SuperAdminUsersContent />;
 }

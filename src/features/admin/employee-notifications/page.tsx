@@ -36,7 +36,7 @@ export function EmployeeNotificationsPage() {
       message: n.message || "",
       type: (n.type as NotificationType) || "general",
       audience: "إشعارات النظام",
-      status: n.readAt || n.read_at ? "sent" : "scheduled",
+      status: n.readAt || n.read_at ? "read" : "unread",
       sentAt: n.createdAt || n.created_at || "اليوم",
       data: ((n as Record<string, unknown>).data as NotificationDataSummary) || null,
       readAt: n.readAt || n.read_at || null,

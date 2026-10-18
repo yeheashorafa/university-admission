@@ -30,7 +30,6 @@ export function AdminNotificationsPage() {
   const { role } = useCurrentAuth();
 
   const isAdmin = role === "admin";
-  const isDean = role === "admission_dean";
   const isStaff = role === "admission_employee" || role === "department_head";
 
   const adminQuery = useAdminNotificationsQuery({ enabled: isAdmin });
@@ -57,7 +56,7 @@ export function AdminNotificationsPage() {
         message: n.message || "",
         type: (n.type as NotificationType) || "general",
         audience: "النظام الإداري",
-        status: n.read_at || n.readAt ? "sent" : "scheduled",
+        status: n.read_at || n.readAt ? "read" : "unread",
         sentAt: n.created_at || n.createdAt || "اليوم",
         data: n.data || null,
         readAt: n.read_at || n.readAt || null,
@@ -70,7 +69,7 @@ export function AdminNotificationsPage() {
         message: n.message,
         type: (n.type as NotificationType) || "general",
         audience: "إشعارات النظام",
-        status: n.readAt || n.read_at ? "sent" : "scheduled",
+        status: n.readAt || n.read_at ? "read" : "unread",
         sentAt: n.createdAt || n.created_at || "اليوم",
         data: ((n as Record<string, unknown>).data as NotificationDataSummary) || null,
       }));

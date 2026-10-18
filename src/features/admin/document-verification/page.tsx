@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AlertCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
@@ -31,7 +32,13 @@ export function AdminDocumentVerificationPage({
 }: AdminDocumentVerificationPageProps) {
   const t = useTranslations("admin");
 
-  const { data: apiApplications, isLoading } = useEmployeeApplicationsQuery();
+  const {
+    data: apiApplications,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useEmployeeApplicationsQuery();
   const { verifyDocumentMutation, requestRevisionMutation } = useEmployeeWorkflowMutations();
 
   const [userSelectedId, setUserSelectedId] = useState<string | null>(null);
@@ -182,6 +189,21 @@ export function AdminDocumentVerificationPage({
         {isLoading ? (
           <div className="rounded-[28px] border border-border bg-card p-12 text-center text-muted-foreground">
             جاري تحميل قائمة تدقيق المستندات من الخادم...
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center text-destructive">
+            <AlertCircle className="size-10" />
+            <h3 className="text-lg font-bold">تعذر تحميل قائمة تدقيق المستندات</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              {error instanceof Error ? error.message : "حدث خطأ أثناء استرجاع وثائق الطلبات من الخادم."}
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              إعادة المحاولة
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">

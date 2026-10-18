@@ -4,13 +4,7 @@ import { AdminUsersPage } from "@/features/admin/users/page";
 
 export default function Page() {
   return (
-    <RoleGuard
-      allowedRoles={[
-        userRoles.admin,
-        userRoles.admissionDean,
-        userRoles.departmentHead,
-      ]}
-    >
+    <RoleGuard allowedRoles={[userRoles.admin, userRoles.departmentHead]}>
       <AdminUsersPage />
     </RoleGuard>
   );

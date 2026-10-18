@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AlertCircle } from "lucide-react";
 import { TableSkeleton } from "@/components/common/loading/table-skeleton";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
@@ -27,13 +28,16 @@ export function AdminApplicationsPage() {
   const isHead = role === userRoles.departmentHead;
 
   const queryStatus = status !== "all" ? status : undefined;
-  const { data: empApps, isLoading: empLoading } = useEmployeeApplicationsQuery({ search, status: queryStatus });
-  const { data: headApps, isLoading: headLoading } = useHeadApplicationsQuery({ search, status: queryStatus });
+  const empQuery = useEmployeeApplicationsQuery({ search, status: queryStatus });
+  const headQuery = useHeadApplicationsQuery({ search, status: queryStatus });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: adminApps, isLoading: adminLoading } = useAdminApplicationsQuery({ search, status: queryStatus as any });
+  const adminQuery = useAdminApplicationsQuery({ search, status: queryStatus as any });
 
-  const rawApps = isEmployee ? empApps : isHead ? headApps : adminApps;
-  const isLoading = isEmployee ? empLoading : isHead ? headLoading : adminLoading;
+  const activeQuery = isEmployee ? empQuery : isHead ? headQuery : adminQuery;
+  const rawApps = activeQuery.data;
+  const isLoading = activeQuery.isLoading;
+  const isError = activeQuery.isError;
+  const error = activeQuery.error;
 
   const applications: WorkflowApplication[] = useMemo(() => {
     const list = Array.isArray(rawApps) ? rawApps : [];
@@ -64,10 +68,28 @@ export function AdminApplicationsPage() {
   return (
     <AdminLayout activePath={routes.adminApplications}>
       <div className="flex flex-col gap-6">
-        <ApplicationsWorkflowHeader />
+        <ApplicationsWorkflowHeader
+          applications={applications}
+          isLoading={isLoading}
+        />
 
         {isLoading ? (
           <TableSkeleton columns={5} rows={6} />
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center text-destructive">
+            <AlertCircle className="size-10" />
+            <h3 className="text-lg font-bold">تعذر تحميل طلبات الالتحاق</h3>
+            <p className="text-sm text-muted-foreground max-w-md">
+              {error instanceof Error ? error.message : "حدث خطأ أثناء استرجاع الطلبات من الخادم."}
+            </p>
+            <button
+              type="button"
+              onClick={() => activeQuery.refetch()}
+              className="mt-2 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
+            >
+              إعادة المحاولة
+            </button>
+          </div>
         ) : (
           <ApplicationsWorkflowTable
             applications={applications}

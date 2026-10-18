@@ -12,7 +12,7 @@ import {
 } from "@/services/admin-users.service";
 
 import { useCurrentAuth } from "@/hooks/use-current-auth";
-import { isAdminRole } from "@/constants/roles";
+import { isSuperAdmin } from "@/constants/roles";
 
 type AdminUsersParams = {
   page?: number;
@@ -24,7 +24,7 @@ type AdminUsersParams = {
 export function useAdminUsersQuery(params?: AdminUsersParams) {
   const { isHydrated, token, user, role } = useCurrentAuth();
 
-  const isEnabled = Boolean(isHydrated && token && user && isAdminRole(role));
+  const isEnabled = Boolean(isHydrated && token && user && isSuperAdmin(role));
 
   return useQuery({
     queryKey: queryKeys.admin.users(params),
@@ -36,9 +36,15 @@ export function useAdminUsersQuery(params?: AdminUsersParams) {
 
 export function useCreateAdminUserMutation() {
   const queryClient = useQueryClient();
+  const { role } = useCurrentAuth();
 
   return useMutation({
-    mutationFn: (payload: AdminUserPayload) => createAdminUser(payload),
+    mutationFn: (payload: AdminUserPayload) => {
+      if (!isSuperAdmin(role)) {
+        throw new Error("Unauthorized: Only super administrators can create users.");
+      }
+      return createAdminUser(payload);
+    },
     onSuccess: () => {
       return queryClient.invalidateQueries({
         queryKey: ["admin", "users"],
@@ -49,6 +55,7 @@ export function useCreateAdminUserMutation() {
 
 export function useUpdateAdminUserMutation() {
   const queryClient = useQueryClient();
+  const { role } = useCurrentAuth();
 
   return useMutation({
     mutationFn: ({
@@ -57,7 +64,12 @@ export function useUpdateAdminUserMutation() {
     }: {
       userId: string;
       payload: Partial<AdminUserPayload>;
-    }) => updateAdminUser(userId, payload),
+    }) => {
+      if (!isSuperAdmin(role)) {
+        throw new Error("Unauthorized: Only super administrators can update users.");
+      }
+      return updateAdminUser(userId, payload);
+    },
     onSuccess: () => {
       return queryClient.invalidateQueries({
         queryKey: ["admin", "users"],
@@ -68,9 +80,15 @@ export function useUpdateAdminUserMutation() {
 
 export function useDeleteAdminUserMutation() {
   const queryClient = useQueryClient();
+  const { role } = useCurrentAuth();
 
   return useMutation({
-    mutationFn: (userId: string) => deleteAdminUser(userId),
+    mutationFn: (userId: string) => {
+      if (!isSuperAdmin(role)) {
+        throw new Error("Unauthorized: Only super administrators can delete users.");
+      }
+      return deleteAdminUser(userId);
+    },
     onSuccess: () => {
       return queryClient.invalidateQueries({
         queryKey: ["admin", "users"],

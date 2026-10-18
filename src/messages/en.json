@@ -1653,10 +1653,13 @@
       "badge": "Admission Workflow",
       "title": "Applications Workflow",
       "description": "Track, review, and manage the workflow of submitted student applications across all stages of admission.",
-      "totalApplications": "Total Applications",
+      "totalApplications": "Total Applications (Current Page)",
       "pendingHeadReview": "Pending Head Review",
-      "paymentPending": "Payment Pending",
-      "rejectedApplications": "Rejected Applications",
+      "paymentPending": "Pending Payment",
+      "rejectedApplications": "Rejected (Current Page)",
+      "cancelledApplications": "Cancelled (Current Page)",
+      "pageScopedBadge": "Current Page",
+      "currentPageNotice": "The figures displayed below reflect applications loaded on the current page only, not campus-wide totals.",
       "tableTitle": "Applications List",
       "tableDescription": "A list of all applications currently in the admission workflow. Click view to see detailed history and perform actions.",
       "application": "Application",
@@ -2474,13 +2477,18 @@
       "statuses": {
         "sent": "Sent",
         "scheduled": "Scheduled",
-        "draft": "Draft"
+        "draft": "Draft",
+        "read": "Read",
+        "unread": "Unread"
       },
       "stats": {
         "sentToday": "Sent Today",
         "scheduled": "Scheduled",
         "drafts": "Drafts",
-        "recipientsReached": "Recipients Reached"
+        "recipientsReached": "Recipients Reached",
+        "totalCount": "Total Notifications",
+        "readCount": "Read",
+        "unreadCount": "Unread"
       },
       "historyTitle": "Notification History",
       "historyDescription": "Review recently sent, scheduled, and draft notifications.",
@@ -2549,7 +2557,8 @@
       "failedRowsDetails": "Error Details (First 200 Rows)",
       "rowIndex": "Row",
       "nationalIdColumn": "National ID",
-      "errorDetailsColumn": "Errors"
+      "errorDetailsColumn": "Errors",
+      "markAsRead": "Mark as read"
     },
     "settings": {
       "systemConfiguration": "System Configuration",

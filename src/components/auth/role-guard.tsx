@@ -6,23 +6,23 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { routes, withLocale } from "@/constants/routes";
 import { canAccessRole } from "@/lib/auth-helpers";
-import type { UserRole } from "@/constants/roles";
+import { type UserRole, isStudentRole } from "@/constants/roles";
+import { getDashboardRouteByRole } from "@/constants/role-navigation";
+
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { getLogoutInProgress } from "@/lib/auth/logout-state";
 
 type RoleGuardProps = {
   children: React.ReactNode;
   allowedRoles: UserRole[];
 };
 
-import { useCurrentAuth } from "@/hooks/use-current-auth";
-import { getLogoutInProgress } from "@/lib/auth/logout-state";
-
 export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("common");
 
-  const { user, role, isHydrated } = useCurrentAuth();
-  const isAuthenticated = Boolean(user);
+  const { role, isHydrated, isAuthenticated } = useCurrentAuth();
   const isAllowed = canAccessRole(role, allowedRoles);
 
   const didRedirectRef = useRef(false);
@@ -34,15 +34,21 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
 
     if (!isAuthenticated) {
       didRedirectRef.current = true;
-      router.replace(withLocale(locale, routes.login));
+      if (router) router.replace(withLocale(locale, routes.login));
       return;
     }
 
     if (!isAllowed) {
       didRedirectRef.current = true;
-      router.replace(withLocale(locale, routes.dashboard));
+      const target = getDashboardRouteByRole(role);
+      // Non-students must NEVER be redirected to the student dashboard
+      if (!isStudentRole(role) && target === routes.dashboard) {
+        if (router) router.replace(withLocale(locale, routes.admin));
+      } else {
+        if (router) router.replace(withLocale(locale, target));
+      }
     }
-  }, [isHydrated, isAuthenticated, isAllowed, router, locale]);
+  }, [isHydrated, isAuthenticated, isAllowed, router, locale, role]);
 
   if (!isHydrated) {
     return (

@@ -8,10 +8,13 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { routes, withLocale } from "@/constants/routes";
+import { useCurrentAuth } from "@/hooks/use-current-auth";
+import { getDashboardRouteByRole } from "@/constants/role-navigation";
 
 export function UnauthorizedHero() {
   const locale = useLocale();
   const t = useTranslations("errors");
+  const { role } = useCurrentAuth();
 
   return (
     <section className="relative w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card p-8 text-center shadow-[0px_8px_30px_rgba(0,77,64,0.08)] md:p-12">
@@ -37,7 +40,7 @@ export function UnauthorizedHero() {
 
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
-            href={withLocale(locale, routes.dashboard)}
+            href={withLocale(locale, getDashboardRouteByRole(role))}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-bold text-primary-foreground transition hover:bg-primary/90"
           >
             <LayoutDashboard className="size-5" />
