@@ -19,14 +19,30 @@ export function AdminKpiGrid() {
         { id: "missing", label: isAr ? "معادة للاستكمال" : "Returned / Revision", value: "..." },
         { id: "accepted", label: isAr ? "الطلبات المقبولة" : "Accepted", value: "...", variant: "success" },
         { id: "rejected", label: isAr ? "الطلبات المرفوضة" : "Rejected", value: "...", variant: "danger" },
+        { id: "cancelled", label: isAr ? "الطلبات الملغاة" : "Cancelled", value: "..." },
       ];
     }
 
-    const byStatus = reports?.byStatus ?? [];
-    const totalCount = byStatus.reduce((acc, curr) => acc + curr.count, 0);
+    const isReportsFailed = !reports || reports.byStatus === null;
+    const byStatus = reports?.byStatus;
+
+    if (isReportsFailed) {
+      const unavailable = isAr ? "غير متوفر" : "Unavailable";
+      return [
+        { id: "total", label: isAr ? "إجمالي الطلبات" : "Total Applications", value: unavailable },
+        { id: "review", label: isAr ? "قيد المراجعة" : "Under Review", value: unavailable, variant: "warning" },
+        { id: "missing", label: isAr ? "معادة للاستكمال" : "Returned / Revision", value: unavailable },
+        { id: "accepted", label: isAr ? "الطلبات المقبولة" : "Accepted", value: unavailable, variant: "success" },
+        { id: "rejected", label: isAr ? "الطلبات المرفوضة" : "Rejected", value: unavailable, variant: "danger" },
+        { id: "cancelled", label: isAr ? "الطلبات الملغاة" : "Cancelled", value: unavailable },
+      ];
+    }
+
+    const list = Array.isArray(byStatus) ? byStatus : [];
+    const totalCount = list.reduce((acc, curr) => acc + curr.count, 0);
 
     const getCountFor = (statuses: string[]) =>
-      byStatus
+      list
         .filter((item) => statuses.includes(item.label.toLowerCase()))
         .reduce((sum, item) => sum + item.count, 0);
 
@@ -55,10 +71,13 @@ export function AdminKpiGrid() {
 
     const rejectedCount = getCountFor([
       "rejected",
-      "cancelled",
       "ai_rejected",
       "employee_rejected",
       "head_rejected",
+    ]);
+
+    const cancelledCount = getCountFor([
+      "cancelled",
     ]);
 
     return [
@@ -90,11 +109,16 @@ export function AdminKpiGrid() {
         value: String(rejectedCount),
         variant: "danger",
       },
+      {
+        id: "cancelled",
+        label: isAr ? "الطلبات الملغاة" : "Cancelled",
+        value: String(cancelledCount),
+      },
     ];
   }, [reports, isLoading, isAr]);
 
   return (
-    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
       {cards.map((card) => (
         <AdminKpiCard key={card.id} card={card} />
       ))}

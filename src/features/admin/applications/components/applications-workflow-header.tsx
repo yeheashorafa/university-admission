@@ -2,9 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { BarChart3, Clock3, FileCheck2, FileX2 } from "lucide-react";
-
-
+import { BarChart3, Clock3, FileCheck2, FileX2, Ban, Info } from "lucide-react";
 
 import type { WorkflowApplication } from "../data/applications-workflow.data";
 import { applicationStatuses } from "@/constants/application-workflow";
@@ -27,6 +25,7 @@ export function ApplicationsWorkflowHeader({
         pendingHeadReview: "...",
         paymentPending: "...",
         rejected: "...",
+        cancelled: "...",
       };
     }
 
@@ -46,12 +45,18 @@ export function ApplicationsWorkflowHeader({
         app.currentStatus === applicationStatuses.employeeRejected ||
         app.currentStatus === applicationStatuses.headRejected
     ).length;
+    const cancelled = applications.filter(
+      (app) =>
+        app.currentStatus === "cancelled" ||
+        (app.currentStatus as string) === "canceled"
+    ).length;
 
     return {
       total,
       pendingHeadReview,
       paymentPending,
       rejected,
+      cancelled,
     };
   }, [applications, isLoading]);
 
@@ -74,29 +79,45 @@ export function ApplicationsWorkflowHeader({
           {t("description")}
         </p>
 
-        <div className="mt-7 grid gap-4 md:grid-cols-4">
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-border/70 bg-muted/40 px-3.5 py-2 text-xs text-muted-foreground">
+          <Info className="size-4 shrink-0 text-primary" />
+          <span>{t("currentPageNotice")}</span>
+        </div>
+
+        <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <StatCard
             icon={BarChart3}
             label={t("totalApplications")}
             value={stats.total}
+            sublabel={t("pageScopedBadge")}
           />
 
           <StatCard
             icon={Clock3}
             label={t("pendingHeadReview")}
             value={stats.pendingHeadReview}
+            sublabel={t("pageScopedBadge")}
           />
 
           <StatCard
             icon={FileCheck2}
             label={t("paymentPending")}
             value={stats.paymentPending}
+            sublabel={t("pageScopedBadge")}
           />
 
           <StatCard
             icon={FileX2}
             label={t("rejectedApplications")}
             value={stats.rejected}
+            sublabel={t("pageScopedBadge")}
+          />
+
+          <StatCard
+            icon={Ban}
+            label={t("cancelledApplications")}
+            value={stats.cancelled}
+            sublabel={t("pageScopedBadge")}
           />
         </div>
       </div>
@@ -108,17 +129,27 @@ type StatCardProps = {
   icon: typeof BarChart3;
   label: string;
   value: number | string;
+  sublabel?: string;
 };
 
-function StatCard({ icon: Icon, label, value }: StatCardProps) {
+function StatCard({ icon: Icon, label, value, sublabel }: StatCardProps) {
   return (
-    <div className="rounded-[22px] border border-border bg-background p-4">
-      <div className="mb-3 flex size-11 items-center justify-center rounded-[16px] bg-primary/10 text-primary">
-        <Icon className="size-5" />
-      </div>
+    <div className="flex flex-col justify-between rounded-[22px] border border-border bg-background p-4">
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex size-11 items-center justify-center rounded-[16px] bg-primary/10 text-primary">
+            <Icon className="size-5" />
+          </div>
+          {sublabel && (
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+              {sublabel}
+            </span>
+          )}
+        </div>
 
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-extrabold text-primary">{value}</p>
+        <p className="text-sm text-muted-foreground">{label}</p>
+      </div>
+      <p className="mt-2 text-2xl font-extrabold text-primary">{value}</p>
     </div>
   );
 }

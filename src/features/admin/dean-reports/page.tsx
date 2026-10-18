@@ -52,26 +52,30 @@ export function DeanReportsPage() {
       }))
     : null;
 
-  const totalApplications = reports?.byStatus
+  const totalApplications = Array.isArray(reports?.byStatus)
     ? reports.byStatus.reduce((acc, curr) => acc + curr.count, 0)
-    : 0;
+    : null;
 
-  const totalUploads = reports?.uploadVolume
+  const totalUploads = Array.isArray(reports?.uploadVolume)
     ? reports.uploadVolume.reduce((acc, curr) => acc + curr.count, 0)
-    : 0;
+    : null;
 
-  let avgMinutesInReview = 0;
-  if (reports?.timeInStatus && reports.timeInStatus.length > 0) {
-    const reviewItem = reports.timeInStatus.find(
-      (item) => item.label.includes("review") || item.label.includes("under_review")
-    );
-    if (reviewItem) {
-      avgMinutesInReview = Math.round(reviewItem.average_minutes);
+  let avgMinutesInReview: number | null = null;
+  if (Array.isArray(reports?.timeInStatus)) {
+    if (reports.timeInStatus.length === 0) {
+      avgMinutesInReview = 0;
     } else {
-      const avg =
-        reports.timeInStatus.reduce((acc, curr) => acc + curr.average_minutes, 0) /
-        reports.timeInStatus.length;
-      avgMinutesInReview = Math.round(avg);
+      const reviewItem = reports.timeInStatus.find(
+        (item) => item.label.includes("review") || item.label.includes("under_review")
+      );
+      if (reviewItem) {
+        avgMinutesInReview = Math.round(reviewItem.average_minutes);
+      } else {
+        const avg =
+          reports.timeInStatus.reduce((acc, curr) => acc + curr.average_minutes, 0) /
+          reports.timeInStatus.length;
+        avgMinutesInReview = Math.round(avg);
+      }
     }
   }
 
@@ -129,7 +133,9 @@ export function DeanReportsPage() {
                   </div>
                 </div>
                 <p className="mt-4 text-3xl font-extrabold text-primary">
-                  {totalApplications}
+                  {totalApplications !== null
+                    ? totalApplications
+                    : (isAr ? "غير متوفر" : "Unavailable")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {isAr ? "موزعة حسب الحالات الرسمية" : "Classified by official statuses"}
@@ -146,7 +152,9 @@ export function DeanReportsPage() {
                   </div>
                 </div>
                 <p className="mt-4 text-3xl font-extrabold text-secondary">
-                  {totalUploads}
+                  {totalUploads !== null
+                    ? totalUploads
+                    : (isAr ? "غير متوفر" : "Unavailable")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {isAr ? "إجمالي الملفات والوثائق المرفوعة" : "Total uploaded admission files"}
@@ -163,7 +171,9 @@ export function DeanReportsPage() {
                   </div>
                 </div>
                 <p className="mt-4 text-3xl font-extrabold text-amber-600">
-                  {avgMinutesInReview} {isAr ? "دقيقة" : "mins"}
+                  {avgMinutesInReview !== null
+                    ? `${avgMinutesInReview} ${isAr ? "دقيقة" : "mins"}`
+                    : (isAr ? "غير متوفر" : "Unavailable")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {isAr ? "متوسط بقاء الطلب في مرحلة التدقيق" : "Average time in verification stage"}

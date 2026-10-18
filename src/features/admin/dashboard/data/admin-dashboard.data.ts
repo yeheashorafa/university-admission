@@ -1,5 +1,5 @@
 export type AdminKpiCard = {
-  id: "total" | "review" | "missing" | "ai-alerts" | "accepted" | "rejected";
+  id: "total" | "review" | "missing" | "ai-alerts" | "accepted" | "rejected" | "cancelled";
   label: string;
   value: string;
   variant?: "default" | "warning" | "success" | "danger";

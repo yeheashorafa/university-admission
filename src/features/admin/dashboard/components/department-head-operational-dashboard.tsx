@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { useLocale } from "next-intl";
 import {
   FileCheck2,
@@ -18,7 +19,8 @@ import { useHeadApplicationsQuery } from "@/hooks/queries/use-admin-queries";
 import { useHeadNotificationsQuery } from "@/hooks/queries/use-head-notifications-queries";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { formatDateTime } from "@/lib/utils/application-formatters";
-import type { HeadApplication } from "@/services/department-head.service";
+import { cn } from "@/lib/utils";
+import { isForwardedToHead, type HeadApplication } from "@/services/department-head.service";
 
 export function DepartmentHeadOperationalDashboard() {
   const locale = useLocale();
@@ -35,21 +37,23 @@ export function DepartmentHeadOperationalDashboard() {
   const {
     data: notificationsData,
     isLoading: isNotifsLoading,
+    isError: isNotifsError,
   } = useHeadNotificationsQuery();
 
-  const applications = (Array.isArray(applicationsData) ? applicationsData : []) as HeadApplication[];
-  const notifications = (Array.isArray(notificationsData) ? notificationsData : []) as Array<{
-    id: string | number;
-    title?: string;
-    message?: string;
-    read_at?: string | null;
-    created_at?: string;
-  }>;
+  const applications = useMemo(() => {
+    return (Array.isArray(applicationsData) ? applicationsData : []) as HeadApplication[];
+  }, [applicationsData]);
 
-  const unreadNotifsCount = notifications.filter((n) => !n.read_at).length;
-  const forwardedApps = applications.filter(
-    (app) => app.status === "forwarded_to_department_head" || !app.status
-  );
+  const forwardedApps = useMemo(() => {
+    return applications.filter((app) => isForwardedToHead(app.status));
+  }, [applications]);
+
+  const unreadNotifsCount = useMemo(() => {
+    if (isNotifsLoading) return "...";
+    if (isNotifsError) return "—";
+    if (!Array.isArray(notificationsData)) return "0";
+    return String(notificationsData.filter((n) => !n.read_at && !n.readAt).length);
+  }, [notificationsData, isNotifsLoading, isNotifsError]);
 
   return (
     <div className="space-y-8">
@@ -103,17 +107,22 @@ export function DepartmentHeadOperationalDashboard() {
             <div className="flex size-11 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
               <Bell className="size-6" />
             </div>
-            <span className="text-2xl font-extrabold text-secondary">
-              {isNotifsLoading ? "..." : unreadNotifsCount}
+            <span className={cn(
+              "text-2xl font-extrabold",
+              isNotifsError ? "text-lg text-destructive" : "text-secondary"
+            )}>
+              {isNotifsLoading ? "..." : isNotifsError ? (isAr ? "تعذر التحميل" : "Unavailable") : unreadNotifsCount}
             </span>
           </div>
           <h3 className="font-bold text-foreground group-hover:text-secondary">
             {isAr ? "التنبيهات الأكاديمية الجديدة" : "Unread Notifications"}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {isAr
-              ? "الإشعارات الواردة بخصوص التحويلات والتحديثات الأكاديمية"
-              : "Incoming notifications regarding forwarded files and academic updates"}
+            {isNotifsError
+              ? (isAr ? "فشل استرجاع الإشعارات من الخادم" : "Failed to load notifications from server")
+              : (isAr
+                  ? "الإشعارات الواردة بخصوص التحويلات والتحديثات الأكاديمية"
+                  : "Incoming notifications regarding forwarded files and academic updates")}
           </p>
           <div className="mt-4 flex items-center gap-1 text-xs font-bold text-secondary">
             <span>{isAr ? "عرض مركز التنبيهات" : "View Notifications"}</span>
@@ -183,11 +192,11 @@ export function DepartmentHeadOperationalDashboard() {
               {appsError instanceof Error ? appsError.message : String(appsError)}
             </p>
           </div>
-        ) : applications.length === 0 ? (
+        ) : forwardedApps.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-muted/20 p-12 text-center text-muted-foreground">
             <FileCheck2 className="size-10 text-muted-foreground/50" />
             <p className="font-bold text-foreground">
-              {isAr ? "لا توجد طلبات محولة حالياً" : "No forwarded applications at the moment"}
+              {isAr ? "لا توجد طلبات محولة حالياً بانتظار قرار القسم" : "No forwarded applications awaiting department decision"}
             </p>
             <p className="text-sm">
               {isAr
@@ -221,7 +230,7 @@ export function DepartmentHeadOperationalDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {applications.slice(0, 10).map((app) => (
+                {forwardedApps.slice(0, 10).map((app) => (
                   <tr
                     key={String(app.id)}
                     className="border-b border-border last:border-b-0 hover:bg-muted/40"
