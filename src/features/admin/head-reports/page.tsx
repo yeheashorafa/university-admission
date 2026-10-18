@@ -53,6 +53,51 @@ export function calculateAvgTimeToDecisionHours(
   return null;
 }
 
+export function resolveMetricUnit(label: string, isAr = true): string | null {
+  const l = label.toLowerCase();
+  if (l.includes("second")) return isAr ? "ثانية" : "sec";
+  if (l.includes("minute")) return isAr ? "دقيقة" : "min";
+  if (l.includes("hour")) return isAr ? "ساعة" : "hrs";
+  if (l.includes("decision") || l.includes("total")) return isAr ? "قرار" : "decisions";
+  return null;
+}
+
+export function formatTimeToDecisionMetric(
+  item: { label: string; value: number },
+  isAr = true
+): { friendlyLabel: string; displayValue: string; isKnownUnit: boolean; unit: string | null } {
+  const unit = resolveMetricUnit(item.label, isAr);
+  const l = item.label.toLowerCase();
+
+  let friendlyLabel = item.label;
+  if (l.includes("second")) {
+    friendlyLabel = isAr ? "متوسط الوقت بالثواني" : "Average Seconds";
+  } else if (l.includes("minute")) {
+    friendlyLabel = isAr ? "متوسط الوقت بالدقائق" : "Average Minutes";
+  } else if (l.includes("hour")) {
+    friendlyLabel = isAr ? "متوسط الوقت بالساعات" : "Average Hours";
+  } else if (l.includes("total") || l.includes("decision")) {
+    friendlyLabel = isAr ? "إجمالي القرارات المتخذة" : "Total Decisions";
+  }
+
+  // If unit is unconfirmed/unknown, display "غير متوفر" instead of assuming hours
+  if (!unit) {
+    return {
+      friendlyLabel,
+      displayValue: isAr ? "غير متوفر" : "Unavailable",
+      isKnownUnit: false,
+      unit: null,
+    };
+  }
+
+  return {
+    friendlyLabel,
+    displayValue: `${item.value} ${unit}`,
+    isKnownUnit: true,
+    unit,
+  };
+}
+
 export function HeadReportsPage() {
   const locale = useLocale();
   const isAr = locale === "ar";
@@ -333,33 +378,19 @@ export function HeadReportsPage() {
                 ) : (
                   <div className="space-y-3">
                     {reports.timeToDecision.map((item, idx) => {
-                      const isSeconds = item.label.toLowerCase().includes("second");
-                      const isMinutes = item.label.toLowerCase().includes("minute");
-                      const isHours = item.label.toLowerCase().includes("hour");
-                      const isTotal = item.label.toLowerCase().includes("total") || item.label.toLowerCase().includes("decision");
-
-                      let unit = isAr ? "ساعة" : "hrs";
-                      let friendlyLabel = item.label;
-
-                      if (isSeconds) {
-                        unit = isAr ? "ثانية" : "sec";
-                        friendlyLabel = isAr ? "متوسط الوقت بالثواني" : "Average Seconds";
-                      } else if (isMinutes) {
-                        unit = isAr ? "دقيقة" : "min";
-                        friendlyLabel = isAr ? "متوسط الوقت بالدقائق" : "Average Minutes";
-                      } else if (isHours) {
-                        unit = isAr ? "ساعة" : "hrs";
-                        friendlyLabel = isAr ? "متوسط الوقت بالساعات" : "Average Hours";
-                      } else if (isTotal) {
-                        unit = isAr ? "قرار" : "decisions";
-                        friendlyLabel = isAr ? "إجمالي القرارات المتخذة" : "Total Decisions";
-                      }
+                      const metric = formatTimeToDecisionMetric(item, isAr);
 
                       return (
                         <div key={idx} className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-sm">
-                          <span className="font-medium text-foreground">{friendlyLabel}</span>
-                          <span className="font-bold text-amber-600">
-                            {item.value} {unit}
+                          <span className="font-medium text-foreground">{metric.friendlyLabel}</span>
+                          <span
+                            className={
+                              metric.isKnownUnit
+                                ? "font-bold text-amber-600"
+                                : "font-bold text-muted-foreground"
+                            }
+                          >
+                            {metric.displayValue}
                           </span>
                         </div>
                       );

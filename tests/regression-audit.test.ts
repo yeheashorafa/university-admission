@@ -20,7 +20,11 @@ import { mapBackendApplicationToWorkflowApplication } from "../src/features/admi
 import { ApplicationSummaryCard } from "../src/features/admin/application-details/page";
 import { RoleGuard } from "../src/components/auth/role-guard";
 import { AuthProvider, type CurrentAuthState } from "../src/hooks/use-current-auth";
-import { calculateAvgTimeToDecisionHours } from "../src/features/admin/head-reports/page";
+import {
+  calculateAvgTimeToDecisionHours,
+  formatTimeToDecisionMetric,
+  resolveMetricUnit,
+} from "../src/features/admin/head-reports/page";
 import { apiClient } from "../src/lib/api/client";
 import { ENDPOINTS } from "../src/lib/api/endpoints";
 import arMessages from "../src/messages/ar.json" with { type: "json" };
@@ -742,17 +746,58 @@ test("10. Time-to-decision unit conversions using production calculateAvgTimeToD
   assert.equal(calculateAvgTimeToDecisionHours(null), null);
   assert.equal(calculateAvgTimeToDecisionHours([]), 0);
 
-  // Unit labeling verification: total_decisions must be labeled as decisions, not hours
-  function getMetricUnit(label: string, isAr = true) {
-    if (label.toLowerCase().includes("second")) return isAr ? "ثانية" : "sec";
-    if (label.toLowerCase().includes("minute")) return isAr ? "دقيقة" : "min";
-    if (label.toLowerCase().includes("hour")) return isAr ? "ساعة" : "hrs";
-    if (label.toLowerCase().includes("decision") || label.toLowerCase().includes("total")) return isAr ? "قرار" : "decisions";
-    return "";
-  }
+  // Unit labeling verification: test production resolveMetricUnit and formatTimeToDecisionMetric
+  assert.equal(resolveMetricUnit("average_seconds", true), "ثانية");
+  assert.equal(resolveMetricUnit("average_minutes", true), "دقيقة");
+  assert.equal(resolveMetricUnit("average_hours", true), "ساعة");
+  assert.equal(resolveMetricUnit("total_decisions", true), "قرار");
+  assert.notEqual(resolveMetricUnit("total_decisions", true), "ساعة", "total_decisions unit must NEVER be hours");
 
-  assert.equal(getMetricUnit("total_decisions"), "قرار");
-  assert.notEqual(getMetricUnit("total_decisions"), "ساعة", "total_decisions unit must NEVER be hours");
+  // Unknown unit verification: resolveMetricUnit MUST return null
+  assert.equal(
+    resolveMetricUnit("unknown_metric_from_backend", true),
+    null,
+    "Unknown metric label must have null unit"
+  );
+
+  // Formatted display: confirmed units display value with unit
+  const secondsFormatted = formatTimeToDecisionMetric({ label: "average_seconds", value: 7200 }, true);
+  assert.equal(secondsFormatted.displayValue, "7200 ثانية");
+  assert.equal(secondsFormatted.isKnownUnit, true);
+
+  const decisionsFormatted = formatTimeToDecisionMetric({ label: "total_decisions", value: 15 }, true);
+  assert.equal(decisionsFormatted.displayValue, "15 قرار");
+  assert.equal(decisionsFormatted.isKnownUnit, true);
+
+  // Unknown unit: MUST display "غير متوفر" in Arabic, NEVER display in hours!
+  const unknownMetricAr = formatTimeToDecisionMetric({ label: "unknown_metric_from_backend", value: 42 }, true);
+  assert.equal(unknownMetricAr.isKnownUnit, false);
+  assert.equal(unknownMetricAr.unit, null);
+  assert.equal(
+    unknownMetricAr.displayValue,
+    "غير متوفر",
+    "Unknown metric label must display 'غير متوفر' instead of assuming hours"
+  );
+  assert.equal(
+    unknownMetricAr.displayValue.includes("ساعة"),
+    false,
+    "Unknown metric label must NEVER be displayed in hours"
+  );
+
+  // Unknown unit in English: MUST display "Unavailable", NEVER display in hrs!
+  const unknownMetricEn = formatTimeToDecisionMetric({ label: "unknown_metric_from_backend", value: 42 }, false);
+  assert.equal(unknownMetricEn.isKnownUnit, false);
+  assert.equal(unknownMetricEn.unit, null);
+  assert.equal(
+    unknownMetricEn.displayValue,
+    "Unavailable",
+    "Unknown metric label in English must display 'Unavailable'"
+  );
+  assert.equal(
+    unknownMetricEn.displayValue.includes("hrs"),
+    false,
+    "Unknown metric label must NEVER be displayed in hrs"
+  );
 
   // Part B: forwardedAt timestamp must NEVER fall back to updated_at
   const appWithOnlyUpdatedAt = {
