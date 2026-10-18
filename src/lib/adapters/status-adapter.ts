@@ -167,21 +167,36 @@ export function normalizeStatus(status?: string | null): BackendApplicationStatu
     return s as BackendApplicationStatus;
   }
 
-  // Legacy mappings
-  if (s === "ai_review" || s === "employee_review" || s === "head_review") {
+  // Supported legacy / alias mappings
+  if (
+    s === "head_review" ||
+    s === "pending_head_review" ||
+    s === "in_department_review" ||
+    s === "dept_head_review" ||
+    s === "employee_approved"
+  ) {
+    return "forwarded_to_department_head";
+  }
+  if (s === "ai_review" || s === "employee_review") {
     return "under_review";
   }
   if (s === "missing_documents") {
     return "returned_for_revision";
   }
-  if (s === "employee_approved" || s === "head_approved") {
-    return "forwarded_to_department_head";
-  }
-  if (s === "completed" || s === "payment_completed" || s === "university_number_issued") {
+  if (
+    s === "completed" ||
+    s === "payment_completed" ||
+    s === "university_number_issued" ||
+    s === "head_approved" ||
+    s === "final_accepted"
+  ) {
     return "accepted";
   }
   if (s === "ai_rejected" || s === "employee_rejected" || s === "head_rejected") {
     return "rejected";
+  }
+  if (s === "canceled") {
+    return "cancelled";
   }
 
   return "draft";

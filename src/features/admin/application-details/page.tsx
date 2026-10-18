@@ -119,7 +119,7 @@ export function AdminApplicationDetailsPage({
   );
 }
 
-type ApplicationCardProps = {
+export type ApplicationCardProps = {
   application: WorkflowApplication;
 };
 
@@ -165,7 +165,7 @@ function ApplicationDetailsHeader({ application }: ApplicationCardProps) {
   );
 }
 
-function ApplicationSummaryCard({ application }: ApplicationCardProps) {
+export function ApplicationSummaryCard({ application }: ApplicationCardProps) {
   const locale = useLocale();
   const isAr = locale === "ar";
 
@@ -231,8 +231,45 @@ function ApplicationSummaryCard({ application }: ApplicationCardProps) {
         />
       </div>
 
+      {application.forwardReason ? (
+        <div
+          data-testid="forward-reason-box"
+          className="mt-5 rounded-[18px] border border-sky-500/30 bg-sky-500/10 p-5 shadow-sm"
+        >
+          <div className="flex items-center gap-2.5 text-sky-800 dark:text-sky-300">
+            <FileText className="size-5 shrink-0" />
+            <p className="text-base font-bold">
+              {isAr ? "سبب التحويل من موظف القبول" : "Forwarding Reason from Admission Employee"}
+            </p>
+          </div>
+          <p
+            data-testid="forward-reason-text"
+            className="mt-3 text-sm leading-relaxed font-semibold text-foreground bg-background/60 rounded-xl p-3.5 border border-sky-500/20"
+          >
+            {application.forwardReason}
+          </p>
+        </div>
+      ) : application.isForwardNoteMissing ? (
+        <div
+          data-testid="forward-reason-missing-box"
+          className="mt-5 rounded-[18px] border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-semibold text-amber-800 dark:text-amber-300"
+        >
+          <p className="font-bold">
+            {isAr ? "سبب التحويل من موظف القبول:" : "Forwarding Reason from Admission Employee:"}
+          </p>
+          <p className="mt-1">
+            {isAr
+              ? "لم يقم موظف القبول بإرفاق ملاحظات إضافية مع طلب التحويل (حقل decision_reason غير متوفر في استجابة الخادم)."
+              : "No additional forwarding notes provided by admission employee (decision_reason field omitted in backend response)."}
+          </p>
+        </div>
+      ) : null}
+
       {(application.rejectionNote || application.missingDocumentsNote) && (
-        <div className="mt-5 rounded-[18px] border border-amber-300/40 bg-amber-500/10 p-4">
+        <div
+          data-testid="rejection-note-box"
+          className="mt-5 rounded-[18px] border border-amber-300/40 bg-amber-500/10 p-4"
+        >
           <p className="font-bold text-amber-700 dark:text-amber-300">
             {isAr ? "الملاحظات وتفاصيل القرار" : "Notes & Decision Details"}
           </p>

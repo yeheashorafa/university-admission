@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "npx --prefer-offline tsx tests/regression-audit.test.ts"
+    "test": "tsx tests/regression-audit.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -45,6 +45,7 @@
     "prettier": "^3.9.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
+    "tsx": "4.23.15",
     "typescript": "^5"
   }
 }

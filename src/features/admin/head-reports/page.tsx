@@ -43,13 +43,34 @@ export function HeadReportsPage() {
     ? reports.throughput.reduce((acc, curr) => acc + curr.count, 0)
     : null;
 
-  let avgTimeToDecision: number | null = null;
+  let avgTimeToDecisionHours: number | null = null;
   if (Array.isArray(reports?.timeToDecision)) {
     if (reports.timeToDecision.length === 0) {
-      avgTimeToDecision = 0;
+      avgTimeToDecisionHours = 0;
     } else {
-      const sum = reports.timeToDecision.reduce((acc, curr) => acc + curr.value, 0);
-      avgTimeToDecision = Math.round(sum / reports.timeToDecision.length);
+      const secondsItem = reports.timeToDecision.find(
+        (m) => m.label.toLowerCase() === "average_seconds" || m.label.toLowerCase() === "seconds"
+      );
+      const minutesItem = reports.timeToDecision.find(
+        (m) => m.label.toLowerCase() === "average_minutes" || m.label.toLowerCase() === "minutes"
+      );
+      const hoursItem = reports.timeToDecision.find(
+        (m) => m.label.toLowerCase() === "average_hours" || m.label.toLowerCase() === "hours"
+      );
+
+      if (hoursItem) {
+        avgTimeToDecisionHours = Math.round(hoursItem.value);
+      } else if (minutesItem) {
+        avgTimeToDecisionHours = Math.round((minutesItem.value / 60) * 10) / 10;
+      } else if (secondsItem) {
+        avgTimeToDecisionHours = Math.round((secondsItem.value / 3600) * 10) / 10;
+      } else {
+        const nonTotalItems = reports.timeToDecision.filter((m) => !m.label.toLowerCase().includes("total"));
+        if (nonTotalItems.length > 0) {
+          const sum = nonTotalItems.reduce((acc, curr) => acc + curr.value, 0);
+          avgTimeToDecisionHours = Math.round(sum / nonTotalItems.length);
+        }
+      }
     }
   }
 
@@ -95,13 +116,22 @@ export function HeadReportsPage() {
         <ReportsFilterBar onApply={setRange} />
 
         {hasUnavailableEndpoints && (
-          <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-semibold text-amber-800 dark:text-amber-300">
-            <Info className="size-4 shrink-0" />
-            <span>
-              {isAr
-                ? "تنبيه: بعض نقاط نهاية تقارير رئيس القسم غير مفعّلة في الخادم حالياً. تم تمييز الأقسام غير المتوفرة بوضوح دون التأثير على عمل النظام."
-                : "Notice: Some department head report endpoints are currently unavailable from the backend. Sections without data are labeled accordingly."}
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-semibold text-amber-800 dark:text-amber-300">
+            <div className="flex items-center gap-3">
+              <Info className="size-4 shrink-0" />
+              <span>
+                {isAr
+                  ? "تنبيه: بعض نقاط نهاية تقارير رئيس القسم غير مفعّلة أو تعذر تحميلها من الخادم حالياً. تم تمييز الأقسام غير المتوفرة بوضوح."
+                  : "Notice: Some department head report endpoints failed or are unavailable from the backend. Sections without data are labeled accordingly."}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="inline-flex shrink-0 items-center justify-center rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-amber-700"
+            >
+              {isAr ? "إعادة المحاولة" : "Retry"}
+            </button>
           </div>
         )}
 
@@ -184,8 +214,8 @@ export function HeadReportsPage() {
                   </div>
                 </div>
                 <p className="mt-4 text-3xl font-extrabold text-amber-600">
-                  {avgTimeToDecision !== null
-                    ? `${avgTimeToDecision} ${isAr ? "ساعة" : "hrs"}`
+                  {avgTimeToDecisionHours !== null
+                    ? `${avgTimeToDecisionHours} ${isAr ? "ساعة" : "hrs"}`
                     : (isAr ? "غير متوفر" : "Unavailable")}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -238,6 +268,13 @@ export function HeadReportsPage() {
                     <p className="text-sm font-semibold text-muted-foreground">
                       {isAr ? "بيانات معدل الإنجاز غير متوفرة من الخادم" : "Throughput data unavailable from server"}
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => refetch()}
+                      className="mt-3 text-xs font-bold text-primary hover:underline"
+                    >
+                      {isAr ? "إعادة المحاولة" : "Retry"}
+                    </button>
                   </div>
                 ) : reports.throughput.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
@@ -274,6 +311,13 @@ export function HeadReportsPage() {
                     <p className="text-sm font-semibold text-muted-foreground">
                       {isAr ? "بيانات زمن القرار غير متوفرة من الخادم" : "Decision time data unavailable from server"}
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => refetch()}
+                      className="mt-3 text-xs font-bold text-primary hover:underline"
+                    >
+                      {isAr ? "إعادة المحاولة" : "Retry"}
+                    </button>
                   </div>
                 ) : reports.timeToDecision.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
@@ -283,12 +327,38 @@ export function HeadReportsPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {reports.timeToDecision.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-sm">
-                        <span className="font-medium text-foreground">{item.label}</span>
-                        <span className="font-bold text-amber-600">{item.value} {isAr ? "ساعة" : "hrs"}</span>
-                      </div>
-                    ))}
+                    {reports.timeToDecision.map((item, idx) => {
+                      const isSeconds = item.label.toLowerCase().includes("second");
+                      const isMinutes = item.label.toLowerCase().includes("minute");
+                      const isHours = item.label.toLowerCase().includes("hour");
+                      const isTotal = item.label.toLowerCase().includes("total") || item.label.toLowerCase().includes("decision");
+
+                      let unit = isAr ? "ساعة" : "hrs";
+                      let friendlyLabel = item.label;
+
+                      if (isSeconds) {
+                        unit = isAr ? "ثانية" : "sec";
+                        friendlyLabel = isAr ? "متوسط الوقت بالثواني" : "Average Seconds";
+                      } else if (isMinutes) {
+                        unit = isAr ? "دقيقة" : "min";
+                        friendlyLabel = isAr ? "متوسط الوقت بالدقائق" : "Average Minutes";
+                      } else if (isHours) {
+                        unit = isAr ? "ساعة" : "hrs";
+                        friendlyLabel = isAr ? "متوسط الوقت بالساعات" : "Average Hours";
+                      } else if (isTotal) {
+                        unit = isAr ? "قرار" : "decisions";
+                        friendlyLabel = isAr ? "إجمالي القرارات المتخذة" : "Total Decisions";
+                      }
+
+                      return (
+                        <div key={idx} className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-sm">
+                          <span className="font-medium text-foreground">{friendlyLabel}</span>
+                          <span className="font-bold text-amber-600">
+                            {item.value} {unit}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

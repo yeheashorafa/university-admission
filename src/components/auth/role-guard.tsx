@@ -9,20 +9,35 @@ import { canAccessRole } from "@/lib/auth-helpers";
 import { type UserRole, isStudentRole } from "@/constants/roles";
 import { getDashboardRouteByRole } from "@/constants/role-navigation";
 
+import type { AuthUser } from "@/services/auth.service";
+
 type RoleGuardProps = {
   children: React.ReactNode;
   allowedRoles: UserRole[];
+  authOverride?: {
+    user: AuthUser | null;
+    role: UserRole | null;
+    isHydrated?: boolean;
+  };
 };
 
 import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { getLogoutInProgress } from "@/lib/auth/logout-state";
 
-export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
+export function RoleGuard({ children, allowedRoles, authOverride }: RoleGuardProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("common");
 
-  const { user, role, isHydrated } = useCurrentAuth();
+  const hookAuth = useCurrentAuth();
+  const user = authOverride !== undefined ? authOverride.user : hookAuth.user;
+  const role = authOverride !== undefined ? authOverride.role : hookAuth.role;
+  const isHydrated = authOverride?.isHydrated !== undefined
+    ? authOverride.isHydrated
+    : authOverride !== undefined
+      ? true
+      : hookAuth.isHydrated;
+
   const isAuthenticated = Boolean(user);
   const isAllowed = canAccessRole(role, allowedRoles);
 
@@ -35,7 +50,7 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
 
     if (!isAuthenticated) {
       didRedirectRef.current = true;
-      router.replace(withLocale(locale, routes.login));
+      if (router) router.replace(withLocale(locale, routes.login));
       return;
     }
 
@@ -44,9 +59,9 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
       const target = getDashboardRouteByRole(role);
       // Non-students must NEVER be redirected to the student dashboard
       if (!isStudentRole(role) && target === routes.dashboard) {
-        router.replace(withLocale(locale, routes.admin));
+        if (router) router.replace(withLocale(locale, routes.admin));
       } else {
-        router.replace(withLocale(locale, target));
+        if (router) router.replace(withLocale(locale, target));
       }
     }
   }, [isHydrated, isAuthenticated, isAllowed, router, locale, role]);

@@ -22,6 +22,8 @@ export type HeadApplication = {
   reviewerId?: string | number;
   employeeNotes?: string;
   decisionReason?: string;
+  forwardReason?: string;
+  isForwardNoteMissing?: boolean;
   raw?: Record<string, unknown>;
 };
 
@@ -153,12 +155,10 @@ export function normalizeHeadApplication(
   // 7. Status & Workflow
   const status = normalizeStatus(raw.status as string);
 
-  // 8. Timestamps
+  // 8. Timestamps (strictly require explicit forwarding timestamp; never fallback to updated_at)
   const forwardedAt =
     (typeof raw.forwarded_at === "string" && raw.forwarded_at) ||
     (typeof raw.forwardedAt === "string" && raw.forwardedAt) ||
-    (typeof raw.updated_at === "string" && raw.updated_at) ||
-    (typeof raw.updatedAt === "string" && raw.updatedAt) ||
     undefined;
 
   const submittedAt =
@@ -191,15 +191,33 @@ export function normalizeHeadApplication(
     undefined;
 
   const employeeNotes =
-    (typeof raw.employee_notes === "string" && raw.employee_notes) ||
-    (typeof raw.employeeNotes === "string" && raw.employeeNotes) ||
-    (typeof raw.notes === "string" && raw.notes) ||
+    (typeof raw.employee_notes === "string" && raw.employee_notes.trim()) ||
+    (typeof raw.employeeNotes === "string" && raw.employeeNotes.trim()) ||
+    (typeof raw.notes === "string" && raw.notes.trim()) ||
     undefined;
 
   const decisionReason =
-    (typeof raw.decision_reason === "string" && raw.decision_reason) ||
-    (typeof raw.decisionReason === "string" && raw.decisionReason) ||
+    (typeof raw.decision_reason === "string" && raw.decision_reason.trim()) ||
+    (typeof raw.decisionReason === "string" && raw.decisionReason.trim()) ||
     undefined;
+
+  const explicitForwardReason =
+    (typeof raw.forward_reason === "string" && raw.forward_reason.trim()) ||
+    (typeof raw.forwardReason === "string" && raw.forwardReason.trim()) ||
+    (typeof raw.forward_note === "string" && raw.forward_note.trim()) ||
+    (typeof raw.forwardNote === "string" && raw.forwardNote.trim()) ||
+    undefined;
+
+  const isForwarded = isForwardedToHead(status);
+  const forwardReason = explicitForwardReason || employeeNotes || (isForwarded ? decisionReason : undefined);
+
+  // If application is forwarded to head but no note field was provided in response, report the missing field
+  const isForwardNoteMissing = isForwarded && !forwardReason;
+  if (isForwardNoteMissing && typeof console !== "undefined") {
+    console.warn(
+      `[DepartmentHeadService] Forwarded application #${raw.id ?? applicationNo} is missing forwarding note field (decision_reason / employee_notes omitted in backend response).`
+    );
+  }
 
   return {
     id: (raw.id as string | number) ?? "—",
@@ -219,6 +237,8 @@ export function normalizeHeadApplication(
     reviewerId,
     employeeNotes,
     decisionReason,
+    forwardReason,
+    isForwardNoteMissing,
     raw,
   };
 }

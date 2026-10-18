@@ -80,17 +80,33 @@ export function DepartmentHeadOperationalDashboard() {
             <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Clock className="size-6" />
             </div>
-            <span className="text-2xl font-extrabold text-primary">
-              {isAppsLoading ? "..." : forwardedApps.length}
+            <span
+              className={cn(
+                "text-2xl font-extrabold",
+                isAppsError ? "text-lg text-destructive" : "text-primary"
+              )}
+            >
+              {isAppsLoading ? (
+                <span data-testid="apps-loading-indicator" className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                  <Loader2 className="size-5 animate-spin" />
+                  <span>{isAr ? "جاري التحميل..." : "Loading..."}</span>
+                </span>
+              ) : isAppsError ? (
+                <span data-testid="apps-error-indicator">{isAr ? "تعذر التحميل" : "Unavailable"}</span>
+              ) : (
+                <span data-testid="apps-count">{forwardedApps.length}</span>
+              )}
             </span>
           </div>
           <h3 className="font-bold text-foreground group-hover:text-primary">
             {isAr ? "طلبات محولة بانتظار قرار القسم" : "Forwarded Applications"}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {isAr
-              ? "طلبات التحاق محولة من موظف القبول وتتطلب موافقة القسم"
-              : "Applications forwarded by admission employee awaiting department decision"}
+            {isAppsError
+              ? (isAr ? "فشل استرجاع الطلبات من الخادم" : "Failed to load applications from server")
+              : (isAr
+                  ? "طلبات التحاق محولة من موظف القبول وتتطلب موافقة القسم"
+                  : "Applications forwarded by admission employee awaiting department decision")}
           </p>
           <div className="mt-4 flex items-center gap-1 text-xs font-bold text-primary">
             <span>{isAr ? "الانتقال إلى قائمة الطلبات" : "View Applications"}</span>

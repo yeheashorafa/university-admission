@@ -4,6 +4,8 @@ import {
   type ApplicationWorkflowLog,
 } from "@/constants/application-workflow";
 import { extractStudentName } from "@/lib/utils/application-formatters";
+import { normalizeStatus } from "@/lib/adapters/status-adapter";
+import { isForwardedToHead } from "@/services/department-head.service";
 
 export type WorkflowApplication = {
   id: string;
@@ -30,6 +32,10 @@ export type WorkflowApplication = {
   employeeDecisionBy?: string;
   departmentHeadDecisionBy?: string;
   rejectionNote?: string;
+  forwardReason?: string;
+  isForwardNoteMissing?: boolean;
+  employeeNotes?: string;
+  decisionReason?: string;
   missingDocumentsNote?: string;
   paymentReference?: string;
   universityNumber?: string;
@@ -497,10 +503,48 @@ export function mapBackendApplicationToWorkflowApplication(
     )) ||
     "—";
 
-  const currentStatus =
-    ((typeof app.status === "string" && app.status) ||
+  const rawStatus =
+    (typeof app.status === "string" && app.status) ||
     (typeof app.currentStatus === "string" && app.currentStatus) ||
-    "submitted") as ApplicationStatus;
+    undefined;
+
+  const currentStatus = (rawStatus ? normalizeStatus(rawStatus) : "submitted") as ApplicationStatus;
+
+  const isForwarded = isForwardedToHead(currentStatus) || isForwardedToHead(rawStatus);
+  const isRejected =
+    currentStatus === "rejected" ||
+    rawStatus === "rejected" ||
+    rawStatus === "employee_rejected" ||
+    rawStatus === "head_rejected" ||
+    rawStatus === "ai_rejected";
+
+  const rawDecisionReason =
+    (typeof app.decisionReason === "string" && app.decisionReason.trim()) ||
+    (typeof app.decision_reason === "string" && app.decision_reason.trim()) ||
+    undefined;
+
+  const rawEmployeeNotes =
+    (typeof app.employeeNotes === "string" && app.employeeNotes.trim()) ||
+    (typeof app.employee_notes === "string" && app.employee_notes.trim()) ||
+    (typeof app.notes === "string" && app.notes.trim()) ||
+    undefined;
+
+  const rawForwardReason =
+    (typeof app.forwardReason === "string" && app.forwardReason.trim()) ||
+    (typeof app.forward_reason === "string" && app.forward_reason.trim()) ||
+    (typeof app.forward_note === "string" && app.forward_note.trim()) ||
+    (typeof app.forwardNote === "string" && app.forwardNote.trim()) ||
+    rawEmployeeNotes ||
+    (isForwarded ? rawDecisionReason : undefined);
+
+  const forwardReason = rawForwardReason;
+  const isForwardNoteMissing = isForwarded && !forwardReason;
+
+  const rejectionNote =
+    (typeof app.rejectionNote === "string" && app.rejectionNote.trim()) ||
+    (typeof app.rejection_note === "string" && app.rejection_note.trim()) ||
+    (typeof app.rejection_reason === "string" && app.rejection_reason.trim()) ||
+    (isRejected ? rawDecisionReason : undefined);
 
   const aiConfidence =
     typeof app.aiConfidence === "number"
@@ -536,6 +580,11 @@ export function mapBackendApplicationToWorkflowApplication(
     faculty,
     average,
     currentStatus,
+    rejectionNote,
+    forwardReason,
+    isForwardNoteMissing,
+    employeeNotes: rawEmployeeNotes,
+    decisionReason: rawDecisionReason,
     aiConfidence,
     aiStatus: typeof app.aiStatus === "string" ? app.aiStatus : typeof app.ai_status === "string" ? app.ai_status : undefined,
     recommendation: typeof app.recommendation === "string" ? app.recommendation : undefined,
