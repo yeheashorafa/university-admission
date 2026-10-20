@@ -14,6 +14,7 @@ export type WorkflowApplication = {
   studentEmail?: string;
   studentPhone?: string;
   nationalId: string;
+  studentSchoolId?: string;
   selectedProgram: string;
   admissionCycle?: string;
   department?: string;
@@ -420,6 +421,20 @@ export function mapBackendApplicationToWorkflowApplication(
     }
   }
 
+  const secRecord =
+    (applicantObj && typeof applicantObj === "object" && (applicantObj as Record<string, unknown>).secondary_school_record) ||
+    (app.secondary_school_record && typeof app.secondary_school_record === "object" ? app.secondary_school_record : null);
+
+  let studentSchoolId = "—";
+  if (secRecord && typeof secRecord === "object") {
+    const sr = secRecord as Record<string, unknown>;
+    if (typeof sr.student_school_id === "string" && sr.student_school_id.trim()) {
+      studentSchoolId = sr.student_school_id.trim();
+    } else if (typeof sr.student_school_id === "number") {
+      studentSchoolId = String(sr.student_school_id);
+    }
+  }
+
   const progObj =
     (app.program && typeof app.program === "object" ? (app.program as Record<string, unknown>) : null) ||
     (app.selected_program && typeof app.selected_program === "object" ? (app.selected_program as Record<string, unknown>) : null) ||
@@ -576,6 +591,7 @@ export function mapBackendApplicationToWorkflowApplication(
     studentEmail,
     studentPhone,
     nationalId,
+    studentSchoolId,
     selectedProgram,
     admissionCycle,
     department,

@@ -188,6 +188,14 @@ export function ApplicationSummaryCard({ application }: ApplicationCardProps) {
           value={application.nationalId}
         />
 
+        {application.studentSchoolId && application.studentSchoolId !== "—" && (
+          <SummaryItem
+            icon={GraduationCap}
+            label={isAr ? "رقم الجلوس / الرقم المدرسي" : "Seat Number / School ID"}
+            value={application.studentSchoolId}
+          />
+        )}
+
         <SummaryItem
           icon={GraduationCap}
           label={isAr ? "البرنامج الأكاديمي" : "Program"}

@@ -11,6 +11,7 @@ export type HeadApplication = {
   studentEmail?: string;
   studentPhone?: string;
   nationalId?: string;
+  studentSchoolId?: string;
   program: string;
   department: string;
   faculty: string;
@@ -85,6 +86,20 @@ export function normalizeHeadApplication(
     (typeof raw.national_id === "string" && raw.national_id.trim()) ||
     (applicantObj && typeof applicantObj.national_id === "string" && applicantObj.national_id.trim()) ||
     "—";
+
+  const secRecord =
+    (applicantObj && typeof applicantObj === "object" && (applicantObj as Record<string, unknown>).secondary_school_record) ||
+    (raw.secondary_school_record && typeof raw.secondary_school_record === "object" ? (raw.secondary_school_record as Record<string, unknown>) : null);
+
+  let studentSchoolId = "—";
+  if (secRecord && typeof secRecord === "object") {
+    const sr = secRecord as Record<string, unknown>;
+    if (typeof sr.student_school_id === "string" && sr.student_school_id.trim()) {
+      studentSchoolId = sr.student_school_id.trim();
+    } else if (typeof sr.student_school_id === "number") {
+      studentSchoolId = String(sr.student_school_id);
+    }
+  }
 
   // 4. Program name as string (NEVER raw object)
   const progObj =
@@ -228,6 +243,7 @@ export function normalizeHeadApplication(
     studentEmail,
     studentPhone,
     nationalId,
+    studentSchoolId,
     program,
     department,
     faculty,

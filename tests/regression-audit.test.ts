@@ -841,3 +841,93 @@ test("11. User management mutation safeguards prevent non-superadmin execution",
   assert.throws(() => verifySuperAdminPermission(userRoles.student), /Unauthorized/);
   assert.throws(() => verifySuperAdminPermission(null), /Unauthorized/);
 });
+
+test("12. National ID versus School ID isolation (App ID 6 case)", () => {
+  // App 6 payload shape from live backend:
+  // applicant has secondary_school_record.student_school_id = "31100027", but NO national_id.
+  const app6Payload = {
+    id: 6,
+    application_number: "APP-98205305",
+    status: "forwarded_to_department_head",
+    applicant: {
+      id: 4,
+      full_name: "Test Student 1",
+      email: "test.student1@example.com",
+      secondary_school_record: {
+        id: 1,
+        student_school_id: "31100027",
+        seat_number: "31100027",
+        high_school_name: "Al-Amal High School",
+        gpa: 92.5,
+      },
+    },
+    selected_program: {
+      id: 3,
+      name: "Computer Science",
+      department: {
+        id: 3,
+        name: "Computer Science",
+      },
+    },
+  };
+
+  // 1. Workflow application mapping
+  const workflowApp = mapBackendApplicationToWorkflowApplication(app6Payload as any);
+  assert.equal(
+    workflowApp.nationalId,
+    "—",
+    "nationalId must remain '—' when backend omits national_id, never falling back to student_school_id"
+  );
+  assert.equal(
+    workflowApp.studentSchoolId,
+    "31100027",
+    "studentSchoolId must be cleanly populated from secondary_school_record.student_school_id"
+  );
+
+  // 2. Department Head application normalization
+  const headApp = normalizeHeadApplication(app6Payload as any);
+  assert.equal(
+    headApp.nationalId,
+    "—",
+    "HeadApplication.nationalId must be '—' when national_id is omitted"
+  );
+  assert.equal(
+    headApp.studentSchoolId,
+    "31100027",
+    "HeadApplication.studentSchoolId must contain student_school_id"
+  );
+
+  // 3. UI rendering: ApplicationSummaryCard
+  const htmlAr = renderWithProviders(
+    React.createElement(ApplicationSummaryCard, { application: workflowApp })
+  );
+
+  // Confirm National ID section displays "—"
+  assert.equal(
+    htmlAr.includes("رقم الهوية"),
+    true,
+    "Must include National ID label"
+  );
+  // Confirm School ID section displays "31100027"
+  assert.equal(
+    htmlAr.includes("رقم الجلوس / الرقم المدرسي"),
+    true,
+    "Must include School ID label"
+  );
+  assert.equal(
+    htmlAr.includes("31100027"),
+    true,
+    "Must render the seat/school id value"
+  );
+
+  // Ensure "31100027" is NOT placed next to "رقم الهوية"
+  // In the markup: <p ...>رقم الهوية</p><p ...>—</p>
+  const nationalIdBlockMatch = htmlAr.match(/رقم الهوية<\/p><p[^>]*>([^<]+)<\/p>/);
+  assert.ok(nationalIdBlockMatch, "National ID block should be present");
+  assert.equal(
+    nationalIdBlockMatch[1].trim(),
+    "—",
+    "National ID value must strictly be '—' and NOT '31100027'"
+  );
+});
+
