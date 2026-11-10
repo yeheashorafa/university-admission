@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import {
   Edit,
+  KeyRound,
   Shield,
   Trash2,
   UserCircle2,
@@ -13,6 +14,7 @@ import { userRoles } from "@/constants/roles";
 
 type UsersTableRowProps = {
   user: AuthUser;
+  onResetPassword: () => void;
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -48,6 +50,7 @@ const roleConfig: Record<
 
 export function UsersTableRow({
   user,
+  onResetPassword,
   onEdit,
   onDelete,
 }: UsersTableRowProps) {
@@ -98,6 +101,11 @@ export function UsersTableRow({
 
       <td className="px-5 py-4 text-center">
         <div className="flex items-center justify-center gap-1 opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
+          {user.role !== userRoles.student && user.role !== userRoles.admin && (
+            <button type="button" onClick={onResetPassword} aria-label={t("users.resetStaffPassword")} className="rounded-lg p-2 text-secondary transition hover:bg-secondary/10">
+              <KeyRound className="size-5" />
+            </button>
+          )}
           <button
             type="button"
             onClick={onEdit}

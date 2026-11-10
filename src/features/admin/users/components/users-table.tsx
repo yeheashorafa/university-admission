@@ -13,6 +13,7 @@ type UsersTableProps = {
   from: number;
   to: number;
   onPageChange: (page: number) => void;
+  onResetPassword: (user: AuthUser) => void;
   onEditUser: (user: AuthUser) => void;
   onDeleteUser: (userId: string | number) => Promise<void>;
 };
@@ -25,6 +26,7 @@ export function UsersTable({
   from,
   to,
   onPageChange,
+  onResetPassword,
   onEditUser,
   onDeleteUser,
 }: UsersTableProps) {
@@ -72,6 +74,7 @@ export function UsersTable({
                 <UsersTableRow
                   key={user.id}
                   user={user}
+                  onResetPassword={() => onResetPassword(user)}
                   onEdit={() => onEditUser(user)}
                   onDelete={() => onDeleteUser(user.id)}
                 />

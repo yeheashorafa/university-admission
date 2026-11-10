@@ -51,3 +51,11 @@ export async function updateAdminUser(
 export async function deleteAdminUser(userId: string | number): Promise<void> {
   await apiClient.delete(ENDPOINTS.admin.userDetail(userId));
 }
+
+export async function resetStaffPassword(id: string | number, password: string, confirmation: string, reason: string): Promise<void> {
+  await apiClient.post(`${ENDPOINTS.admin.users}/${id}/reset-password`, {
+    password,
+    password_confirmation: confirmation,
+    reason,
+  });
+}

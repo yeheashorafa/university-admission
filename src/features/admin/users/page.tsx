@@ -21,7 +21,7 @@ import {
 } from "@/hooks/queries/use-admin-users-queries";
 import { extractApiError } from "@/lib/api/api-error";
 import type { AuthUser, UserRole } from "@/services/auth.service";
-import type { AdminUserPayload } from "@/services/admin-users.service";
+import { resetStaffPassword, type AdminUserPayload } from "@/services/admin-users.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { userRoles } from "@/constants/roles";
@@ -106,6 +106,43 @@ function SuperAdminUsersContent() {
   const updateMutation = useUpdateAdminUserMutation();
   const deleteMutation = useDeleteAdminUserMutation();
   const queryClient = useQueryClient();
+
+  async function handleResetPassword(user: AuthUser) {
+    const result = await Swal.fire({
+      title: t("users.resetStaffPassword"),
+      html: `<label for="staff-reset-reason">${t("users.resetReason")}</label><textarea id="staff-reset-reason" class="swal2-textarea !mx-0 !w-full"></textarea>
+        <label for="staff-reset-password">${t("users.resetNewPassword")}</label><input id="staff-reset-password" class="swal2-input !mx-0 !w-full" type="password" autocomplete="new-password">
+        <label for="staff-reset-confirmation">${t("users.resetConfirmation")}</label><input id="staff-reset-confirmation" class="swal2-input !mx-0 !w-full" type="password" autocomplete="new-password">`,
+      showCancelButton: true,
+      confirmButtonText: t("users.resetStaffPassword"),
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      preConfirm: async () => {
+        const popup = Swal.getPopup();
+        const reason = popup?.querySelector<HTMLTextAreaElement>("#staff-reset-reason")?.value.trim() ?? "";
+        const password = popup?.querySelector<HTMLInputElement>("#staff-reset-password")?.value ?? "";
+        const confirmation = popup?.querySelector<HTMLInputElement>("#staff-reset-confirmation")?.value ?? "";
+        if (!reason) {
+          Swal.showValidationMessage(t("users.resetReasonRequired"));
+          return false;
+        }
+        if (password.length < 8 || password !== confirmation) {
+          Swal.showValidationMessage(t("users.resetPasswordInvalid"));
+          return false;
+        }
+        try {
+          await resetStaffPassword(user.id, password, confirmation, reason);
+          return true;
+        } catch {
+          Swal.showValidationMessage(t("users.resetStaffFailed"));
+          return false;
+        }
+      },
+    });
+    if (result.isConfirmed) {
+      await Swal.fire({ icon: "success", text: t("users.resetStaffDone") });
+    }
+  }
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -293,6 +330,7 @@ function SuperAdminUsersContent() {
             from={from}
             to={to}
             onPageChange={handlePageChange}
+            onResetPassword={handleResetPassword}
             onEditUser={handleOpenEdit}
             onDeleteUser={handleDeleteUser}
           />
