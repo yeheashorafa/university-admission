@@ -13,7 +13,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLocale, useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import {
@@ -22,12 +21,13 @@ import {
 } from "@/features/auth/schemas/reset-password.schema";
 import { routes, withLocale } from "@/constants/routes";
 import { resetPassword } from "@/services/auth.service";
-import { getApiErrorMessage } from "@/lib/api/api-error";
+import { extractApiError, getApiErrorMessage } from "@/lib/api/api-error";
 
 export function ResetPasswordForm() {
   const locale = useLocale();
   const t = useTranslations("auth");
-  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
 
   const [isDone, setIsDone] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -47,28 +47,32 @@ export function ResetPasswordForm() {
   });
 
   async function onSubmit(values: ResetPasswordFormValues) {
-    const token = searchParams.get("token") ?? "";
-    const email = searchParams.get("email") ?? "";
-
-    if (!token || !email) {
+    if (!/^\d{6}$/.test(code) || !email) {
       toast.error(
         locale === "ar"
-          ? "رابط إعادة التعيين غير صالح"
-          : "Invalid password reset link"
+          ? "أدخل البريد والرمز المكوّن من ستة أرقام"
+          : "Enter your email and six-digit code"
       );
       return;
     }
 
     try {
       await resetPassword({
-        token,
+        token: code,
         email,
         password: values.password,
         passwordConfirmation: values.passwordConfirmation,
       });
       setIsDone(true);
     } catch (err) {
-      toast.error(getApiErrorMessage(err));
+      const error = extractApiError(err);
+      if (error.status === 429) {
+        toast.error(locale === "ar" ? "محاولات كثيرة. حاول مجدداً بعد انتهاء صلاحية الرمز." : "Too many incorrect attempts. Try again after the code expires.");
+      } else if (error.status === 422 && !error.errors) {
+        toast.error(locale === "ar" ? "الرمز غير صالح أو منتهي الصلاحية." : "Invalid or expired code.");
+      } else {
+        toast.error(getApiErrorMessage(err));
+      }
     }
   }
 
@@ -92,6 +96,14 @@ export function ResetPasswordForm() {
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+              <label className="block space-y-2">
+                <span>{t("emailAddress")}</span>
+                <input className="h-12 w-full rounded-lg border border-input bg-card px-4" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} />
+              </label>
+              <label className="block space-y-2">
+                <span>{locale === "ar" ? "رمز إعادة التعيين" : "Password reset code"}</span>
+                <input className="h-12 w-full rounded-lg border border-input bg-card px-4" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={code} onChange={(event) => setCode(event.target.value)} />
+              </label>
               <div className="space-y-2">
                 <label
                   htmlFor="password"
