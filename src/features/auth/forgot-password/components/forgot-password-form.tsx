@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Loader2, Mail } from "lucide-react";
@@ -12,6 +13,7 @@ import { SubmitHandler } from "@/lib/utils";
 
 export function ForgotPasswordForm() {
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("auth");
 
   const [email, setEmail] = useState("");
@@ -30,6 +32,7 @@ export function ForgotPasswordForm() {
     try {
       await forgotPassword(email);
       toast.success(t("resetLinkSent"));
+      router.push(withLocale(locale, routes.resetPassword));
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     } finally {

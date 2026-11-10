@@ -262,7 +262,7 @@ export function VerifyOtpForm() {
               {t("sendOtpVia")}
             </span>
             <div className="inline-flex overflow-hidden rounded-lg border border-border">
-              {(["email", "sms"] as OtpChannel[]).map((value) => (
+              {(["email"] as OtpChannel[]).map((value) => (
                 <button
                   key={value}
                   type="button"
