@@ -109,10 +109,6 @@ export function NotificationComposer() {
                 label: t("notifications.types.status"),
               },
               {
-                value: "payment",
-                label: t("notifications.types.payment"),
-              },
-              {
                 value: "general",
                 label: t("notifications.types.general"),
               },

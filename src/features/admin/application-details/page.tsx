@@ -1,11 +1,9 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   Calendar,
-  CreditCard,
   FileText,
   User,
   Loader2,
@@ -227,17 +225,6 @@ export function ApplicationSummaryCard({ application }: ApplicationCardProps) {
           value={formatDateTime(application.updatedAt ?? application.createdAt, locale)}
         />
 
-        {paymentsEnabled && (<SummaryItem
-          icon={CreditCard}
-          label={isAr ? "بيانات السداد" : "Payment Status"}
-          value={
-            application.paymentReference
-              ? `${isAr ? "تم السداد" : "Paid"} (${application.paymentReference})`
-              : isAr
-                ? "بانتظار السداد"
-                : "Payment Pending"
-          }
-        />)}
       </div>
 
       {application.forwardReason ? (

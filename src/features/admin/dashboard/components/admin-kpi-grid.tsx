@@ -65,8 +65,6 @@ export function AdminKpiGrid() {
       "approved",
       "head_approved",
       "completed",
-      "payment_pending",
-      "payment_completed",
     ]);
 
     const rejectedCount = getCountFor([

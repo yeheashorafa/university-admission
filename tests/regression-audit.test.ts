@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import React from "react";
@@ -931,10 +932,12 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   );
 });
 
-test("payment routes are unavailable in the disabled release and admission stays available", () => {
-  if (process.env.NEXT_PUBLIC_ENABLE_PAYMENTS === "true") return;
-  for (const path of ["/en/payment", "/ar/payment/success", "/en/payment/42", "/ar/applications/42/payment"]) {
-    assert.equal(canAccessRoute(userRoles.student, path), false, path);
+test("online payment routes are absent and admission stays available", () => {
+  for (const path of [
+    "src/app/[locale]/payment",
+    "src/app/[locale]/applications/[applicationId]/payment",
+  ]) {
+    assert.equal(existsSync(path), false, path);
   }
   assert.equal(canAccessRoute(userRoles.student, "/en/applications/new"), true);
 });

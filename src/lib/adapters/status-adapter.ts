@@ -22,9 +22,6 @@ export type LegacyUIStatus =
   | "head_review"
   | "head_approved"
   | "head_rejected"
-  | "payment_pending"
-  | "payment_completed"
-  | "payment_failed"
   | "university_number_issued"
   | "social_research_required"
   | "social_research_submitted"
@@ -185,7 +182,6 @@ export function normalizeStatus(status?: string | null): BackendApplicationStatu
   }
   if (
     s === "completed" ||
-    s === "payment_completed" ||
     s === "university_number_issued" ||
     s === "head_approved" ||
     s === "final_accepted"

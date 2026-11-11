@@ -42,12 +42,6 @@ export const notificationsMock = [
     variant: "danger",
   },
   {
-    id: "2",
-    title: "Your registration fee payment has been received successfully.",
-    time: "Yesterday",
-    variant: "info",
-  },
-  {
     id: "3",
     title: "Welcome to the smart admission system.",
     time: "October 15",

@@ -10,7 +10,7 @@ This project provides a complete user interface for student admission workflows 
 
 The University Admission Frontend is designed to support the full admission process for students and administrators.
 
-Students can browse programs, create an account, submit applications, upload documents, track admission status, receive notifications, and complete payment steps.
+Students can browse programs, create an account, submit applications, upload documents, track admission status, and receive notifications.
 
 Administrators can manage applications, review documents, handle manual review cases, manage users, configure programs, admission cycles, reports, settings, and legal policies.
 
@@ -33,8 +33,6 @@ Administrators can manage applications, review documents, handle manual review c
 - Application status tracking
 - Student profile page
 - Student notifications page
-- Payment page
-- Payment success and failed pages
 - Unauthorized page
 - Not found page
 
@@ -100,7 +98,6 @@ src/
       documents/
       login/
       notifications/
-      payment/
       profile/
       programs/
       register/
@@ -129,8 +126,6 @@ src/
     documents/
     landing/
     notifications/
-    payment/
-    payment-result/
     profile/
     programs/
     status/
@@ -161,7 +156,6 @@ src/
     documents.service.ts
     health.service.ts
     notifications.service.ts
-    payment.service.ts
     profile.service.ts
     programs.service.ts
 
@@ -187,8 +181,6 @@ The following endpoints are referenced by the frontend but are **not documented*
 - **`GET /public/application-types`** (`src/lib/api/endpoints.ts`,
   `src/services/public-catalog.service.ts`) — there is no public route documented; only
   `GET /admin/application-types` exists. The public catalog call is currently disabled.
-- **Payment endpoints** (`src/services/payment.service.ts`) — payment flows are not covered
-  by the API docs and are treated as mock/unverified.
 - **Reports export (PDF/Excel)** — `RecentExportsCard` is static mock data; no export
   endpoint is documented.
 

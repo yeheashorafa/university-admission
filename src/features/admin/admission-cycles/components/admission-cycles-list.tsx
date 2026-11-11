@@ -72,7 +72,6 @@ export function AdmissionCyclesList({
           cycle.status,
           cycle.applicationsOpenAt,
           cycle.applicationsCloseAt,
-          cycle.paymentDeadline,
           cycle.notes,
         ].join(" ")
       );

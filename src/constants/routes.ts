@@ -17,9 +17,6 @@ export const routes = {
   status: "/status",
   profile: "/profile",
   notifications: "/notifications",
-  payment: "/payment",
-  paymentSuccess: "/payment/success",
-  paymentFailed: "/payment/failed",
   unauthorized: "/unauthorized",
   socialResearch: "/social-research",
   

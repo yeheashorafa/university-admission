@@ -24,13 +24,10 @@ type ApplicationsState = {
   getApplicationById: (id: string) => WorkflowApplication | undefined;
   getStudentApplications: () => WorkflowApplication[];
   getLatestApplication: () => WorkflowApplication | undefined;
-  getPaymentPendingApplication: (preferredId?: string) => WorkflowApplication | undefined;
   getSocialResearchRequiredApplication: (preferredId?: string) => WorkflowApplication | undefined;
 
   createDraftApplication: (program?: string, faculty?: string) => WorkflowApplication;
   submitApplication: (id: string, program?: string, faculty?: string) => WorkflowApplication | undefined;
-  payApplication: (id: string) => WorkflowApplication | undefined;
-  failPayment: (id: string) => WorkflowApplication | undefined;
   submitSocialResearch: (id: string) => WorkflowApplication | undefined;
   clearMockStore: () => void;
 };
@@ -53,15 +50,6 @@ export const useApplicationsStore = create<ApplicationsState>()(
       getLatestApplication: () => {
         const apps = get().applications;
         return apps[0];
-      },
-
-      getPaymentPendingApplication: (preferredId?: string) => {
-        const apps = get().applications;
-        if (preferredId) {
-          const found = apps.find((a) => String(a.id) === String(preferredId));
-          if (found) return found;
-        }
-        return apps.find((a) => a.currentStatus === applicationStatuses.paymentPending) ?? apps[0];
       },
 
       getSocialResearchRequiredApplication: (preferredId?: string) => {
@@ -125,68 +113,6 @@ export const useApplicationsStore = create<ApplicationsState>()(
                   decision: "submitted",
                   actorName: app.studentName,
                   note: "Application submitted successfully by student.",
-                }),
-              ],
-            };
-            return updatedApp;
-          }),
-        }));
-
-        return updatedApp;
-      },
-
-      payApplication: (id: string) => {
-        let updatedApp: WorkflowApplication | undefined;
-
-        set((state) => ({
-          applications: state.applications.map((app) => {
-            if (String(app.id) !== String(id)) return app;
-
-            const nextUnivNo = `20261${Math.floor(10000 + Math.random() * 90000)}`;
-            const payRef = `PAY-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-
-            updatedApp = {
-              ...app,
-              currentStatus: applicationStatuses.socialResearchRequired,
-              paymentReference: payRef,
-              universityNumber: app.universityNumber ?? nextUnivNo,
-              socialResearchStatus: "required",
-              workflowLogs: [
-                ...app.workflowLogs,
-                createLog({
-                  status: applicationStatuses.paymentCompleted,
-                  actor: "payment_system",
-                  decision: "payment_completed",
-                  actorName: "Payment System",
-                  note: `Payment reference ${payRef} completed successfully.`,
-                }),
-              ],
-            };
-            return updatedApp;
-          }),
-        }));
-
-        return updatedApp;
-      },
-
-      failPayment: (id: string) => {
-        let updatedApp: WorkflowApplication | undefined;
-
-        set((state) => ({
-          applications: state.applications.map((app) => {
-            if (String(app.id) !== String(id)) return app;
-
-            updatedApp = {
-              ...app,
-              currentStatus: applicationStatuses.paymentFailed,
-              workflowLogs: [
-                ...app.workflowLogs,
-                createLog({
-                  status: applicationStatuses.paymentFailed,
-                  actor: "payment_system",
-                  decision: "payment_failed",
-                  actorName: "Payment System",
-                  note: "Payment attempt failed. Student can retry payment.",
                 }),
               ],
             };

@@ -23,9 +23,6 @@ export const queryKeys = {
       ["notifications", "my-notifications", params] as const,
   },
 
-  payment: {
-    invoice: ["payment", "invoice"] as const,
-  },
 
   profile: {
     myProfile: ["profile", "my-profile"] as const,

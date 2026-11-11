@@ -24,7 +24,6 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
   const successStatuses: string[] = [
     applicationStatuses.headApproved,
-    applicationStatuses.paymentCompleted,
     applicationStatuses.universityNumberIssued,
     applicationStatuses.completed,
     "accepted",
@@ -36,7 +35,6 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     applicationStatuses.employeeReview,
     applicationStatuses.employeeApproved,
     applicationStatuses.headReview,
-    applicationStatuses.paymentPending,
     applicationStatuses.socialResearchRequired,
     "under_review",
     "forwarded_to_department_head",

@@ -67,7 +67,6 @@ export function AdminAdmissionCyclesPage() {
         status: (c.is_active === true || c.status === "open" ? "active" : "closed") as AdmissionCycleStatus,
         applicationsOpenAt: String(c.starts_at || c.start_date || "—"),
         applicationsCloseAt: String(c.ends_at || c.end_date || "—"),
-        paymentDeadline: String(c.payment_deadline || "—"),
         capacity: c.capacity !== undefined && c.capacity !== null ? Number(c.capacity) : 0,
         applicationsCount: Number(c.applications_count || 0),
         acceptedCount: Number(c.accepted_count || 0),

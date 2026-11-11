@@ -22,7 +22,6 @@
     "status": "Status",
     "profile": "Profile",
     "notifications": "Notifications",
-    "payment": "Payment",
     "socialResearch": "Social Research",
     "settings": "Settings",
     "reports": "Reports",
@@ -315,13 +314,13 @@
         },
         "tracking": {
           "title": "Track Application Status",
-          "description": "Follow the application journey step by step, from review to payment and university number issuance."
+          "description": "Follow the application from review to university number issuance."
         }
       },
       "workflow": {
         "title": "Organized review workflow",
-        "description": "Applications move from AI verification to employee review, department head approval, payment, and university number issuance.",
-        "progress": "AI → Employee → Department Head → Payment"
+        "description": "Applications move from AI verification to employee review, department head approval, and university number issuance.",
+        "progress": "AI → Employee → Department Head"
       }
     },
     "journey": {
@@ -352,13 +351,9 @@
           "title": "Department Head Approval",
           "description": "The department head reviews the employee decision before final approval."
         },
-        "payment": {
-          "title": "Electronic Payment",
-          "description": "Accepted students complete the payment step through the portal."
-        },
         "universityNumber": {
           "title": "University Number Issuance",
-          "description": "After successful payment, the student receives a university number and completes the social research form."
+          "description": "After admission, the student receives a university number and completes the social research form."
         }
       }
     },
@@ -940,18 +935,14 @@
     "submittedApplication": "Submitted Application",
     "uploadedDocuments": "Uploaded Documents",
     "pendingActions": "Pending Actions",
-    "paymentStatus": "Payment Status",
     "completeApplication": "Complete Application",
     "uploadDocuments": "Upload Documents",
     "trackStatus": "Track Status",
     "viewNotifications": "View Notifications",
-    "continuePayment": "Continue Payment",
     "viewProfile": "View Profile",
     "underReview": "Under Review",
     "pending": "Pending",
     "completed": "Completed",
-    "paid": "Paid",
-    "unpaid": "Unpaid",
     "noNotifications": "No new notifications",
     "viewAll": "View All",
     "lastUpdated": "Last updated",
@@ -959,7 +950,6 @@
     "reviewApplication": "Review your application and complete any missing information.",
     "documentsHint": "Upload the required documents to continue the admission process.",
     "statusHint": "Follow the latest updates about your admission application.",
-    "paymentHint": "Complete the payment step when your application becomes eligible.",
     "admissionJourney": "Admission Journey",
     "notifications": "Notifications",
     "profileCompletion": "Profile Completion",
@@ -1066,9 +1056,6 @@
     "progressDescription": "This path shows where your application stands and what steps remain.",
     "timelineTitle": "Application Log",
     "timelineDescription": "This log shows all actions taken on your application.",
-    "payNow": "Pay Now",
-    "paymentRequiredTitle": "Payment Required",
-    "paymentRequiredDescription": "Your application has been approved. Please complete payment to proceed to university number issuance.",
     "socialResearchRequiredTitle": "Social Research Required",
     "socialResearchRequiredDescription": "Your university number has been issued. Please complete the social research form to finalize your admission file.",
     "completeSocialResearch": "Complete Social Research",
@@ -1127,13 +1114,9 @@
         "title": "Department Head Approval",
         "description": "The department head reviews the final decision."
       },
-      "payment": {
-        "title": "Payment",
-        "description": "After approval, you proceed to admission fee payment."
-      },
       "universityNumber": {
         "title": "University Number",
-        "description": "The system issues the university number after payment is completed."
+        "description": "The system issues the university number after admission."
       },
       "socialResearch": {
         "title": "Social Research",
@@ -1221,127 +1204,15 @@
     "officialAddress": "Official address",
     "missingBaseFieldsError": "Please fill in all basic personal details before saving."
   },
-  "payment": {
-    "title": "Payment",
-    "description": "Review your invoice and complete the admission payment.",
-    "invoice": "Invoice",
-    "amount": "Amount",
-    "paymentMethod": "Payment Method",
-    "payNow": "Pay Now",
-    "successTitle": "Payment Successful",
-    "successDescription": "Your payment has been completed successfully.",
-    "failedTitle": "Payment Failed",
-    "failedDescription": "Your payment could not be completed. Please try again.",
-    "subtitle": "Admission Payment",
-    "completePayment": "Complete Payment",
-    "headerDescription": "Pay the admission application fee to continue your university admission process.",
-    "applicationNumber": "Application #{number}",
-    "invoiceNo": "Invoice No.",
-    "issueDate": "Issue Date",
-    "dueDate": "Due Date",
-    "status": "Status",
-    "pending": "Pending",
-    "downloadInvoice": "Download Invoice",
-    "mockIssueDate": "October 18, 2026",
-    "mockDueDate": "October 25, 2026",
-    "paymentPending": "Payment Pending",
-    "paymentPendingDescription": "Your admission payment has not been completed yet. Please choose a payment method below.",
-    "paymentCompleted": "Payment Completed",
-    "paymentCompletedDescription": "Your payment has been received successfully. Your application can continue to the final admission stage.",
-    "paymentFailed": "Payment Failed",
-    "paymentFailedDescription": "The last payment attempt failed. Please try again or use another payment method.",
-    "paymentSummary": "Payment Summary",
-    "student": "Student",
-    "application": "Application",
-    "program": "Program",
-    "faculty": "Faculty",
-    "total": "Total",
-    "transactionNumber": "Transaction Number",
-    "paidAt": "Paid At",
-    "failureReason": "Failure Reason",
-    "mockStudentName": "Ahmed Mohammad Hassan",
-    "mockProgram": "Software Engineering",
-    "mockFaculty": "Faculty of Information Technology",
-    "items": {
-      "admission-fee": {
-        "title": "Admission Application Fee",
-        "description": "Required fee to complete the admission process."
-      },
-      "service-fee": {
-        "title": "Online Payment Service Fee",
-        "description": "Processing fee for digital payment methods."
-      }
-    },
-    "paymentMethodDescription": "Choose how you want to pay the admission application fee.",
-    "simulateFailed": "Simulate Failed",
-    "continuePayment": "Continue Payment",
-    "methods": {
-      "card": {
-        "title": "Credit / Debit Card",
-        "description": "Pay securely using Visa or MasterCard."
-      },
-      "bank_transfer": {
-        "title": "Bank Transfer",
-        "description": "Transfer the fee and upload the transfer receipt."
-      },
-      "cash_office": {
-        "title": "University Finance Office",
-        "description": "Pay directly at the university finance office."
-      }
-    },
-    "cardDetails": "Card Details",
-    "cardholderName": "Cardholder Name",
-    "cardNumber": "Card Number",
-    "expiryDate": "Expiry Date",
-    "cvv": "CVV",
-    "bankTransferDetails": "Bank Transfer Details",
-    "bankAccount": "Bank Account",
-    "bankAccountName": "Islamic University of Gaza - Admission Account",
-    "uploadTransferReceipt": "Upload Transfer Receipt",
-    "financeOfficePayment": "Finance Office Payment",
-    "financeOfficeDescription": "Visit the university finance office during official working hours and provide your application number to complete payment.",
-    "applicationNumberLabel": "Application Number",
-    "paymentResult": {
-      "completed": "Payment Completed",
-      "failed": "Payment Failed",
-      "completedDescription": "Your payment was completed successfully",
-      "failedDescription": "We could not complete your payment",
-      "completedLongDescription": "Your admission payment has been received. Your application can now continue to the final admission stage.",
-      "failedLongDescription": "The payment attempt was not successful. Please try again or choose another payment method.",
-      "nextStepsSuccess": "What Happens Next?",
-      "nextStepsFailed": "How to Continue?",
-      "stepFinalReview": "Final Review",
-      "stepAdmissionDecision": "Admission Decision",
-      "stepUniversityNumber": "University Number",
-      "stepTryPaymentAgain": "Try Payment Again",
-      "stepCheckPaymentDetails": "Check Payment Details",
-      "stepContactAdmissions": "Contact Admissions Office"
-    },
-    "successBadge": "Payment Completed",
-    "failedBadge": "Payment Failed",
-    "summaryTitle": "Transaction Summary",
-    "applicationNo": "Application No.",
-    "paymentReference": "Payment Reference",
-    "universityNumber": "University Number",
-    "notAvailable": "Not available",
-    "notIssuedYet": "Not issued yet",
-    "successNextTitle": "Next Step: Social Research",
-    "successNextDescription": "Please complete the social research form to finalize your admission file.",
-    "failedNextTitle": "Try Payment Again",
-    "failedNextDescription": "You can return to the payment page and try again.",
-    "completeSocialResearch": "Complete Social Research",
-    "tryPaymentAgain": "Try Payment Again"
-  },
   "notifications": {
     "subtitle": "Student Center",
     "title": "Notifications",
-    "description": "Stay updated with important admission messages, document requests, payment reminders, and application status changes.",
+    "description": "Stay updated with admission messages, document requests, and application status changes.",
     "recentNotifications": "Recent Notifications",
     "recentNotificationsDescription": "Important messages related to your admission application.",
     "new": "New",
     "typeDocument": "Document",
     "typeStatus": "Status",
-    "typePayment": "Payment",
     "typeAdmission": "Admission",
     "typeGeneral": "General",
     "searchNotifications": "Search Notifications",
@@ -1350,7 +1221,6 @@
     "allTypes": "All Types",
     "documents": "Documents",
     "statusUpdates": "Status Updates",
-    "payment": "Payment",
     "admission": "Admission",
     "general": "General",
     "status": "Status",
@@ -1383,15 +1253,9 @@
         "time": "Today, 10:20 AM",
         "actionLabel": "Upload Document"
       },
-      "4": {
-        "title": "Payment Step Required",
-        "message": "Your application has been approved by the department head. Please complete the admission fee payment.",
-        "time": "Yesterday, 02:45 PM",
-        "actionLabel": "Pay Now"
-      },
       "5": {
         "title": "Social Research Form Required",
-        "message": "Your payment was verified and university number issued. Please fill out the social research form.",
+        "message": "Your university number has been issued. Please fill out the social research form.",
         "time": "Yesterday, 04:10 PM",
         "actionLabel": "Fill Form"
       },
@@ -1655,7 +1519,6 @@
       "description": "Track, review, and manage the workflow of submitted student applications across all stages of admission.",
       "totalApplications": "Total Applications (Current Page)",
       "pendingHeadReview": "Pending Head Review",
-      "paymentPending": "Pending Payment",
       "rejectedApplications": "Rejected (Current Page)",
       "cancelledApplications": "Cancelled (Current Page)",
       "pageScopedBadge": "Current Page",
@@ -1680,7 +1543,7 @@
       "currentStatus": "Current Status",
       "actionsTitle": "Review Actions",
       "employeeActionsDescription": "Review the documents manually after AI verification fails, then choose the proper decision.",
-      "headActionsDescription": "Review the employee decision and verify the documents before sending the student to payment.",
+      "headActionsDescription": "Review the employee decision and verify the documents before recording a decision.",
       "notePlaceholder": "Write a note explaining the decision...",
       "confirmTitle": "Confirm Action",
       "confirmDescription": "Are you sure you want to apply this decision to the application?",
@@ -1715,9 +1578,6 @@
         "head_review": "Department Head Review",
         "head_approved": "Department Head Approved",
         "head_rejected": "Department Head Rejected",
-        "payment_pending": "Payment Pending",
-        "payment_completed": "Payment Completed",
-        "payment_failed": "Payment Failed",
         "university_number_issued": "University Number Issued",
         "social_research_required": "Social Research Required",
         "social_research_submitted": "Social Research Submitted",
@@ -1728,7 +1588,6 @@
         "ai": "Artificial Intelligence",
         "admission_employee": "Admission Employee",
         "department_head": "Department Head",
-        "payment_system": "Payment System",
         "system": "System"
       },
       "decisions": {
@@ -1736,8 +1595,6 @@
         "rejected": "Rejected",
         "needs_review": "Needs Review",
         "missing_documents": "Missing Documents",
-        "payment_completed": "Payment Completed",
-        "payment_failed": "Payment Failed",
         "issued": "Issued",
         "submitted": "Submitted"
       },
@@ -2307,7 +2164,6 @@
       "totalCapacity": "Total Capacity",
       "applicationsOpenDate": "Applications Open Date",
       "applicationsCloseDate": "Applications Close Date",
-      "paymentDeadline": "Payment Deadline",
       "internalNotes": "Internal Notes",
       "applications": "Applications",
       "accepted": "Accepted",
@@ -2479,7 +2335,6 @@
       "types": {
         "document": "Document",
         "status": "Status",
-        "payment": "Payment",
         "general": "General"
       },
       "statuses": {
@@ -2512,10 +2367,6 @@
         "application-approved": {
           "title": "Application Approved",
           "message": "Congratulations. Your application has been approved. Please follow the next steps in your dashboard."
-        },
-        "payment-reminder": {
-          "title": "Payment Reminder",
-          "message": "Please complete the admission fee payment before the deadline to avoid delays."
         }
       },
       "rows": {
@@ -2530,12 +2381,6 @@
           "message": "Your admission application is currently being reviewed by the admissions team.",
           "audience": "All applicants under review",
           "sentAt": "Yesterday, 02:45 PM"
-        },
-        "3": {
-          "title": "Payment Step Available",
-          "message": "Your documents have been verified. You can now proceed to the admission fee payment step.",
-          "audience": "Verified applicants",
-          "sentAt": "Tomorrow, 09:00 AM"
         },
         "4": {
           "title": "Welcome to Admission Portal",
@@ -3034,10 +2879,6 @@
         "decision": {
           "title": "Admission Decision",
           "description": "You will receive a notification once the admission decision is available."
-        },
-        "payment": {
-          "title": "Payment Step",
-          "description": "If accepted, you will be asked to complete the admission payment to finalize the process."
         }
       },
       "note": "You can track your application status anytime from the status page. Important updates will also appear in your notifications."
@@ -3163,7 +3004,6 @@
       "description": "Overview of applications grouped by their current admission status.",
       "aiFailed": "AI Review Failed",
       "headReview": "Under Head Review",
-      "paymentPending": "Payment Pending",
       "socialResearchRequired": "Social Research Required",
       "completed": "Completed",
       "rejected": "Rejected"

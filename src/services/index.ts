@@ -4,7 +4,6 @@ export * from "./programs.service";
 export * from "./application.service";
 export * from "./documents.service";
 export * from "./notifications.service";
-export * from "./payment.service";
 export * from "./profile.service";
 export * from "./social-information.service";
 export * from "./admin.service";

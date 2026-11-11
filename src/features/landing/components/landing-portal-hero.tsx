@@ -1,6 +1,5 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import { useSyncExternalStore, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -9,7 +8,6 @@ import {
   FileText,
   FolderKanban,
   Search,
-  CreditCard,
   Sparkles,
   GraduationCap,
   ArrowRight,
@@ -122,8 +120,8 @@ export function LandingPortalHero() {
           {/* Subtitle */}
           <p className="max-w-2xl text-sm leading-relaxed text-slate-700 dark:text-slate-200/90 sm:text-base">
             {isAr
-              ? "بوابة خدمات طلابية متكاملة تتيح لك اختيار الكلية أولاً ثم البرامج، تقديم طلبات متعددة، متابعة التدقيق الآلي للوثائق بالذكاء الاصطناعي، سداد الرسوم، واستكمال نموذج البحث الاجتماعي للمنح."
-              : "An integrated university portal allowing students to select faculties, submit multiple applications, monitor AI document verification, pay fees online, and submit social research forms."}
+              ? "بوابة خدمات طلابية متكاملة تتيح لك اختيار الكلية أولاً ثم البرامج، تقديم طلبات متعددة، متابعة التدقيق الآلي للوثائق بالذكاء الاصطناعي، واستكمال نموذج البحث الاجتماعي للمنح."
+              : "An integrated university portal allowing students to select faculties, submit multiple applications, monitor AI document verification, and submit social research forms."}
           </p>
 
           {/* Primary Action Buttons */}
@@ -263,7 +261,7 @@ export function LandingPortalHero() {
                       {latestApp.applicationNo}
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#0396E9]/15 dark:bg-[#0396E9]/20 px-2.5 py-0.5 text-2xs font-bold text-[#0284c7] dark:text-[#0396E9] border border-[#0396E9]/30">
-                      <CreditCard className="size-3" />
+                      <ClipboardList className="size-3" />
                       {latestApp.status}
                     </span>
                   </div>
@@ -473,8 +471,8 @@ export function LandingPortalHero() {
                   </div>
                   <p className="text-2xs text-slate-600 dark:text-slate-300 leading-relaxed ps-6">
                     {isAr
-                      ? "سداد الرسوم الإلكترونية واستكمال نموذج البحث الاجتماعي للمنح."
-                      : "Pay admission fees online to issue Student ID & apply for scholarships."}
+                      ? "استكمال نموذج البحث الاجتماعي للمنح."
+                      : "Complete the social research form to apply for scholarships."}
                   </p>
                 </div>
               </div>
@@ -489,10 +487,6 @@ export function LandingPortalHero() {
                   <Sparkles className="size-3.5 text-purple-600 dark:text-purple-300" />
                   <span>{isAr ? "تدقيق ذكاء اصطناعي" : "AI Verification"}</span>
                 </div>
-                {paymentsEnabled && (<div className="flex items-center gap-1.5 rounded-lg bg-white/60 dark:bg-white/5 p-1.5 border border-[#0d2b08]/10 dark:border-white/10">
-                  <CreditCard className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>{isAr ? "دفع إلكتروني" : "Digital Payment"}</span>
-                </div>)}
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/60 dark:bg-white/5 p-1.5 border border-[#0d2b08]/10 dark:border-white/10">
                   <ShieldCheck className="size-3.5 text-[#0284c7] dark:text-[#0396E9]" />
                   <span>{isAr ? "تتبع الحالة" : "Status Tracking"}</span>

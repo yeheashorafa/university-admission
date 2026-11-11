@@ -38,7 +38,6 @@ export type WorkflowApplication = {
   employeeNotes?: string;
   decisionReason?: string;
   missingDocumentsNote?: string;
-  paymentReference?: string;
   universityNumber?: string;
   socialResearchStatus?: "not_required" | "required" | "submitted";
   createdAt: string;
@@ -162,7 +161,7 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
     selectedProgram: "Computer Science",
     faculty: "Faculty of Information Technology",
     average: "84.0%",
-    currentStatus: applicationStatuses.paymentPending,
+    currentStatus: applicationStatuses.headApproved,
     aiConfidence: 93,
     assignedEmployeeName: "Admission Employee",
     employeeDecisionBy: "Admission Employee",
@@ -197,15 +196,6 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
         note: "Department head approved the application.",
         createdAt: "2026-08-17 09:20",
       },
-      {
-        id: "log-4",
-        status: applicationStatuses.paymentPending,
-        actor: "system",
-        decision: "needs_review",
-        actorName: "System",
-        note: "Application moved to payment step.",
-        createdAt: "2026-08-17 09:21",
-      },
     ],
   },
   {
@@ -221,7 +211,6 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
     assignedEmployeeName: "Admission Employee",
     employeeDecisionBy: "Admission Employee",
     departmentHeadDecisionBy: "Department Head",
-    paymentReference: "PAY-90901",
     universityNumber: "202610045",
     createdAt: "2026-08-18",
     socialResearchStatus: "required",
@@ -234,15 +223,6 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
         actorName: "Mariam Nasser Ali",
         note: "Application submitted.",
         createdAt: "2026-08-18 09:00",
-      },
-      {
-        id: "log-2",
-        status: applicationStatuses.paymentCompleted,
-        actor: "payment_system",
-        decision: "payment_completed",
-        actorName: "Payment System",
-        note: "Payment completed successfully.",
-        createdAt: "2026-08-18 10:15",
       },
       {
         id: "log-3",
@@ -298,7 +278,6 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
     average: "85.4%",
     currentStatus: applicationStatuses.completed,
     aiConfidence: 96,
-    paymentReference: "PAY-2026-8812",
     universityNumber: "202610012",
     createdAt: "2026-08-10",
     socialResearchStatus: "submitted",
@@ -311,15 +290,6 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
         actorName: "Ahmed Mohammad Hassan",
         note: "Application submitted.",
         createdAt: "2026-08-10 11:00",
-      },
-      {
-        id: "log-2",
-        status: applicationStatuses.paymentCompleted,
-        actor: "payment_system",
-        decision: "payment_completed",
-        actorName: "Payment System",
-        note: "Payment completed successfully.",
-        createdAt: "2026-08-10 12:30",
       },
       {
         id: "log-3",

@@ -39,8 +39,6 @@ export function buildAdminReportsAnalytics(
 
   const acceptedStatuses: ApplicationStatus[] = [
     applicationStatuses.headApproved,
-    applicationStatuses.paymentPending,
-    applicationStatuses.paymentCompleted,
     applicationStatuses.universityNumberIssued,
     applicationStatuses.socialResearchRequired,
     applicationStatuses.socialResearchSubmitted,
@@ -154,12 +152,6 @@ export function buildAdminReportsAnalytics(
           value: countByStatuses(applications, [applicationStatuses.headReview]),
         },
         {
-          key: "paymentPending",
-          value: countByStatuses(applications, [
-            applicationStatuses.paymentPending,
-          ]),
-        },
-        {
           key: "socialResearchRequired",
           value: countByStatuses(applications, [
             applicationStatuses.socialResearchRequired,
@@ -183,8 +175,6 @@ export function buildAdminReportsAnalytics(
             "accepted",
             "approved",
             "head_approved",
-            "payment_pending",
-            "payment_completed",
             "completed",
           ].includes(item.label.toLowerCase())
         )

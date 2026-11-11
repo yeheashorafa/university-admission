@@ -103,7 +103,6 @@ const PROTECTED_ROUTE_PREFIXES = [
   "/status",
   "/profile",
   "/admin",
-  "/payment",
   "/social-information",
 ];
 

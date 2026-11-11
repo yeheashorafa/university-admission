@@ -17,7 +17,4 @@ export const nextStepsMock = [
   {
     id: "decision",
   },
-  {
-    id: "payment",
-  },
 ] as const;

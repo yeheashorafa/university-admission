@@ -1,11 +1,9 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import {
   FileText,
-  CreditCard,
   CheckCircle2,
   ArrowUpRight,
   GraduationCap,
@@ -44,22 +42,6 @@ export function LandingApplicationsPreview() {
       icon: FileText,
     },
     {
-      id: "app-3",
-      appNo: "APP-2026-1003",
-      program: isAr ? "علوم الحاسوب" : "Computer Science",
-      faculty: isAr ? "كلية تكنولوجيا المعلومات" : "Faculty of Information Technology",
-      statusLabel: isAr ? "بانتظار سداد الرسوم" : "Payment Pending",
-      statusBg: "bg-[#0396E9]/10 text-[#0396E9] border-[#0396E9]/30",
-      progress: 75,
-      nextAction: isAr
-        ? "سداد رسوم القبول المقررة لتأكيد الترشيح وإصدار الرقم الجامعي"
-        : "Pay admission fee to confirm seat reservation and generate Student ID",
-      actionText: isAr ? "سداد الرسوم الآن" : "Pay Fee Now",
-      actionHref: routes.payment,
-      btnClass: "bg-[#0396E9] text-white hover:bg-[#0396E9]/90",
-      icon: CreditCard,
-    },
-    {
       id: "app-6",
       appNo: "APP-2026-1006",
       program: isAr ? "اللغة الإنجليزية وآدابها" : "English Literature",
@@ -75,7 +57,7 @@ export function LandingApplicationsPreview() {
       btnClass: "bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700",
       icon: CheckCircle2,
     },
-  ].filter((item) => paymentsEnabled || item.actionHref !== routes.payment);
+  ];
 
   return (
     <section className="space-y-8 rounded-3xl border border-border bg-card p-6 md:p-10 shadow-sm">

@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import {
   Bot,
   CheckCircle2,
-  CircleDollarSign,
   FileText,
   IdCard,
   UserCheck,
@@ -29,7 +28,6 @@ const actorIcons: Record<WorkflowActor, typeof FileText> = {
   ai: Bot,
   admission_employee: UserCog,
   department_head: UserCheck,
-  payment_system: CircleDollarSign,
   system: IdCard,
 };
 

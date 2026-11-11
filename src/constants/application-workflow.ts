@@ -1,4 +1,3 @@
-import { paymentsEnabled } from "@/constants/features";
 
 export const applicationStatuses = {
   draft: "draft",
@@ -17,9 +16,6 @@ export const applicationStatuses = {
   headApproved: "head_approved",
   headRejected: "head_rejected",
 
-  paymentPending: "payment_pending",
-  paymentCompleted: "payment_completed",
-  paymentFailed: "payment_failed",
 
   universityNumberIssued: "university_number_issued",
   socialResearchRequired: "social_research_required",
@@ -46,7 +42,6 @@ export const applicationStatusFlow: ApplicationStatus[] = [
   applicationStatuses.employeeApproved,
   applicationStatuses.headReview,
   applicationStatuses.headApproved,
-  ...(paymentsEnabled ? [applicationStatuses.paymentPending, applicationStatuses.paymentCompleted] : []),
   applicationStatuses.universityNumberIssued,
   applicationStatuses.socialResearchRequired,
   applicationStatuses.socialResearchSubmitted,
@@ -58,7 +53,6 @@ export type WorkflowActor =
   | "ai"
   | "admission_employee"
   | "department_head"
-  | "payment_system"
   | "system";
 
 export type WorkflowDecision =
@@ -66,8 +60,6 @@ export type WorkflowDecision =
   | "rejected"
   | "needs_review"
   | "missing_documents"
-  | "payment_completed"
-  | "payment_failed"
   | "issued"
   | "submitted";
 
@@ -112,10 +104,6 @@ export function canDepartmentHeadReview(status: ApplicationStatus) {
   );
 }
 
-export function canStudentPay(status: ApplicationStatus) {
-  return paymentsEnabled && status === applicationStatuses.paymentPending;
-}
-
 export function canStudentCompleteSocialResearch(status: ApplicationStatus) {
   return status === applicationStatuses.socialResearchRequired;
 }
@@ -125,11 +113,7 @@ export function getNextStatusAfterEmployeeApproval(): ApplicationStatus {
 }
 
 export function getNextStatusAfterHeadApproval(): ApplicationStatus {
-  return paymentsEnabled ? applicationStatuses.paymentPending : applicationStatuses.headApproved;
-}
-
-export function getNextStatusAfterPaymentSuccess(): ApplicationStatus {
-  return applicationStatuses.universityNumberIssued;
+  return applicationStatuses.headApproved;
 }
 
 export function getNextStatusAfterUniversityNumber(): ApplicationStatus {

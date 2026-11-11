@@ -1,9 +1,8 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { BarChart3, Clock3, FileCheck2, FileX2, Ban, Info } from "lucide-react";
+import { BarChart3, Clock3, FileX2, Ban, Info } from "lucide-react";
 
 import type { WorkflowApplication } from "../data/applications-workflow.data";
 import { applicationStatuses } from "@/constants/application-workflow";
@@ -24,7 +23,6 @@ export function ApplicationsWorkflowHeader({
       return {
         total: "...",
         pendingHeadReview: "...",
-        paymentPending: "...",
         rejected: "...",
         cancelled: "...",
       };
@@ -35,9 +33,6 @@ export function ApplicationsWorkflowHeader({
       (app) =>
         app.currentStatus === applicationStatuses.headReview ||
         app.currentStatus === "forwarded_to_department_head"
-    ).length;
-    const paymentPending = applications.filter(
-      (app) => app.currentStatus === applicationStatuses.paymentPending
     ).length;
     const rejected = applications.filter(
       (app) =>
@@ -55,7 +50,6 @@ export function ApplicationsWorkflowHeader({
     return {
       total,
       pendingHeadReview,
-      paymentPending,
       rejected,
       cancelled,
     };
@@ -100,12 +94,6 @@ export function ApplicationsWorkflowHeader({
             sublabel={t("pageScopedBadge")}
           />
 
-          {paymentsEnabled && (<StatCard
-            icon={FileCheck2}
-            label={t("paymentPending")}
-            value={stats.paymentPending}
-            sublabel={t("pageScopedBadge")}
-          />)}
 
           <StatCard
             icon={FileX2}

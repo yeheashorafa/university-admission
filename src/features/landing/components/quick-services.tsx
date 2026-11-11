@@ -1,12 +1,10 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import {
   FileText,
   Search,
-  CreditCard,
   ClipboardList,
   ArrowUpRight,
   FolderKanban,
@@ -36,12 +34,6 @@ export function QuickServices() {
     ? routes.login
     : role === "student"
     ? routes.documents
-    : routes.admin;
-
-  const paymentHref = !isAuthenticated
-    ? routes.login
-    : role === "student"
-    ? routes.payment
     : routes.admin;
 
   const socialResearchHref = !isAuthenticated
@@ -101,17 +93,6 @@ export function QuickServices() {
       badgeText: isAr ? "تدقيق ذكي" : "AI Verification",
       badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
     },
-    ...(paymentsEnabled ? [{
-      title: isAr ? "سداد رسوم القبول" : "Pay Admission Fees",
-      description: isAr
-        ? "سدد الرسوم المقررة إلكترونياً بعد موافقة القبول لتأكيد الترشيح وإصدار الرقم الجامعي."
-        : "Pay required admission fees online to confirm your seat and generate Student ID.",
-      icon: CreditCard,
-      href: paymentHref,
-      actionText: isAr ? "بوابة الدفع" : "Payment Portal",
-      badgeText: isAr ? "دفع إلكتروني" : "E-Payment",
-      badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    }] : []),
     {
       title: isAr ? "نموذج البحث الاجتماعي" : "Social Research Form",
       description: isAr
