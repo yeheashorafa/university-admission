@@ -845,7 +845,7 @@ test("11. User management mutation safeguards prevent non-superadmin execution",
 test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   // App 6 payload shape from live backend:
   // applicant has secondary_school_record.student_school_id = "31100027", but NO national_id.
-  const app6Payload = {
+  const app6Payload: Record<string, unknown> = {
     id: 6,
     application_number: "APP-98205305",
     status: "forwarded_to_department_head",
@@ -872,7 +872,7 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   };
 
   // 1. Workflow application mapping
-  const workflowApp = mapBackendApplicationToWorkflowApplication(app6Payload as any);
+  const workflowApp = mapBackendApplicationToWorkflowApplication(app6Payload);
   assert.equal(
     workflowApp.nationalId,
     "—",
@@ -885,7 +885,7 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   );
 
   // 2. Department Head application normalization
-  const headApp = normalizeHeadApplication(app6Payload as any);
+  const headApp = normalizeHeadApplication(app6Payload);
   assert.equal(
     headApp.nationalId,
     "—",
