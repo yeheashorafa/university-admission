@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -226,7 +227,7 @@ export function ApplicationSummaryCard({ application }: ApplicationCardProps) {
           value={formatDateTime(application.updatedAt ?? application.createdAt, locale)}
         />
 
-        <SummaryItem
+        {paymentsEnabled && (<SummaryItem
           icon={CreditCard}
           label={isAr ? "بيانات السداد" : "Payment Status"}
           value={
@@ -236,7 +237,7 @@ export function ApplicationSummaryCard({ application }: ApplicationCardProps) {
                 ? "بانتظار السداد"
                 : "Payment Pending"
           }
-        />
+        />)}
       </div>
 
       {application.forwardReason ? (

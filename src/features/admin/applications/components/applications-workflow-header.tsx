@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { BarChart3, Clock3, FileCheck2, FileX2, Ban, Info } from "lucide-react";
@@ -99,12 +100,12 @@ export function ApplicationsWorkflowHeader({
             sublabel={t("pageScopedBadge")}
           />
 
-          <StatCard
+          {paymentsEnabled && (<StatCard
             icon={FileCheck2}
             label={t("paymentPending")}
             value={stats.paymentPending}
             sublabel={t("pageScopedBadge")}
-          />
+          />)}
 
           <StatCard
             icon={FileX2}

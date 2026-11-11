@@ -1,3 +1,5 @@
+import { paymentsEnabled } from "@/constants/features";
+
 export const applicationStatuses = {
   draft: "draft",
   submitted: "submitted",
@@ -44,8 +46,7 @@ export const applicationStatusFlow: ApplicationStatus[] = [
   applicationStatuses.employeeApproved,
   applicationStatuses.headReview,
   applicationStatuses.headApproved,
-  applicationStatuses.paymentPending,
-  applicationStatuses.paymentCompleted,
+  ...(paymentsEnabled ? [applicationStatuses.paymentPending, applicationStatuses.paymentCompleted] : []),
   applicationStatuses.universityNumberIssued,
   applicationStatuses.socialResearchRequired,
   applicationStatuses.socialResearchSubmitted,
@@ -112,7 +113,7 @@ export function canDepartmentHeadReview(status: ApplicationStatus) {
 }
 
 export function canStudentPay(status: ApplicationStatus) {
-  return status === applicationStatuses.paymentPending;
+  return paymentsEnabled && status === applicationStatuses.paymentPending;
 }
 
 export function canStudentCompleteSocialResearch(status: ApplicationStatus) {
@@ -124,7 +125,7 @@ export function getNextStatusAfterEmployeeApproval(): ApplicationStatus {
 }
 
 export function getNextStatusAfterHeadApproval(): ApplicationStatus {
-  return applicationStatuses.paymentPending;
+  return paymentsEnabled ? applicationStatuses.paymentPending : applicationStatuses.headApproved;
 }
 
 export function getNextStatusAfterPaymentSuccess(): ApplicationStatus {

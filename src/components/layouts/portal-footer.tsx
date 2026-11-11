@@ -35,8 +35,8 @@ export function PortalFooter() {
 
           <p className="max-w-md text-xs md:text-sm leading-relaxed text-muted-foreground">
             {isAr
-              ? "بوابة القبول الإلكتروني بالجامعة الإسلامية بغزة - عمادة القبول والتسجيل. منصة متكاملة لتقديم الطلبات، رفع المستندات والتحقق الذكي، سداد الرسوم، واستكمال طلبات المنح."
-              : "Islamic University of Gaza Admission Portal. Integrated portal for application submission, AI document verification, fee payment, and scholarship research."}
+              ? "بوابة القبول الإلكتروني بالجامعة الإسلامية بغزة - عمادة القبول والتسجيل. منصة متكاملة لتقديم الطلبات، رفع المستندات والتحقق الذكي، واستكمال طلبات المنح."
+              : "Islamic University of Gaza Admission Portal. Integrated portal for application submission, AI document verification, and scholarship research."}
           </p>
         </div>
 

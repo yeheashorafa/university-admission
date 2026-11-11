@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import { useLocale } from "next-intl";
 import {
   FileText,
@@ -47,7 +48,7 @@ export function LandingAdmissionWorkflow() {
       tag: isAr ? "مراجعة بشرية" : "Human Review",
       color: "bg-[#0396E9]/10 text-[#0396E9] border-[#0396E9]/30",
     },
-    {
+    ...(paymentsEnabled ? [{
       num: "04",
       title: isAr ? "سداد رسوم القبول" : "Admission Fee Payment",
       desc: isAr
@@ -56,13 +57,13 @@ export function LandingAdmissionWorkflow() {
       icon: CreditCard,
       tag: isAr ? "دفع آمن" : "Secure Payment",
       color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    },
+    }] : []),
     {
       num: "05",
       title: isAr ? "إصدار الرقم الجامعي" : "University Student ID Issued",
       desc: isAr
-        ? "توليد الرقم الجامعي الرسمي فور نجاح عملية السداد وإنشاء السجل الأكاديمي."
-        : "Automated student ID number generation (2026xxxx) upon payment confirmation.",
+        ? "توليد الرقم الجامعي الرسمي وفق تعليمات الجامعة بعد اعتماد القبول."
+        : "Follow the university instructions after admission approval.",
       icon: IdCard,
       tag: isAr ? "رقم جامعي" : "Student ID",
       color: "bg-[#76BC21]/15 text-[#76BC21] border-[#76BC21]/30",
@@ -104,7 +105,7 @@ export function LandingAdmissionWorkflow() {
         </h2>
         <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
           {isAr
-            ? "يمر كل طلب يقدّمه الطالب بمراحل منظمة ومحكومة تتيح لك متابعة التحديثات، نتائج التدقيق الآلي، الإجراءات المطلوبة، وسداد الرسوم لحظة بلحظة."
+            ? "يمر كل طلب يقدّمه الطالب بمراحل منظمة ومحكومة تتيح لك متابعة التحديثات، نتائج التدقيق الآلي، الإجراءات المطلوبة لحظة بلحظة."
             : "Every application flows through distinct, automated checkpoints giving you clear real-time updates at every single stage."}
         </p>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import {
@@ -100,7 +101,7 @@ export function QuickServices() {
       badgeText: isAr ? "تدقيق ذكي" : "AI Verification",
       badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
     },
-    {
+    ...(paymentsEnabled ? [{
       title: isAr ? "سداد رسوم القبول" : "Pay Admission Fees",
       description: isAr
         ? "سدد الرسوم المقررة إلكترونياً بعد موافقة القبول لتأكيد الترشيح وإصدار الرقم الجامعي."
@@ -110,7 +111,7 @@ export function QuickServices() {
       actionText: isAr ? "بوابة الدفع" : "Payment Portal",
       badgeText: isAr ? "دفع إلكتروني" : "E-Payment",
       badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    },
+    }] : []),
     {
       title: isAr ? "نموذج البحث الاجتماعي" : "Social Research Form",
       description: isAr

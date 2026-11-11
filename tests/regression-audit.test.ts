@@ -10,7 +10,7 @@ import {
   isStudentRole,
   userRoles,
 } from "../src/constants/roles";
-import { getDashboardRouteByRole } from "../src/constants/role-navigation";
+import { canAccessRoute, getDashboardRouteByRole } from "../src/constants/role-navigation";
 import { routes } from "../src/constants/routes";
 import {
   normalizeHeadApplication,
@@ -931,3 +931,10 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   );
 });
 
+test("payment routes are unavailable in the disabled release and admission stays available", () => {
+  if (process.env.NEXT_PUBLIC_ENABLE_PAYMENTS === "true") return;
+  for (const path of ["/en/payment", "/ar/payment/success", "/en/payment/42", "/ar/applications/42/payment"]) {
+    assert.equal(canAccessRoute(userRoles.student, path), false, path);
+  }
+  assert.equal(canAccessRoute(userRoles.student, "/en/applications/new"), true);
+});

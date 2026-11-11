@@ -1,3 +1,4 @@
+import { isPaymentRoute, paymentsEnabled } from "@/constants/features";
 import { routes } from "@/constants/routes";
 import {
   isAdminRole,
@@ -73,6 +74,8 @@ export function canAccessRoute(role?: string | null, path?: string): boolean {
     return false;
   }
 
+  if (!paymentsEnabled && isPaymentRoute(cleanPath)) return false;
+
   // Student role access rules
   if (isStudentRole(role)) {
     const studentRoutes = [
@@ -82,7 +85,7 @@ export function canAccessRoute(role?: string | null, path?: string): boolean {
       routes.documents,
       routes.notifications,
       routes.status,
-      routes.payment,
+      ...(paymentsEnabled ? [routes.payment] : []),
       routes.socialResearch,
       routes.profile,
     ];
@@ -90,7 +93,7 @@ export function canAccessRoute(role?: string | null, path?: string): boolean {
     if ((studentRoutes as readonly string[]).includes(cleanPath)) return true;
     if (cleanPath.startsWith("/applications/")) return true;
     if (cleanPath.startsWith("/status/")) return true;
-    if (cleanPath.startsWith("/payment/")) return true;
+    if (paymentsEnabled && cleanPath.startsWith("/payment/")) return true;
     if (cleanPath.startsWith("/social-research/")) return true;
     return false;
   }
