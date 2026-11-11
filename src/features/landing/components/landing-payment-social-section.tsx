@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import {
@@ -40,21 +41,22 @@ export function LandingPaymentSocialSection() {
         </div>
 
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#12360b] dark:text-[#8bd63a]">
-          {isAr
+          {!paymentsEnabled ? (isAr ? "البحث الاجتماعي للمنح" : "Social Research for Scholarships") : isAr
             ? "سداد الرسوم الإلكترونية يعقبه نموذج البحث الاجتماعي للمنح"
             : "Online Fee Settlement Followed by Social Research for Scholarships"}
         </h2>
 
         <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-          {isAr
+          {!paymentsEnabled ? (isAr ? "اطّلع على نموذج البحث الاجتماعي للمنح بعد القبول." : "Access scholarship research after admission.") : isAr
             ? "تأتي مرحلة السداد الإلكتروني فور صدور موافقة القبول وحجز المقعد الأكاديمي، حيث يتم إصدار الرقم الجامعي مباشرة، وتتاح بعدها إمكانية تعبئة استمارة البحث الاجتماعي للاستفادة من منح الجامعة."
             : "Upon admission approval, completing the online fee payment generates your official student ID, enabling access to the social research form for scholarship evaluations."}
         </p>
       </div>
 
       {/* Dual Connected Sequential Cards */}
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 pt-4 relative">
+      <div className={paymentsEnabled ? "grid grid-cols-1 gap-8 md:grid-cols-2 pt-4 relative" : "grid grid-cols-1 gap-8 pt-4"}>
         {/* Card 1: Online Fee Payment */}
+        {paymentsEnabled && (<>
         <div className="relative flex flex-col justify-between rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 shadow-sm">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -104,6 +106,8 @@ export function LandingPaymentSocialSection() {
           <ArrowRight className="size-5 rtl:rotate-180" />
         </div>
 
+        </>)}
+
         {/* Card 2: Social Research Form */}
         <div className="relative flex flex-col justify-between rounded-2xl border border-[#0396E9]/30 bg-[#0396E9]/5 p-6 shadow-sm">
           <div className="space-y-4">
@@ -112,7 +116,7 @@ export function LandingPaymentSocialSection() {
                 <ClipboardList className="size-6" />
               </div>
               <span className="font-mono text-xs font-black text-[#0396E9] bg-[#0396E9]/10 px-3 py-1 rounded-lg border border-[#0396E9]/20">
-                {isAr ? "الخطوة الثانية للمنح" : "Step 2 Scholarship Research"}
+                {paymentsEnabled ? (isAr ? "الخطوة الثانية للمنح" : "Step 2 Scholarship Research") : (isAr ? "المنح" : "Scholarships")}
               </span>
             </div>
 

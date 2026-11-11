@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import { useSyncExternalStore, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -456,7 +457,7 @@ export function LandingPortalHero() {
                   <p className="text-2xs text-slate-600 dark:text-slate-300 leading-relaxed ps-6">
                     {isAr
                       ? "تابع كل طلب من التقديم والتدقيق الذكي حتى الاعتماد النهائي."
-                      : "Follow each application from AI verification to department head approval."}
+                      : "Follow each application from AI verification to faculty head approval."}
                   </p>
                 </div>
 
@@ -488,10 +489,10 @@ export function LandingPortalHero() {
                   <Sparkles className="size-3.5 text-purple-600 dark:text-purple-300" />
                   <span>{isAr ? "تدقيق ذكاء اصطناعي" : "AI Verification"}</span>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-lg bg-white/60 dark:bg-white/5 p-1.5 border border-[#0d2b08]/10 dark:border-white/10">
+                {paymentsEnabled && (<div className="flex items-center gap-1.5 rounded-lg bg-white/60 dark:bg-white/5 p-1.5 border border-[#0d2b08]/10 dark:border-white/10">
                   <CreditCard className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>{isAr ? "دفع إلكتروني" : "Digital Payment"}</span>
-                </div>
+                </div>)}
                 <div className="flex items-center gap-1.5 rounded-lg bg-white/60 dark:bg-white/5 p-1.5 border border-[#0d2b08]/10 dark:border-white/10">
                   <ShieldCheck className="size-3.5 text-[#0284c7] dark:text-[#0396E9]" />
                   <span>{isAr ? "تتبع الحالة" : "Status Tracking"}</span>

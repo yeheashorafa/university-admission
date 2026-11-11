@@ -1,5 +1,6 @@
 "use client";
 
+import { paymentsEnabled } from "@/constants/features";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import {
@@ -74,7 +75,7 @@ export function LandingApplicationsPreview() {
       btnClass: "bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700",
       icon: CheckCircle2,
     },
-  ];
+  ].filter((item) => paymentsEnabled || item.actionHref !== routes.payment);
 
   return (
     <section className="space-y-8 rounded-3xl border border-border bg-card p-6 md:p-10 shadow-sm">
@@ -92,8 +93,8 @@ export function LandingApplicationsPreview() {
           </h2>
           <p className="max-w-2xl text-xs md:text-sm text-muted-foreground leading-relaxed">
             {isAr
-              ? "تسمح البوابة للطالب بتقديم رغبات متعددة في كليات مختلفة (مثل الحاسوب والهندسة والآداب). يمكنك تتبع كل طلب على حدة، ومتابعة نسبة التدقيق بالذكاء الاصطناعي، وسداد الرسوم بشكل مستقل."
-              : "Our university gateway lets you file distinct applications across different faculties and track status, AI document verification, payment, and social research for each file separately."}
+              ? "تسمح البوابة للطالب بتقديم رغبات متعددة في كليات مختلفة (مثل الحاسوب والهندسة والآداب). يمكنك تتبع كل طلب على حدة، ومتابعة نسبة التدقيق بالذكاء الاصطناعي بشكل مستقل."
+              : "Our university gateway lets you file distinct applications across different faculties and track status, AI document verification, and social research for each file separately."}
           </p>
         </div>
 
