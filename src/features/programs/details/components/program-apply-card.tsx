@@ -40,11 +40,7 @@ export function ProgramApplyCard({ program }: ProgramApplyCardProps) {
           />
         )}
 
-        <SummaryItem
-          icon={Percent}
-          label={t("minimumRate")}
-          value={`${program.minimumAverage}%`}
-        />
+        {program.minimumAverage > 0 && <SummaryItem icon={Percent} label={t("minimumRate")} value={`${program.minimumAverage}%`} />}
 
         {safeBranches.length > 0 && (
           <SummaryItem

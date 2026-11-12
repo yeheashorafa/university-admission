@@ -36,11 +36,7 @@ export function ProgramInfoCards({ program }: ProgramInfoCardsProps) {
           },
         ]
       : []),
-    {
-      label: t("minimumRate"),
-      value: `${program.minimumAverage}%`,
-      icon: Percent,
-    },
+    ...(program.minimumAverage > 0 ? [{ label: t("minimumRate"), value: `${program.minimumAverage}%`, icon: Percent }] : []),
     ...(safeBranches.length > 0
       ? [
           {

@@ -4,7 +4,7 @@
 import { useQueries } from "@tanstack/react-query";
 import { queryKeys } from "@/constants/query-keys";
 import { getProgramById } from "@/services/programs.service";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { Edit2, AlertTriangle } from "lucide-react";
 import type { ApplicationWizardState } from "../../types/application-form.types";
 import { governorates } from "../../data/palestine-addresses.data";
@@ -22,7 +22,6 @@ type ReviewStepProps = {
 
 export function ReviewStep({ state, onGoToStep }: ReviewStepProps) {
   const locale = useLocale();
-  const t = useTranslations("application");
 
   const ids = state.preferences.preferences;
   const programs = useQueries({

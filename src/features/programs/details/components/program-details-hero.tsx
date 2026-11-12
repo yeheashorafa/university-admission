@@ -1,14 +1,18 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { GraduationCap } from "lucide-react";
 import type { ProgramViewModel } from "../../types";
 
 type ProgramDetailsHeroProps = {
   program: ProgramViewModel;
+  nameAr?: string;
+  nameEn?: string;
 };
 
-export function ProgramDetailsHero({ program }: ProgramDetailsHeroProps) {
+export function ProgramDetailsHero({ program, nameAr, nameEn }: ProgramDetailsHeroProps) {
+  const isArabic = useLocale() === "ar";
+  const alternateName = isArabic ? nameEn : nameAr;
   const t = useTranslations("programsDetails");
 
   return (
@@ -24,18 +28,16 @@ export function ProgramDetailsHero({ program }: ProgramDetailsHeroProps) {
         )}
 
         <h1 className="text-3xl font-bold leading-tight text-primary md:text-5xl">
-          {program.name}
+          <span lang={isArabic || !nameEn ? "ar" : "en"} dir="auto">{program.name}</span>
         </h1>
 
-        {program.facultyName && (
-          <p className="mt-4 text-lg font-medium text-secondary">
-            {program.facultyName}
-          </p>
+        {alternateName && alternateName !== program.name && (
+          <p lang={isArabic ? "en" : "ar"} dir="auto" className="mt-2 text-lg text-muted-foreground">{alternateName}</p>
         )}
 
-        {program.description && (
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">
-            {program.description}
+        {program.facultyName && (
+          <p dir="auto" className="mt-4 text-lg font-medium text-secondary">
+            {program.facultyName}
           </p>
         )}
       </div>

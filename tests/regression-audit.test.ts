@@ -20,6 +20,7 @@ import {
 import { mapBackendApplicationToWorkflowApplication } from "../src/features/admin/applications/data/applications-workflow.data";
 import { ApplicationSummaryCard } from "../src/features/admin/application-details/page";
 import { RoleGuard } from "../src/components/auth/role-guard";
+import { ProgramContentSections } from "../src/features/programs/details/components/program-content-sections";
 import { AuthProvider, type CurrentAuthState } from "../src/hooks/use-current-auth";
 import { apiClient } from "../src/lib/api/client";
 import { ENDPOINTS } from "../src/lib/api/endpoints";
@@ -825,4 +826,67 @@ test("online payment routes are absent and admission stays available", () => {
     assert.equal(existsSync(path), false, path);
   }
   assert.equal(canAccessRoute(userRoles.student, "/en/applications/new"), true);
+});
+
+test("catalog details render informative fees and branch-specific admission thresholds", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(NextIntlClientProvider, {
+      locale: "en",
+      messages: enMessages,
+    }, React.createElement(ProgramContentSections, {
+        program: {
+          id: 1,
+          admission_thresholds: [
+            { id: 1, branch: { id: 1, name_en: "Scientific" }, gender: "female", min_average_percent: "93.50" },
+            { id: 2, branch: { id: 2, name_en: "Literary" }, gender: "male", min_average_percent: "81" },
+          ],
+          fees: [{ id: 1, price_per_hour_dinar: "100.00", credit_hours: 258 }],
+        },
+    })),
+  );
+
+  for (const text of ["Indicative fees", "100 JOD", "258", "Scientific", "Female", "93.5%", "Literary", "Male", "81%"]) {
+    assert.ok(markup.includes(text), text);
+  }
+  assert.doesNotMatch(markup, /<(?:a|button|form|input)\b|payment|checkout|سداد/i);
+});
+
+test("missing English content is labelled Arabic and empty catalog sections are omitted", () => {
+  const program = {
+    id: 2,
+    description_ar: "وصف البرنامج",
+    description_en: "",
+    why_study_ar: "سبب الدراسة",
+    why_study_en: null,
+    career_opportunities: [
+      { id: 1, ar: "الطب السريري", en: "Clinical medicine" },
+      { id: 2, ar: "البحث الطبي", en: "" },
+    ],
+    objectives: [],
+    graduate_outcomes: [],
+    courses: [],
+  };
+  const markup = renderToStaticMarkup(
+    React.createElement(NextIntlClientProvider, {
+      locale: "en",
+      messages: enMessages,
+    }, React.createElement(ProgramContentSections, { program })),
+  );
+
+  assert.match(markup, /Some content is only available in Arabic/);
+  assert.match(markup, /lang="ar" dir="rtl">وصف البرنامج/);
+  assert.match(markup, /lang="ar" dir="rtl">سبب الدراسة/);
+  assert.match(markup, /lang="ar" dir="rtl">البحث الطبي/);
+  assert.match(markup, /lang="en" dir="ltr">Clinical medicine/);
+  assert.doesNotMatch(markup, /Objectives|Learning Outcomes|Courses/);
+
+  const arabic = renderToStaticMarkup(
+    React.createElement(NextIntlClientProvider, {
+      locale: "ar",
+      messages: arMessages,
+    }, React.createElement(ProgramContentSections, { program })),
+  );
+  assert.match(arabic, /وصف البرنامج/);
+  assert.match(arabic, /الطب السريري/);
+  assert.doesNotMatch(arabic, /بعض المحتوى متوفر بالعربية فقط|Clinical medicine/);
 });

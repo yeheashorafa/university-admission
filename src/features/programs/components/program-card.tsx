@@ -58,7 +58,7 @@ export function ProgramCard({ program, locale }: ProgramCardProps) {
           />
         )}
 
-        <InfoBox label={t("minAverage")} value={`${program.minimumAverage}%`} />
+        {program.minimumAverage > 0 && <InfoBox label={t("minAverage")} value={`${program.minimumAverage}%`} />}
 
         {safeBranches.length > 0 && (
           <InfoBox

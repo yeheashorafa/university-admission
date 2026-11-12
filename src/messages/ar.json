@@ -555,10 +555,24 @@
     }
   },
   "programsDetails": {
+    "whyStudy": "لماذا تدرس هذا البرنامج؟",
+    "arabicOnlyNotice": "بعض المحتوى متوفر بالعربية فقط.",
+    "branch": "الفرع",
+    "gender": "الجنس",
+    "male": "ذكر",
+    "female": "أنثى",
+    "indicativeFees": "رسوم تقريبية للتوضيح",
+    "ratePerCredit": "رسوم الساعة المعتمدة",
+    "dinarAmount": "{amount} دينار",
+    "creditHours": "الساعات المعتمدة",
+    "catalogLinks": "روابط البرنامج",
+    "sourceLink": "مصدر البرنامج",
+    "studyPlanLink": "الخطة الدراسية",
+    "objectives": "الأهداف",
+    "courses": "المقررات",
     "branches": "الفروع",
     "acceptedBranches": "الفروع المقبولة",
     "minimumAverage": "الحد الأدنى للمعدل",
-    "department": "القسم",
     "description": "الوصف",
     "status": "الحالة",
     "available": "متاح",
@@ -1316,7 +1330,6 @@
       "rejected": "المرفوضون",
       "programs": "البرامج",
       "faculties": "الكليات",
-      "departments": "الأقسام",
       "students": "الطلاب",
       "users": "المستخدمون"
     },
@@ -1413,7 +1426,6 @@
     "sidebar": {
       "dashboard": "لوحة التحكم",
       "reports": "الإحصائيات والتقارير",
-      "headReports": "تقارير رئيس الكلية",
       "deanReports": "تقارير العميد",
       "applications": "الطلبات",
       "manualReview": "المراجعة اليدوية",
@@ -1426,7 +1438,6 @@
       "settings": "الإعدادات",
       "masterData": {
         "faculties": "الكليات",
-        "departments": "الأقسام",
         "documentTypes": "أنواع المستندات",
         "applicationTypes": "أنواع الطلبات",
         "branches": "الفروع"
@@ -2119,11 +2130,7 @@
         "minimumRate": "معدل القبول الأدنى",
         "capacity": "السعة",
         "branches": "الفروع المؤهلة",
-        "selectFaculty": "اختر الكلية",
-        "department": "القسم",
-        "selectDepartment": "اختر القسم",
-        "selectFacultyFirst": "اختر الكلية أولاً",
-        "noDepartments": "لا توجد أقسام متاحة"
+        "selectFaculty": "اختر الكلية"
       }
     },
     "admissionCycles": {
@@ -2671,65 +2678,6 @@
         "active": "نشط",
         "inactive": "غير نشط"
       }
-    },
-    "departments": {
-      "academicStructure": "الهيكل الأكاديمي",
-      "managementTitle": "إدارة الأقسام",
-      "managementDescription": "إنشاء وإدارة الأقسام وتفاصيلها وتوفرها.",
-      "export": "تصدير",
-      "add": "إضافة قسم",
-      "search": "بحث عن قسم",
-      "searchPlaceholder": "ابحث بالاسم...",
-      "reset": "إعادة تعيين",
-      "status": "الحالة",
-      "allStatuses": "كل الحالات",
-      "stats": {
-        "total": "إجمالي الأقسام",
-        "active": "الأقسام النشطة",
-        "inactive": "الأقسام غير النشطة"
-      },
-      "table": {
-        "faculty": "الكلية",
-        "nameEn": "الاسم (بالإنجليزية)",
-        "nameAr": "الاسم (بالعربية)",
-        "status": "الحالة",
-        "actions": "إجراءات"
-      },
-      "form": {
-        "faculty": "الكلية",
-        "nameEn": "الاسم (بالإنجليزية)",
-        "nameAr": "الاسم (بالعربية)",
-        "descriptionEn": "الوصف (بالإنجليزية)",
-        "descriptionAr": "الوصف (بالعربية)",
-        "isActive": "نشط"
-      },
-      "createTitle": "إنشاء قسم",
-      "updateTitle": "تحديث قسم",
-      "formDescription": "أدخل تفاصيل قسم.",
-      "deleteConfirmTitle": "حذف قسم؟",
-      "deleteConfirmDescription": "سيؤدي هذا الإجراء إلى حذف العنصر نهائياً.",
-      "delete": "حذف",
-      "cancel": "إلغاء",
-      "create": "إنشاء",
-      "save": "حفظ",
-      "edit": "تعديل قسم",
-      "enable": "تفعيل قسم",
-      "disable": "تعطيل قسم",
-      "createdSuccessfully": "تم إنشاء قسم بنجاح.",
-      "updatedSuccessfully": "تم تحديث قسم بنجاح.",
-      "deletedSuccessfully": "تم حذف قسم بنجاح.",
-      "statusUpdated": "تم تحديث حالة قسم.",
-      "paginationInfo": "عرض {from} إلى {to} من {total} الأقسام",
-      "previous": "السابق",
-      "next": "التالي",
-      "noResultsTitle": "لا توجد الأقسام",
-      "noResultsDescription": "جرّب تغيير كلمة البحث أو عوامل التصفية.",
-      "statuses": {
-        "active": "نشط",
-        "inactive": "غير نشط"
-      },
-      "formSelectFaculty": "اختر الكلية",
-      "formSelectFacultyFirst": "اختر الكلية أولاً"
     },
     "documentTypes": {
       "academicStructure": "الهيكل الأكاديمي",

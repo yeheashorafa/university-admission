@@ -74,6 +74,7 @@ export type BackendApplicationRaw = {
     faculty?: { name_ar?: string; name_en?: string; name?: string };
   };
   selectedProgram?: {
+    faculty?: { name_ar?: string; name_en?: string; name?: string };
     id?: string | number;
     name_ar?: string;
     name_en?: string;
@@ -157,7 +158,7 @@ export function adaptBackendApplication(
       : prog.name_en || prog.name_ar || prog.name || ""
     : undefined;
 
-  const faculty = prog && "faculty" in prog ? prog.faculty : undefined;
+  const faculty = prog?.faculty;
   const facultyName = faculty
     ? locale === "ar"
       ? faculty.name_ar || faculty.name_en || faculty.name

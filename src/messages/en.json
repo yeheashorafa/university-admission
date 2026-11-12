@@ -555,10 +555,24 @@
     }
   },
   "programsDetails": {
+    "whyStudy": "Why study this program?",
+    "arabicOnlyNotice": "Some content is only available in Arabic.",
+    "branch": "Branch",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "indicativeFees": "Indicative fees",
+    "ratePerCredit": "Fee per credit hour",
+    "dinarAmount": "{amount} JOD",
+    "creditHours": "Credit hours",
+    "catalogLinks": "Program links",
+    "sourceLink": "Program source",
+    "studyPlanLink": "Study plan",
+    "objectives": "Objectives",
+    "courses": "Courses",
     "branches": "Branches",
     "acceptedBranches": "Accepted branches",
     "minimumAverage": "Minimum average",
-    "department": "Department",
     "description": "Description",
     "status": "Status",
     "available": "Available",
@@ -1316,7 +1330,6 @@
       "rejected": "Rejected",
       "programs": "Programs",
       "faculties": "Faculties",
-      "departments": "Departments",
       "students": "Students",
       "users": "Users"
     },
@@ -1413,7 +1426,6 @@
     "sidebar": {
       "dashboard": "Dashboard",
       "reports": "Statistics & Reports",
-      "headReports": "Head Reports",
       "deanReports": "Dean Reports",
       "applications": "Applications",
       "manualReview": "Manual Review",
@@ -1426,7 +1438,6 @@
       "settings": "Settings",
       "masterData": {
         "faculties": "Faculties",
-        "departments": "Departments",
         "documentTypes": "Document Types",
         "applicationTypes": "Application Types",
         "branches": "Branches"
@@ -2119,11 +2130,7 @@
         "minimumRate": "Minimum rate",
         "capacity": "Capacity",
         "branches": "Eligible branches",
-        "selectFaculty": "Select faculty",
-        "department": "Department",
-        "selectDepartment": "Select department",
-        "selectFacultyFirst": "Select a faculty first",
-        "noDepartments": "No departments available"
+        "selectFaculty": "Select faculty"
       }
     },
     "admissionCycles": {
@@ -2671,65 +2678,6 @@
         "active": "Active",
         "inactive": "Inactive"
       }
-    },
-    "departments": {
-      "academicStructure": "Academic Structure",
-      "managementTitle": "Departments Management",
-      "managementDescription": "Create and manage departments, their details, and availability.",
-      "export": "Export",
-      "add": "Add Department",
-      "search": "Search Department",
-      "searchPlaceholder": "Search by name...",
-      "reset": "Reset",
-      "status": "Status",
-      "allStatuses": "All Statuses",
-      "stats": {
-        "total": "Total Departments",
-        "active": "Active Departments",
-        "inactive": "Inactive Departments"
-      },
-      "table": {
-        "faculty": "Faculty",
-        "nameEn": "Name (EN)",
-        "nameAr": "Name (AR)",
-        "status": "Status",
-        "actions": "Actions"
-      },
-      "form": {
-        "faculty": "Faculty",
-        "nameEn": "Name (English)",
-        "nameAr": "Name (Arabic)",
-        "descriptionEn": "Description (English)",
-        "descriptionAr": "Description (Arabic)",
-        "isActive": "Active"
-      },
-      "createTitle": "Create Department",
-      "updateTitle": "Update Department",
-      "formDescription": "Fill in the department details.",
-      "deleteConfirmTitle": "Delete department?",
-      "deleteConfirmDescription": "This action will remove the item permanently.",
-      "delete": "Delete",
-      "cancel": "Cancel",
-      "create": "Create",
-      "save": "Save",
-      "edit": "Edit department",
-      "enable": "Enable department",
-      "disable": "Disable department",
-      "createdSuccessfully": "Department created successfully.",
-      "updatedSuccessfully": "Department updated successfully.",
-      "deletedSuccessfully": "Department deleted successfully.",
-      "statusUpdated": "Department status updated.",
-      "paginationInfo": "Showing {from} to {to} of {total} departments",
-      "previous": "Previous",
-      "next": "Next",
-      "noResultsTitle": "No departments found",
-      "noResultsDescription": "Try changing the search keyword or filters.",
-      "statuses": {
-        "active": "Active",
-        "inactive": "Inactive"
-      },
-      "formSelectFaculty": "Select faculty",
-      "formSelectFacultyFirst": "Select a faculty first"
     },
     "documentTypes": {
       "academicStructure": "Academic Structure",

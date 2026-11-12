@@ -55,6 +55,18 @@ export interface PublicFaculty {
   [key: string]: unknown;
 }
 
+export interface CatalogBranch {
+  id: string | number;
+  name_ar?: string;
+  name_en?: string;
+}
+
+export interface CatalogText {
+  id: string | number;
+  ar?: string | null;
+  en?: string | null;
+}
+
 export interface PublicProgram {
   faculty_id?: string | number;
   id: string | number;
@@ -69,7 +81,23 @@ export interface PublicProgram {
   degree?: string;
   duration_years?: number;
   durationYears?: number;
-  branches?: string[];
+  branches?: (string | CatalogBranch)[];
+  description_ar?: string | null;
+  description_en?: string | null;
+  why_study_ar?: string | null;
+  why_study_en?: string | null;
+  career_opportunities?: CatalogText[];
+  objectives?: CatalogText[];
+  graduate_outcomes?: CatalogText[];
+  courses?: { id: string | number; name_ar?: string; name_en?: string; credit_hours: number }[];
+  links?: { id: string | number; kind: string; label_ar?: string; label_en?: string; url: string; is_active: boolean }[];
+  fees?: { id: string | number; price_per_hour_dinar: string | number; credit_hours: number }[];
+  admission_thresholds?: {
+    id: string | number;
+    branch: CatalogBranch;
+    gender: "male" | "female";
+    min_average_percent: string | number;
+  }[];
   is_active?: boolean;
   [key: string]: unknown;
 }
