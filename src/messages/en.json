@@ -238,7 +238,7 @@
     "signInNow": "Sign In Now",
     "registerTitle": "Create Student Account",
     "registerDescription": "Fill in your details to create your admission account.",
-    "studentRegisterNote": "This page is only for new students. Employee accounts are created by the department head.",
+    "studentRegisterNote": "This page is only for new students. Employee accounts are created by the faculty head.",
     "fullName": "Full Name",
     "phoneNumber": "Phone Number",
     "passwordHint": "At least 8 characters",
@@ -319,8 +319,8 @@
       },
       "workflow": {
         "title": "Organized review workflow",
-        "description": "Applications move from AI verification to employee review, department head approval, and university number issuance.",
-        "progress": "AI → Employee → Department Head"
+        "description": "Applications move from AI verification to employee review, faculty head approval, and university number issuance.",
+        "progress": "AI → Employee → Faculty Head"
       }
     },
     "journey": {
@@ -348,8 +348,8 @@
           "description": "Cases that need confirmation are assigned to an admission employee for manual review."
         },
         "departmentApproval": {
-          "title": "Department Head Approval",
-          "description": "The department head reviews the employee decision before final approval."
+          "title": "Faculty Head Approval",
+          "description": "The faculty head reviews the employee decision before final approval."
         },
         "universityNumber": {
           "title": "University Number Issuance",
@@ -1083,8 +1083,8 @@
         "description": "Application returned for document or data revision."
       },
       "forwarded_to_department_head": {
-        "title": "Forwarded to Department Head",
-        "description": "Application forwarded to the academic department head."
+        "title": "Forwarded to Faculty Head",
+        "description": "Application forwarded to the academic faculty head."
       },
       "returned_to_employee": {
         "title": "Returned to Admission Employee",
@@ -1111,8 +1111,8 @@
         "description": "The application is sent to an employee if manual review is needed."
       },
       "headReview": {
-        "title": "Department Head Approval",
-        "description": "The department head reviews the final decision."
+        "title": "Faculty Head Approval",
+        "description": "The faculty head reviews the final decision."
       },
       "universityNumber": {
         "title": "University Number",
@@ -1407,7 +1407,7 @@
     "roles": {
       "student": "Student",
       "admission_dean": "Admission and Registration Dean",
-      "department_head": "Department Head",
+      "department_head": "Faculty Head",
       "admission_employee": "Admission Employee"
     },
     "sidebar": {
@@ -1434,7 +1434,7 @@
     },
     "profileAlert": {
       "title": "Complete your profile",
-      "description": "Your employee account has been created by the department head. Please complete your profile before starting document review tasks.",
+      "description": "Your employee account has been created by the faculty head. Please complete your profile before starting document review tasks.",
       "action": "Complete Profile"
     },
     "applications": {
@@ -1554,15 +1554,15 @@
       "successDescription": "Application status updated successfully.",
       "employeeApprove": "Employee Initial Approval",
       "employeeReject": "Employee Reject",
-      "headApprove": "Department Head Approval",
-      "headReject": "Department Head Reject",
+      "headApprove": "Faculty Head Approval",
+      "headReject": "Faculty Head Reject",
       "requestMissingDocuments": "Request Missing Documents",
       "statuses": {
         "draft": "Draft",
         "submitted": "Submitted",
         "under_review": "Under Review",
         "returned_for_revision": "Returned for Revision",
-        "forwarded_to_department_head": "Forwarded to Department Head",
+        "forwarded_to_department_head": "Forwarded to Faculty Head",
         "returned_to_employee": "Returned to Admission Employee",
         "accepted": "Accepted",
         "rejected": "Rejected",
@@ -1575,9 +1575,9 @@
         "employee_approved": "Employee Initial Approval",
         "employee_rejected": "Employee Rejected",
         "missing_documents": "Missing Documents Required",
-        "head_review": "Department Head Review",
-        "head_approved": "Department Head Approved",
-        "head_rejected": "Department Head Rejected",
+        "head_review": "Faculty Head Review",
+        "head_approved": "Faculty Head Approved",
+        "head_rejected": "Faculty Head Rejected",
         "university_number_issued": "University Number Issued",
         "social_research_required": "Social Research Required",
         "social_research_submitted": "Social Research Submitted",
@@ -1587,7 +1587,7 @@
         "student": "Student",
         "ai": "Artificial Intelligence",
         "admission_employee": "Admission Employee",
-        "department_head": "Department Head",
+        "department_head": "Faculty Head",
         "system": "System"
       },
       "decisions": {
@@ -1607,7 +1607,7 @@
       "reForward": "Re-forward Application",
       "reForwardSuccess": "Application re-forwarded successfully.",
       "forwardTo": "Forward To",
-      "forwardToDepartmentHead": "Department Head",
+      "forwardToDepartmentHead": "Faculty Head",
       "note": "Note",
       "confirmReForward": "Confirm Re-forward",
       "processing": "Processing...",
@@ -1877,9 +1877,9 @@
       "employeeBadge": "Employee Review Queue",
       "employeeTitle": "Applications with Failed AI Verification",
       "employeeDescription": "This page shows applications that AI could not approve automatically and require manual review by an admission employee.",
-      "headBadge": "Department Head Approval",
-      "headTitle": "Applications Waiting for Department Head Approval",
-      "headDescription": "This page shows applications reviewed and initially approved by the employee and waiting for department head approval.",
+      "headBadge": "Faculty Head Approval",
+      "headTitle": "Applications Waiting for Faculty Head Approval",
+      "headDescription": "This page shows applications reviewed and initially approved by the employee and waiting for faculty head approval.",
       "pendingCases": "Pending Cases",
       "queueTitle": "Review Queue",
       "queueDescription": "Search pending cases and open an application to review details and make the proper decision.",
@@ -2816,7 +2816,7 @@
         "code": "Code",
         "nameEn": "Name (English)",
         "nameAr": "Name (Arabic)",
-        "requiresDeptHeadApproval": "Requires Department Head Approval",
+        "requiresDeptHeadApproval": "Requires Faculty Head Approval",
         "isActive": "Active"
       },
       "createTitle": "Create Application Type",

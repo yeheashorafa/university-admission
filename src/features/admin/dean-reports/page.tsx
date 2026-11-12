@@ -8,7 +8,6 @@ import { ReportsFilterBar } from "@/features/admin/reports/components/reports-fi
 import { useDeanReportsQuery } from "@/hooks/queries/use-dean-reports-queries";
 import { ApplicationStatusReport } from "@/features/admin/reports/components/application-status-report";
 import { FacultyReportTable } from "@/features/admin/reports/components/faculty-report-table";
-import { DepartmentReportTable } from "@/features/admin/reports/components/department-report-table";
 import { ProgramReportTable } from "@/features/admin/reports/components/program-report-table";
 import type { ReportsChartItem } from "@/features/admin/reports/utils/admin-reports-analytics";
 import { BarChart3, Clock, FileText, Loader2, AlertCircle } from "lucide-react";
@@ -30,14 +29,6 @@ export function DeanReportsPage() {
 
   const facultyDistribution: ReportsChartItem[] | null = reports?.byFaculty
     ? reports.byFaculty.map((item) => ({
-        key: item.label,
-        label: item.label,
-        value: item.count,
-      }))
-    : null;
-
-  const departmentDistribution: ReportsChartItem[] | null = reports?.byDepartment
-    ? reports.byDepartment.map((item) => ({
         key: item.label,
         label: item.label,
         value: item.count,
@@ -192,7 +183,6 @@ export function DeanReportsPage() {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <DepartmentReportTable data={departmentDistribution} />
               <ProgramReportTable data={programDistribution} />
             </div>
           </>

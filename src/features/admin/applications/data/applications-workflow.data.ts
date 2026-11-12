@@ -17,7 +17,6 @@ export type WorkflowApplication = {
   studentSchoolId?: string;
   selectedProgram: string;
   admissionCycle?: string;
-  department?: string;
   faculty: string;
   average: string;
   currentStatus: ApplicationStatus;
@@ -148,7 +147,7 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
         actor: "system",
         decision: "needs_review",
         actorName: "System",
-        note: "Application moved to department head review.",
+        note: "Application moved to faculty head review.",
         createdAt: "2026-08-16 11:31",
       },
     ],
@@ -165,7 +164,7 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
     aiConfidence: 93,
     assignedEmployeeName: "Admission Employee",
     employeeDecisionBy: "Admission Employee",
-    departmentHeadDecisionBy: "Department Head",
+    departmentHeadDecisionBy: "Faculty Head",
     createdAt: "2026-08-17",
     socialResearchStatus: "not_required",
     workflowLogs: [
@@ -192,7 +191,7 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
         status: applicationStatuses.headApproved,
         actor: "department_head",
         decision: "approved",
-        actorName: "Department Head",
+        actorName: "Faculty Head",
         note: "Department head approved the application.",
         createdAt: "2026-08-17 09:20",
       },
@@ -210,7 +209,7 @@ export const workflowApplicationsMock: WorkflowApplication[] = [
     aiConfidence: 95,
     assignedEmployeeName: "Admission Employee",
     employeeDecisionBy: "Admission Employee",
-    departmentHeadDecisionBy: "Department Head",
+    departmentHeadDecisionBy: "Faculty Head",
     universityNumber: "202610045",
     createdAt: "2026-08-18",
     socialResearchStatus: "required",
@@ -326,7 +325,6 @@ export function mapBackendApplicationToWorkflowApplication(
       nationalId: "—",
       selectedProgram: "—",
       admissionCycle: "—",
-      department: "—",
       faculty: "—",
       average: "—",
       currentStatus: "submitted" as ApplicationStatus,
@@ -424,22 +422,6 @@ export function mapBackendApplicationToWorkflowApplication(
     else if (typeof progObj.name === "string" && progObj.name.trim()) selectedProgram = progObj.name.trim();
   }
 
-  const deptObj =
-    progObj?.department && typeof progObj.department === "object"
-      ? (progObj.department as Record<string, unknown>)
-      : app.department && typeof app.department === "object"
-        ? (app.department as Record<string, unknown>)
-        : null;
-
-  let department = "—";
-  if (typeof app.department === "string" && app.department.trim()) {
-    department = app.department.trim();
-  } else if (deptObj) {
-    if (typeof deptObj.name_ar === "string" && deptObj.name_ar.trim()) department = deptObj.name_ar.trim();
-    else if (typeof deptObj.name_en === "string" && deptObj.name_en.trim()) department = deptObj.name_en.trim();
-    else if (typeof deptObj.name === "string" && deptObj.name.trim()) department = deptObj.name.trim();
-  }
-
   let admissionCycle = "—";
   if (typeof app.admission_cycle === "string" && app.admission_cycle.trim()) admissionCycle = app.admission_cycle.trim();
   else if (app.admission_cycle && typeof app.admission_cycle === "object") {
@@ -458,11 +440,6 @@ export function mapBackendApplicationToWorkflowApplication(
     if (typeof f.name_ar === "string" && f.name_ar.trim()) faculty = f.name_ar.trim();
     else if (typeof f.name === "string" && f.name.trim()) faculty = f.name.trim();
     else if (typeof f.name_en === "string" && f.name_en.trim()) faculty = f.name_en.trim();
-  } else if (deptObj?.faculty && typeof deptObj.faculty === "object") {
-    const f = deptObj.faculty as Record<string, unknown>;
-    if (typeof f.name_ar === "string" && f.name_ar.trim()) faculty = f.name_ar.trim();
-    else if (typeof f.name_en === "string" && f.name_en.trim()) faculty = f.name_en.trim();
-    else if (typeof f.name === "string" && f.name.trim()) faculty = f.name.trim();
   } else if (progObj?.faculty && typeof progObj.faculty === "object") {
     const f = progObj.faculty as Record<string, unknown>;
     if (typeof f.name_ar === "string" && f.name_ar.trim()) faculty = f.name_ar.trim();
@@ -564,7 +541,6 @@ export function mapBackendApplicationToWorkflowApplication(
     studentSchoolId,
     selectedProgram,
     admissionCycle,
-    department,
     faculty,
     average,
     currentStatus,
@@ -591,4 +567,4 @@ export function mapBackendApplicationToWorkflowApplication(
     updatedAt: typeof app.updatedAt === "string" ? app.updatedAt : undefined,
     workflowLogs,
   };
-}
+}

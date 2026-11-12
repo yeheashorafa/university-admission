@@ -27,7 +27,6 @@ export function buildAdminReportsAnalytics(
   reports?: { 
     byStatus?: ReportLabelCount[] | null; 
     byFaculty?: ReportLabelCount[] | null;
-    byDepartment?: ReportLabelCount[] | null;
     byProgram?: ReportLabelCount[] | null;
   }
 ) {
@@ -93,17 +92,6 @@ export function buildAdminReportsAnalytics(
       label: faculty,
       value: count,
     }));
-  }
-
-  let departmentDistribution: ReportsChartItem[] | null = null;
-  if (reports?.byDepartment) {
-    departmentDistribution = reports.byDepartment.map((item) => ({
-      key: item.label,
-      label: item.label,
-      value: item.count,
-    }));
-  } else if (reports?.byDepartment === undefined) {
-    departmentDistribution = []; // Fallback empty if not provided and not failed
   }
 
   let programDistribution: ReportsChartItem[] | null = null;
@@ -230,7 +218,6 @@ export function buildAdminReportsAnalytics(
     averageAiConfidence,
     statusDistribution,
     facultyDistribution,
-    departmentDistribution,
     programDistribution,
     aiConfidenceDistribution,
     recentApplications,

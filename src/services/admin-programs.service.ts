@@ -3,7 +3,7 @@ import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { Program } from "./programs.service";
 
 export type AdminProgramPayload = {
-  department_id: string | number;
+  faculty_id: string | number;
   name_en: string;
   name_ar: string;
   description_en?: string;

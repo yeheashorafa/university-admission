@@ -94,7 +94,7 @@ export function canAccessRoute(role?: string | null, path?: string): boolean {
     return false;
   }
 
-  // Admin role access rules (Admin, Employee, Department Head, Dean)
+  // Admin role access rules (Admin, Employee, Faculty Head, Dean)
   if (isAdminRole(role)) {
     if (cleanPath.startsWith("/admin")) return true;
     return false;
@@ -296,7 +296,7 @@ export function getFooterServicesByRole(
 
   if (isDepartmentHead(role)) {
     return [
-      { label: isAr ? "لوحة رئيس القسم" : "Department Head Dashboard", href: routes.admin },
+      { label: isAr ? "لوحة رئيس الكلية" : "Faculty Head Dashboard", href: routes.admin },
       { label: isAr ? "مراجعة الطلبات" : "Application Review", href: routes.adminApplications },
       { label: isAr ? "إدارة المستخدمين" : "User Management", href: routes.adminUsers },
     ];

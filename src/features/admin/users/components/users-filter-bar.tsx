@@ -69,7 +69,7 @@ export function UsersFilterBar({
             },
             {
               value: "department_head",
-              label: "Department Head",
+              label: "Faculty Head",
             },
             {
               value: "admission_employee",

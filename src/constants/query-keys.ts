@@ -35,8 +35,6 @@ export const queryKeys = {
 
   publicCatalog: {
     faculties: ["publicCatalog", "faculties"] as const,
-    departments: (facultyId?: string | number) => ["publicCatalog", "departments", facultyId] as const,
-    programs: (departmentId?: string | number) => ["publicCatalog", "programs", departmentId] as const,
     facultyPrograms: (facultyId?: string | number) => ["publicCatalog", "facultyPrograms", facultyId] as const,
     documentTypes: ["publicCatalog", "documentTypes"] as const,
     applicationTypes: ["publicCatalog", "applicationTypes"] as const,
@@ -60,7 +58,6 @@ export const queryKeys = {
     programs: (params?: unknown) => ["admin", "programs", params] as const,
     users: (params?: unknown) => ["admin", "users", params] as const,
     faculties: () => ["admin", "faculties"] as const,
-    departments: () => ["admin", "departments"] as const,
     documentTypes: () => ["admin", "documentTypes"] as const,
     applicationTypes: () => ["admin", "applicationTypes"] as const,
   },
@@ -76,16 +73,6 @@ export const queryKeys = {
     applications: (params?: unknown) => ["departmentHead", "applications", params] as const,
     applicationDetail: (id: string | number) => ["departmentHead", "applications", String(id)] as const,
     notifications: ["departmentHead", "notifications"] as const,
-    reports: {
-      byStatus: (range?: { from?: string; to?: string }) =>
-        ["departmentHead", "reports", "byStatus", range?.from ?? "all", range?.to ?? "all"] as const,
-      throughput: (range?: { from?: string; to?: string }) =>
-        ["departmentHead", "reports", "throughput", range?.from ?? "all", range?.to ?? "all"] as const,
-      timeToDecision: (range?: { from?: string; to?: string }) =>
-        ["departmentHead", "reports", "timeToDecision", range?.from ?? "all", range?.to ?? "all"] as const,
-      acceptanceRate: (range?: { from?: string; to?: string }) =>
-        ["departmentHead", "reports", "acceptanceRate", range?.from ?? "all", range?.to ?? "all"] as const,
-    },
   },
 
   admissionDean: {
@@ -95,8 +82,6 @@ export const queryKeys = {
         ["admissionDean", "reports", "byStatus", range?.from ?? "all", range?.to ?? "all"] as const,
       byFaculty: (range?: { from?: string; to?: string }) =>
         ["admissionDean", "reports", "byFaculty", range?.from ?? "all", range?.to ?? "all"] as const,
-      byDepartment: (range?: { from?: string; to?: string }) =>
-        ["admissionDean", "reports", "byDepartment", range?.from ?? "all", range?.to ?? "all"] as const,
       byProgram: (range?: { from?: string; to?: string }) =>
         ["admissionDean", "reports", "byProgram", range?.from ?? "all", range?.to ?? "all"] as const,
       timeInStatus: (range?: { from?: string; to?: string }) =>

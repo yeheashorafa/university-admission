@@ -1,6 +1,5 @@
 import type {
   PublicFaculty,
-  PublicDepartment,
   PublicProgram,
 } from "@/services/public-catalog.service";
 
@@ -9,19 +8,10 @@ export type FacultyViewModel = {
   name: string;
   description: string;
   isActive: boolean;
-  departmentsCount?: number;
-};
-
-export type DepartmentViewModel = {
-  id: string;
-  facultyId: string;
-  name: string;
-  description: string;
 };
 
 export type ProgramViewModel = {
   id: string;
-  departmentId: string;
   name: string;
   description: string;
   minimumAverage: number;
@@ -30,7 +20,6 @@ export type ProgramViewModel = {
   degree?: string;
   durationYears?: number;
   facultyName?: string;
-  departmentName?: string;
 };
 
 export function mapFacultyToViewModel(
@@ -52,29 +41,6 @@ export function mapFacultyToViewModel(
     name: String(name),
     description: String(description),
     isActive: faculty.is_active ?? true,
-    departmentsCount: typeof faculty.departmentsCount === "number" ? faculty.departmentsCount : undefined,
-  };
-}
-
-export function mapDepartmentToViewModel(
-  department: PublicDepartment,
-  locale: string
-): DepartmentViewModel {
-  const name =
-    locale === "ar"
-      ? department.name_ar || department.name_en || department.name || ""
-      : department.name_en || department.name_ar || department.name || "";
-
-  const description =
-    locale === "ar"
-      ? department.description_ar || department.description_en || department.description || ""
-      : department.description_en || department.description_ar || department.description || "";
-
-  return {
-    id: String(department.id),
-    facultyId: String(department.faculty_id ?? department.facultyId ?? ""),
-    name: String(name),
-    description: String(description),
   };
 }
 
@@ -120,15 +86,6 @@ export function mapProgramToViewModel(
       )
     : undefined;
 
-  const deptObj = program.department as PublicDepartment | undefined;
-  const departmentName = deptObj
-    ? String(
-        locale === "ar"
-          ? deptObj.name_ar || deptObj.name_en || deptObj.name || ""
-          : deptObj.name_en || deptObj.name_ar || deptObj.name || ""
-      )
-    : undefined;
-
   const mappedBranches = safeBranchesList
     .map((item) => {
       if (typeof item === "object" && item !== null) {
@@ -143,7 +100,6 @@ export function mapProgramToViewModel(
 
   return {
     id: String(program.id),
-    departmentId: String(program.department_id ?? program.departmentId ?? ""),
     name: String(name),
     description: String(description),
     minimumAverage: minAvg,
@@ -155,6 +111,5 @@ export function mapProgramToViewModel(
         ? Number(program.duration_years ?? program.durationYears)
         : undefined,
     facultyName,
-    departmentName,
   };
 }

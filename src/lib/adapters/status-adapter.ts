@@ -94,7 +94,7 @@ export const BACKEND_STATUS_MAP: Record<BackendApplicationStatus, StatusConfig> 
   forwarded_to_department_head: {
     backendStatus: "forwarded_to_department_head",
     labelAr: "محال للقسم الأكاديمي",
-    labelEn: "Forwarded to Department Head",
+    labelEn: "Forwarded to Faculty Head",
     variant: "info",
     badgeClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
     stepIndex: 2,

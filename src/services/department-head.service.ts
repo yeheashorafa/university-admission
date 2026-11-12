@@ -13,7 +13,6 @@ export type HeadApplication = {
   nationalId?: string;
   studentSchoolId?: string;
   program: string;
-  department: string;
   faculty: string;
   status: BackendApplicationStatus;
   forwardedAt?: string;
@@ -127,29 +126,8 @@ export function normalizeHeadApplication(
     program = isAr ? nameAr || nameEn || name || "—" : nameEn || nameAr || name || "—";
   }
 
-  // 5. Department resolution
-  const deptObj =
-    progObj?.department && typeof progObj.department === "object"
-      ? (progObj.department as Record<string, unknown>)
-      : raw.department && typeof raw.department === "object"
-        ? (raw.department as Record<string, unknown>)
-        : null;
-
-  let department = "—";
-  if (typeof raw.department === "string" && raw.department.trim()) {
-    department = raw.department.trim();
-  } else if (deptObj) {
-    const nameAr = typeof deptObj.name_ar === "string" ? deptObj.name_ar.trim() : "";
-    const nameEn = typeof deptObj.name_en === "string" ? deptObj.name_en.trim() : "";
-    const name = typeof deptObj.name === "string" ? deptObj.name.trim() : "";
-    department = isAr ? nameAr || nameEn || name || "—" : nameEn || nameAr || name || "—";
-  }
-
-  // 6. Faculty resolution (NEVER use department as faculty name; return '—' if unavailable)
   const facObj =
-    deptObj?.faculty && typeof deptObj.faculty === "object"
-      ? (deptObj.faculty as Record<string, unknown>)
-      : progObj?.faculty && typeof progObj.faculty === "object"
+    progObj?.faculty && typeof progObj.faculty === "object"
         ? (progObj.faculty as Record<string, unknown>)
         : raw.faculty && typeof raw.faculty === "object"
           ? (raw.faculty as Record<string, unknown>)
@@ -245,7 +223,6 @@ export function normalizeHeadApplication(
     nationalId,
     studentSchoolId,
     program,
-    department,
     faculty,
     status,
     forwardedAt,

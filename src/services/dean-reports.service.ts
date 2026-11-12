@@ -33,15 +33,6 @@ export async function getDeanReportByFaculty(
   return extractArray(response.data);
 }
 
-export async function getDeanReportByDepartment(
-  range?: ReportDateRange
-): Promise<ReportLabelCount[]> {
-  const response = await apiClient.get<
-    ReportLabelCount[] | { data: ReportLabelCount[] }
-  >(ENDPOINTS.admissionDean.reports.byDepartment, { params: buildParams(range) });
-  return extractArray(response.data);
-}
-
 export async function getDeanReportByProgram(
   range?: ReportDateRange
 ): Promise<ReportLabelCount[]> {

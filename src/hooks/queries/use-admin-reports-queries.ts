@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getAdminReportByFaculty,
   getAdminReportByStatus,
-  getAdminReportByDepartment,
   getAdminReportByProgram,
   getAdminReportTimeInStatus,
   getAdminReportUploadVolume,
@@ -21,7 +20,6 @@ import { isAdminRole } from "@/constants/roles";
 export type AdminReportsData = {
   byStatus: ReportLabelCount[] | null;
   byFaculty: ReportLabelCount[] | null;
-  byDepartment: ReportLabelCount[] | null;
   byProgram: ReportLabelCount[] | null;
   timeInStatus: ReportTimeInStatus[] | null;
   uploadVolume: ReportDateCount[] | null;
@@ -39,7 +37,6 @@ export function useAdminReportsQuery(range?: ReportDateRange) {
       const results = await Promise.allSettled([
         getAdminReportByStatus(range),
         getAdminReportByFaculty(range),
-        getAdminReportByDepartment(range),
         getAdminReportByProgram(range),
         getAdminReportTimeInStatus(range),
         getAdminReportUploadVolume(range),
@@ -55,11 +52,10 @@ export function useAdminReportsQuery(range?: ReportDateRange) {
       return {
         byStatus: safeValue(results[0], null),
         byFaculty: safeValue(results[1], null),
-        byDepartment: safeValue(results[2], null),
-        byProgram: safeValue(results[3], null),
-        timeInStatus: safeValue(results[4], null),
-        uploadVolume: safeValue(results[5], null),
-        acceptanceRate: safeValue(results[6], null),
+        byProgram: safeValue(results[2], null),
+        timeInStatus: safeValue(results[3], null),
+        uploadVolume: safeValue(results[4], null),
+        acceptanceRate: safeValue(results[5], null),
       };
     },
     enabled: isEnabled,

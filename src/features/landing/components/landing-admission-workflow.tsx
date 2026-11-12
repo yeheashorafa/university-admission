@@ -40,8 +40,8 @@ export function LandingAdmissionWorkflow() {
       num: "03",
       title: isAr ? "المراجعة الإدارية والأكاديمية" : "Manual & Dept Head Review",
       desc: isAr
-        ? "تدقيق موظف القبول للمستندات غير الواضحة ثم اعتماد رئيس القسم الأكاديمي للطلب."
-        : "Admission employee verification for low-confidence scans and department head sign-off.",
+        ? "تدقيق موظف القبول للمستندات غير الواضحة ثم اعتماد رئيس الكلية الأكاديمي للطلب."
+        : "Admission employee verification for low-confidence scans and faculty head sign-off.",
       icon: UserCheck,
       tag: isAr ? "مراجعة بشرية" : "Human Review",
       color: "bg-[#0396E9]/10 text-[#0396E9] border-[#0396E9]/30",

@@ -11,7 +11,6 @@ import {
   Boxes,
   Users,
   GraduationCap,
-  Network,
   Clock,
   Undo2,
   type LucideIcon,
@@ -29,7 +28,6 @@ export type DeanKpiCard = {
     | "rejected"
     | "programs"
     | "faculties"
-    | "departments"
     | "students"
     | "users";
   value: string;
@@ -50,7 +48,6 @@ const kpiIconMap: Record<DeanKpiCard["id"], LucideIcon> = {
   rejected: CircleX,
   programs: Boxes,
   faculties: Building2,
-  departments: Network,
   students: GraduationCap,
   users: Users,
 };

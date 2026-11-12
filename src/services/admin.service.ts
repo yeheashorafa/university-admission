@@ -64,23 +64,9 @@ export type AdminFaculty = {
   is_active?: boolean;
 };
 
-export type AdminDepartment = {
-  id: string | number;
-  faculty_id: string | number;
-  name?: string;
-  name_en?: string;
-  name_ar?: string;
-  is_active?: boolean;
-};
-
 export async function getAdminFaculties(): Promise<AdminFaculty[]> {
   const response = await apiClient.get(ENDPOINTS.admin.faculties);
   return extractArray<AdminFaculty>(response.data);
-}
-
-export async function getAdminDepartments(): Promise<AdminDepartment[]> {
-  const response = await apiClient.get(ENDPOINTS.admin.departments);
-  return extractArray<AdminDepartment>(response.data);
 }
 
 export async function getAdminMasterCatalogPrograms() {
@@ -133,41 +119,6 @@ export async function updateAdminFaculty(
 
 export async function deleteAdminFaculty(facultyId: string | number): Promise<void> {
   await apiClient.delete(`${ENDPOINTS.admin.faculties}/${facultyId}`);
-}
-
-// ---------- Departments CRUD ----------
-
-export type AdminDepartmentPayload = {
-  faculty_id: string | number;
-  name_en: string;
-  name_ar: string;
-  description_en?: string;
-  description_ar?: string;
-  is_active?: boolean;
-};
-
-export async function createAdminDepartment(
-  payload: AdminDepartmentPayload
-): Promise<Record<string, unknown>> {
-  const response = await apiClient.post(ENDPOINTS.admin.departments, payload);
-  return extractResource<Record<string, unknown>>(response.data);
-}
-
-export async function updateAdminDepartment(
-  departmentId: string | number,
-  payload: Partial<AdminDepartmentPayload>
-): Promise<Record<string, unknown>> {
-  const response = await apiClient.put(
-    `${ENDPOINTS.admin.departments}/${departmentId}`,
-    payload
-  );
-  return extractResource<Record<string, unknown>>(response.data);
-}
-
-export async function deleteAdminDepartment(
-  departmentId: string | number
-): Promise<void> {
-  await apiClient.delete(`${ENDPOINTS.admin.departments}/${departmentId}`);
 }
 
 // ---------- Admission Cycles CRUD ----------

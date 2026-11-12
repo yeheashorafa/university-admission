@@ -35,7 +35,7 @@ const roleConfig: Record<
     className: "bg-primary/10 text-primary",
   },
   [userRoles.departmentHead]: {
-    label: "Department Head",
+    label: "Faculty Head",
     className: "bg-secondary/10 text-secondary",
   },
   [userRoles.admissionEmployee]: {

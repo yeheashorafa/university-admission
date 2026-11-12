@@ -80,7 +80,6 @@ export function AdminProgramsPage() {
         capacity: Number(p.capacity || 100),
         applicationsCount: Number(p.applications_count || 0),
         acceptedCount: Number(p.accepted_count || 0),
-        departmentId: p.department_id != null ? String(p.department_id) : undefined,
         facultyId: p.faculty_id != null ? String(p.faculty_id) : undefined,
         branches: Array.isArray(p.branches)
           ? (p.branches.map((b) =>
@@ -163,7 +162,7 @@ export function AdminProgramsPage() {
 
   async function handleSubmitProgram(program: AdminProgram) {
     const payload: AdminProgramPayload = {
-      department_id: Number(program.departmentId),
+      faculty_id: Number(program.facultyId),
       name_en: program.title,
       name_ar: program.title,
       minimum_average: program.minimumRate,
@@ -212,8 +211,8 @@ export function AdminProgramsPage() {
       await updateProgramMutation.mutateAsync({
         programId: program.id,
         payload: {
-          department_id:
-            program.departmentId != null ? Number(program.departmentId) : undefined,
+          faculty_id:
+            program.facultyId != null ? Number(program.facultyId) : undefined,
           name_en: program.title,
           name_ar: program.title,
           minimum_average: program.minimumRate,
@@ -280,4 +279,4 @@ export function AdminProgramsPage() {
       />
     </AdminLayout>
   );
-}
+}

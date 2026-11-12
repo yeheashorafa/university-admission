@@ -15,7 +15,6 @@ import { ReportsStats } from "./components/reports-stats";
 import { ApplicationStatusReport } from "./components/application-status-report";
 import { AiAlertsReport } from "./components/ai-alerts-report";
 import { FacultyReportTable } from "./components/faculty-report-table";
-import { DepartmentReportTable } from "./components/department-report-table";
 import { ProgramReportTable } from "./components/program-report-table";
 import { buildAdminReportsAnalytics } from "./utils/admin-reports-analytics";
 
@@ -36,7 +35,6 @@ export function AdminReportsPage() {
     return buildAdminReportsAnalytics(applications, {
       byStatus: reports?.byStatus,
       byFaculty: reports?.byFaculty,
-      byDepartment: reports?.byDepartment,
       byProgram: reports?.byProgram,
     });
   }, [applications, reports]);
@@ -62,7 +60,6 @@ export function AdminReportsPage() {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <DepartmentReportTable data={analytics.departmentDistribution} />
               <ProgramReportTable data={analytics.programDistribution} />
             </div>
           </>

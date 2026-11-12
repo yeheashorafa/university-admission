@@ -57,15 +57,15 @@ export function DepartmentHeadOperationalDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Department Head Header */}
+      {/* Faculty Head Header */}
       <header className="rounded-2xl border border-border bg-card p-6 shadow-[0px_4px_20px_rgba(0,77,64,0.05)]">
         <h1 className="text-2xl font-bold text-primary sm:text-3xl">
-          {isAr ? "لوحة مهام رئيس القسم" : "Department Head Workspace"}
+          {isAr ? "لوحة مهام رئيس الكلية" : "Faculty Head Workspace"}
         </h1>
         <p className="mt-2 leading-7 text-muted-foreground">
           {isAr
             ? "مرحباً بك. تتيح لك هذه اللوحة متابعة والبت في طلبات الالتحاق المحولة لقسمك الأكاديمي."
-            : "Welcome. Review and decide on admission applications forwarded to your academic department."}
+            : "Welcome. Review and decide on admission applications forwarded to your faculty."}
         </p>
       </header>
 
@@ -99,14 +99,14 @@ export function DepartmentHeadOperationalDashboard() {
             </span>
           </div>
           <h3 className="font-bold text-foreground group-hover:text-primary">
-            {isAr ? "طلبات محولة بانتظار قرار القسم" : "Forwarded Applications"}
+            {isAr ? "طلبات محولة بانتظار قرار الكلية" : "Forwarded Applications"}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
             {isAppsError
               ? (isAr ? "فشل استرجاع الطلبات من الخادم" : "Failed to load applications from server")
               : (isAr
                   ? "طلبات التحاق محولة من موظف القبول وتتطلب موافقة القسم"
-                  : "Applications forwarded by admission employee awaiting department decision")}
+                  : "Applications forwarded by admission employee awaiting faculty decision")}
           </p>
           <div className="mt-4 flex items-center gap-1 text-xs font-bold text-primary">
             <span>{isAr ? "الانتقال إلى قائمة الطلبات" : "View Applications"}</span>
@@ -167,7 +167,7 @@ export function DepartmentHeadOperationalDashboard() {
           <div className="mt-4 text-xs text-muted-foreground">
             {isAr
               ? "يعرض النظام فقط الطلبات الموجهة لقسمكم الأكاديمي"
-              : "System only exposes applications scoped to your department"}
+              : "System only exposes applications scoped to your faculty"}
           </div>
         </div>
       </section>
@@ -182,7 +182,7 @@ export function DepartmentHeadOperationalDashboard() {
             <p className="mt-1 text-sm text-muted-foreground">
               {isAr
                 ? "قائمة الطلبات المحولة التي تحتاج إلى مراجعة أكاديمية واتخاذ قرار"
-                : "Applications forwarded to your department requiring academic evaluation"}
+                : "Applications forwarded to your faculty requiring academic evaluation"}
             </p>
           </div>
           <Link
@@ -212,7 +212,7 @@ export function DepartmentHeadOperationalDashboard() {
           <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-muted/20 p-12 text-center text-muted-foreground">
             <FileCheck2 className="size-10 text-muted-foreground/50" />
             <p className="font-bold text-foreground">
-              {isAr ? "لا توجد طلبات محولة حالياً بانتظار قرار القسم" : "No forwarded applications awaiting department decision"}
+              {isAr ? "لا توجد طلبات محولة حالياً بانتظار قرار الكلية" : "No forwarded applications awaiting faculty decision"}
             </p>
             <p className="text-sm">
               {isAr

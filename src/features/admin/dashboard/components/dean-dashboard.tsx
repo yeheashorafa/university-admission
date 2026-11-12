@@ -56,9 +56,6 @@ export function DeanDashboard() {
     if (typeof s.total_faculties === "number") {
       result.push({ id: "faculties", value: s.total_faculties.toLocaleString() });
     }
-    if (typeof s.total_departments === "number") {
-      result.push({ id: "departments", value: s.total_departments.toLocaleString() });
-    }
     if (typeof s.total_students === "number") {
       result.push({ id: "students", value: s.total_students.toLocaleString() });
     }

@@ -7,7 +7,6 @@ export type DeanStatistics = {
   total_applications?: number;
   total_documents?: number;
   total_programs?: number;
-  total_departments?: number;
   total_faculties?: number;
   total_admission_cycles?: number;
   pending_applications?: number;

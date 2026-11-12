@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  Building2,
   GraduationCap,
   Info,
   Layers,
@@ -38,14 +37,6 @@ export function ProgramApplyCard({ program }: ProgramApplyCardProps) {
             icon={GraduationCap}
             label={t("faculty")}
             value={program.facultyName}
-          />
-        )}
-
-        {program.departmentName && (
-          <SummaryItem
-            icon={Building2}
-            label={t("department")}
-            value={program.departmentName}
           />
         )}
 

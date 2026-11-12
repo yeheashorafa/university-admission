@@ -1,19 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useMemo } from "react";
+import { useQueries } from "@tanstack/react-query";
+import { queryKeys } from "@/constants/query-keys";
+import { getProgramById } from "@/services/programs.service";
 import { useLocale, useTranslations } from "next-intl";
 import { Edit2, AlertTriangle } from "lucide-react";
 import type { ApplicationWizardState } from "../../types/application-form.types";
 import { governorates } from "../../data/palestine-addresses.data";
-import { programOptions } from "../../data/application.data";
 
 import {
   QUALIFICATION_TYPES,
   DESIRED_STUDY_LEVELS,
 } from "../../constants/qualification.constants";
 
-import { usePublicFacultiesQuery } from "@/hooks/queries/use-public-catalog-queries";
 
 type ReviewStepProps = {
   state: ApplicationWizardState;
@@ -23,28 +23,14 @@ type ReviewStepProps = {
 export function ReviewStep({ state, onGoToStep }: ReviewStepProps) {
   const locale = useLocale();
   const t = useTranslations("application");
-  const { data: faculties } = usePublicFacultiesQuery();
 
-  const allCatalogPrograms = useMemo(() => {
-    if (!faculties || !Array.isArray(faculties)) return [];
-    const list: Array<{ id: string; titleAr?: string; titleEn?: string }> = [];
-    for (const fac of faculties) {
-      if (Array.isArray(fac.departments)) {
-        for (const dep of fac.departments) {
-          if (Array.isArray(dep.programs)) {
-            for (const prog of dep.programs) {
-              list.push({
-                id: String(prog.id),
-                titleAr: prog.name_ar || prog.name || prog.title,
-                titleEn: prog.name_en || prog.name || prog.title,
-              });
-            }
-          }
-        }
-      }
-    }
-    return list;
-  }, [faculties]);
+  const ids = state.preferences.preferences;
+  const programs = useQueries({
+    queries: ids.map((id) => ({
+      queryKey: queryKeys.programs.details(String(id)),
+      queryFn: () => getProgramById(id),
+    })),
+  });
 
   const getGovernorateName = (id: string) => {
     const gov = governorates.find((g) => g.id === id);
@@ -54,13 +40,8 @@ export function ReviewStep({ state, onGoToStep }: ReviewStepProps) {
 
   const getProgramName = (id: string | number) => {
     const strId = String(id);
-    const catalogMatch = allCatalogPrograms.find((p) => p.id === strId);
-    if (catalogMatch) {
-      return (locale === "ar" ? catalogMatch.titleAr : catalogMatch.titleEn) || catalogMatch.titleAr || catalogMatch.titleEn || strId;
-    }
-    const prog = programOptions.find((p) => p.id === strId);
-    if (!prog) return `البرنامج #${strId}`;
-    return t(`programOptions.${prog.id}.title`);
+    const program = programs[ids.findIndex((item) => String(item) === strId)]?.data;
+    return (locale === "ar" ? program?.name_ar || program?.name_en : program?.name_en || program?.name_ar) ?? strId;
   };
 
   const getRelationName = (rel: string) => {
