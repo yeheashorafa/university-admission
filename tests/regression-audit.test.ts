@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import React from "react";
@@ -19,12 +20,8 @@ import {
 import { mapBackendApplicationToWorkflowApplication } from "../src/features/admin/applications/data/applications-workflow.data";
 import { ApplicationSummaryCard } from "../src/features/admin/application-details/page";
 import { RoleGuard } from "../src/components/auth/role-guard";
+import { ProgramContentSections } from "../src/features/programs/details/components/program-content-sections";
 import { AuthProvider, type CurrentAuthState } from "../src/hooks/use-current-auth";
-import {
-  calculateAvgTimeToDecisionHours,
-  formatTimeToDecisionMetric,
-  resolveMetricUnit,
-} from "../src/features/admin/head-reports/page";
 import { apiClient } from "../src/lib/api/client";
 import { ENDPOINTS } from "../src/lib/api/endpoints";
 import arMessages from "../src/messages/ar.json" with { type: "json" };
@@ -261,12 +258,7 @@ test("3. Head list mapping with nested applicant and selected_program objects", 
     selected_program: {
       id: 12,
       name_ar: "هندسة أمن المعلومات",
-      department: {
-        name_ar: "قسم الأمن السيبراني",
-        faculty: {
-          name_ar: "كلية تكنولوجيا المعلومات",
-        },
-      },
+      faculty: { name_ar: "كلية تكنولوجيا المعلومات" },
     },
     reviewer: {
       id: 4,
@@ -281,20 +273,18 @@ test("3. Head list mapping with nested applicant and selected_program objects", 
   assert.equal(normalized.studentName, "محمود خليل إبراهيم");
   assert.equal(normalized.nationalId, "987654321");
   assert.equal(normalized.program, "هندسة أمن المعلومات");
-  assert.equal(normalized.department, "قسم الأمن السيبراني");
   assert.equal(normalized.faculty, "كلية تكنولوجيا المعلومات");
   assert.equal(normalized.reviewerName, "د. أحمد مراجع");
   assert.equal(normalized.reviewerId, 4);
   assert.equal(normalized.forwardedAt, "2026-10-11T09:30:00Z");
 });
 
-test("4. Applications with incomplete/missing relationships do not crash or substitute department for faculty", () => {
+test("4. Applications with incomplete/missing relationships do not crash or invent a faculty", () => {
   const incompleteRaw = {
     id: 102,
     application_no: "APP-INCOMPLETE",
     status: "under_review",
     applicant: null,
-    department: { name_ar: "قسم هندسة الحاسوب" },
     faculty: null,
   };
 
@@ -302,15 +292,12 @@ test("4. Applications with incomplete/missing relationships do not crash or subs
   const headNorm = normalizeHeadApplication(incompleteRaw, "ar");
   assert.equal(headNorm.studentName, "—");
   assert.equal(headNorm.nationalId, "—");
-  assert.equal(headNorm.department, "قسم هندسة الحاسوب");
-  // CRITICAL: Faculty must NOT be department name; must strictly be "—"
-  assert.equal(headNorm.faculty, "—", "Faculty must not substitute department");
+  assert.equal(headNorm.faculty, "—", "Faculty must remain unavailable");
 
   // mapBackendApplicationToWorkflowApplication
   const workflowNorm = mapBackendApplicationToWorkflowApplication(incompleteRaw);
   assert.equal(workflowNorm.studentName, "—");
-  assert.equal(workflowNorm.department, "قسم هندسة الحاسوب");
-  assert.equal(workflowNorm.faculty, "—", "Faculty must never fall back to department name");
+  assert.equal(workflowNorm.faculty, "—", "Faculty must remain unavailable");
 });
 
 test("5. API failure renders unavailable, not zero (Implementation Test)", () => {
@@ -722,106 +709,6 @@ test("9. Forward note survives API normalization and reaches the details UI (End
   );
 });
 
-test("10. Time-to-decision unit conversions using production calculateAvgTimeToDecisionHours and retry semantics", () => {
-  // Part A: Time to decision unit conversion using production calculateAvgTimeToDecisionHours
-  assert.equal(calculateAvgTimeToDecisionHours([{ label: "average_seconds", value: 7200 }]), 2);
-  assert.equal(calculateAvgTimeToDecisionHours([{ label: "average_minutes", value: 180 }]), 3);
-  assert.equal(calculateAvgTimeToDecisionHours([{ label: "average_hours", value: 5 }]), 5);
-
-  // total_decisions must NEVER be averaged into hours
-  const laravelMetrics = [
-    { label: "average_seconds", value: 172800 },
-    { label: "average_minutes", value: 2880 },
-    { label: "total_decisions", value: 15 },
-  ];
-  // 172800 / 3600 = 48 hours
-  assert.equal(calculateAvgTimeToDecisionHours(laravelMetrics), 48);
-
-  // Unknown units must return null (unavailable state), never averaged as hours
-  assert.equal(
-    calculateAvgTimeToDecisionHours([{ label: "arbitrary_metric", value: 100 }]),
-    null,
-    "Unknown metric unit must return null, never averaged as hours"
-  );
-  assert.equal(calculateAvgTimeToDecisionHours(null), null);
-  assert.equal(calculateAvgTimeToDecisionHours([]), 0);
-
-  // Unit labeling verification: test production resolveMetricUnit and formatTimeToDecisionMetric
-  assert.equal(resolveMetricUnit("average_seconds", true), "ثانية");
-  assert.equal(resolveMetricUnit("average_minutes", true), "دقيقة");
-  assert.equal(resolveMetricUnit("average_hours", true), "ساعة");
-  assert.equal(resolveMetricUnit("total_decisions", true), "قرار");
-  assert.notEqual(resolveMetricUnit("total_decisions", true), "ساعة", "total_decisions unit must NEVER be hours");
-
-  // Unknown unit verification: resolveMetricUnit MUST return null
-  assert.equal(
-    resolveMetricUnit("unknown_metric_from_backend", true),
-    null,
-    "Unknown metric label must have null unit"
-  );
-
-  // Formatted display: confirmed units display value with unit
-  const secondsFormatted = formatTimeToDecisionMetric({ label: "average_seconds", value: 7200 }, true);
-  assert.equal(secondsFormatted.displayValue, "7200 ثانية");
-  assert.equal(secondsFormatted.isKnownUnit, true);
-
-  const decisionsFormatted = formatTimeToDecisionMetric({ label: "total_decisions", value: 15 }, true);
-  assert.equal(decisionsFormatted.displayValue, "15 قرار");
-  assert.equal(decisionsFormatted.isKnownUnit, true);
-
-  // Unknown unit: MUST display "غير متوفر" in Arabic, NEVER display in hours!
-  const unknownMetricAr = formatTimeToDecisionMetric({ label: "unknown_metric_from_backend", value: 42 }, true);
-  assert.equal(unknownMetricAr.isKnownUnit, false);
-  assert.equal(unknownMetricAr.unit, null);
-  assert.equal(
-    unknownMetricAr.displayValue,
-    "غير متوفر",
-    "Unknown metric label must display 'غير متوفر' instead of assuming hours"
-  );
-  assert.equal(
-    unknownMetricAr.displayValue.includes("ساعة"),
-    false,
-    "Unknown metric label must NEVER be displayed in hours"
-  );
-
-  // Unknown unit in English: MUST display "Unavailable", NEVER display in hrs!
-  const unknownMetricEn = formatTimeToDecisionMetric({ label: "unknown_metric_from_backend", value: 42 }, false);
-  assert.equal(unknownMetricEn.isKnownUnit, false);
-  assert.equal(unknownMetricEn.unit, null);
-  assert.equal(
-    unknownMetricEn.displayValue,
-    "Unavailable",
-    "Unknown metric label in English must display 'Unavailable'"
-  );
-  assert.equal(
-    unknownMetricEn.displayValue.includes("hrs"),
-    false,
-    "Unknown metric label must NEVER be displayed in hrs"
-  );
-
-  // Part B: forwardedAt timestamp must NEVER fall back to updated_at
-  const appWithOnlyUpdatedAt = {
-    id: 991,
-    status: "forwarded_to_department_head",
-    updated_at: "2026-10-18T10:00:00Z",
-  };
-  const normalizedTimestamp = normalizeHeadApplication(appWithOnlyUpdatedAt);
-  assert.equal(
-    normalizedTimestamp.forwardedAt,
-    undefined,
-    "forwardedAt must not fall back to updated_at unless backend confirms forwarding event"
-  );
-
-  const appWithExplicitForwardedAt = {
-    id: 992,
-    status: "forwarded_to_department_head",
-    forwarded_at: "2026-10-17T08:30:00Z",
-    updated_at: "2026-10-18T10:00:00Z",
-  };
-  const normalizedExplicit = normalizeHeadApplication(appWithExplicitForwardedAt);
-  assert.equal(normalizedExplicit.forwardedAt, "2026-10-17T08:30:00Z");
-});
-
 test("11. User management mutation safeguards prevent non-superadmin execution", () => {
   function verifySuperAdminPermission(role?: string | null) {
     if (!isSuperAdmin(role)) {
@@ -845,7 +732,7 @@ test("11. User management mutation safeguards prevent non-superadmin execution",
 test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   // App 6 payload shape from live backend:
   // applicant has secondary_school_record.student_school_id = "31100027", but NO national_id.
-  const app6Payload = {
+  const app6Payload: Record<string, unknown> = {
     id: 6,
     application_number: "APP-98205305",
     status: "forwarded_to_department_head",
@@ -872,7 +759,7 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   };
 
   // 1. Workflow application mapping
-  const workflowApp = mapBackendApplicationToWorkflowApplication(app6Payload as any);
+  const workflowApp = mapBackendApplicationToWorkflowApplication(app6Payload);
   assert.equal(
     workflowApp.nationalId,
     "—",
@@ -885,7 +772,7 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   );
 
   // 2. Department Head application normalization
-  const headApp = normalizeHeadApplication(app6Payload as any);
+  const headApp = normalizeHeadApplication(app6Payload);
   assert.equal(
     headApp.nationalId,
     "—",
@@ -931,10 +818,75 @@ test("12. National ID versus School ID isolation (App ID 6 case)", () => {
   );
 });
 
-test("payment routes are unavailable in the disabled release and admission stays available", () => {
-  if (process.env.NEXT_PUBLIC_ENABLE_PAYMENTS === "true") return;
-  for (const path of ["/en/payment", "/ar/payment/success", "/en/payment/42", "/ar/applications/42/payment"]) {
-    assert.equal(canAccessRoute(userRoles.student, path), false, path);
+test("online payment routes are absent and admission stays available", () => {
+  for (const path of [
+    "src/app/[locale]/payment",
+    "src/app/[locale]/applications/[applicationId]/payment",
+  ]) {
+    assert.equal(existsSync(path), false, path);
   }
   assert.equal(canAccessRoute(userRoles.student, "/en/applications/new"), true);
+});
+
+test("catalog details render informative fees and branch-specific admission thresholds", () => {
+  const markup = renderToStaticMarkup(
+    React.createElement(NextIntlClientProvider, {
+      locale: "en",
+      messages: enMessages,
+    }, React.createElement(ProgramContentSections, {
+        program: {
+          id: 1,
+          admission_thresholds: [
+            { id: 1, branch: { id: 1, name_en: "Scientific" }, gender: "female", min_average_percent: "93.50" },
+            { id: 2, branch: { id: 2, name_en: "Literary" }, gender: "male", min_average_percent: "81" },
+          ],
+          fees: [{ id: 1, price_per_hour_dinar: "100.00", credit_hours: 258 }],
+        },
+    })),
+  );
+
+  for (const text of ["Indicative fees", "100 JOD", "258", "Scientific", "Female", "93.5%", "Literary", "Male", "81%"]) {
+    assert.ok(markup.includes(text), text);
+  }
+  assert.doesNotMatch(markup, /<(?:a|button|form|input)\b|payment|checkout|سداد/i);
+});
+
+test("missing English content is labelled Arabic and empty catalog sections are omitted", () => {
+  const program = {
+    id: 2,
+    description_ar: "وصف البرنامج",
+    description_en: "",
+    why_study_ar: "سبب الدراسة",
+    why_study_en: null,
+    career_opportunities: [
+      { id: 1, ar: "الطب السريري", en: "Clinical medicine" },
+      { id: 2, ar: "البحث الطبي", en: "" },
+    ],
+    objectives: [],
+    graduate_outcomes: [],
+    courses: [],
+  };
+  const markup = renderToStaticMarkup(
+    React.createElement(NextIntlClientProvider, {
+      locale: "en",
+      messages: enMessages,
+    }, React.createElement(ProgramContentSections, { program })),
+  );
+
+  assert.match(markup, /Some content is only available in Arabic/);
+  assert.match(markup, /lang="ar" dir="rtl">وصف البرنامج/);
+  assert.match(markup, /lang="ar" dir="rtl">سبب الدراسة/);
+  assert.match(markup, /lang="ar" dir="rtl">البحث الطبي/);
+  assert.match(markup, /lang="en" dir="ltr">Clinical medicine/);
+  assert.doesNotMatch(markup, /Objectives|Learning Outcomes|Courses/);
+
+  const arabic = renderToStaticMarkup(
+    React.createElement(NextIntlClientProvider, {
+      locale: "ar",
+      messages: arMessages,
+    }, React.createElement(ProgramContentSections, { program })),
+  );
+  assert.match(arabic, /وصف البرنامج/);
+  assert.match(arabic, /الطب السريري/);
+  assert.doesNotMatch(arabic, /بعض المحتوى متوفر بالعربية فقط|Clinical medicine/);
 });

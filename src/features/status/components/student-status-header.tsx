@@ -1,11 +1,7 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Clock3 } from "lucide-react";
-import { routes, withLocale } from "@/constants/routes";
-import { applicationStatuses } from "@/constants/application-workflow";
 import type { WorkflowApplication } from "@/features/admin/applications/data/applications-workflow.data";
 
 type StudentStatusHeaderProps = {
@@ -15,7 +11,6 @@ type StudentStatusHeaderProps = {
 
 export function StudentStatusHeader({
   application,
-  locale,
 }: StudentStatusHeaderProps) {
   const t = useTranslations("studentStatusWorkflow");
   const workflowT = useTranslations("admin.applicationWorkflow");
@@ -53,14 +48,6 @@ export function StudentStatusHeader({
         </div>
       </div>
 
-      {paymentsEnabled && application.currentStatus === applicationStatuses.paymentPending && (
-        <Link
-          href={withLocale(locale, routes.payment)}
-          className="relative z-10 mt-6 inline-flex h-11 items-center justify-center rounded-[16px] bg-secondary px-5 text-sm font-bold text-secondary-foreground transition hover:bg-secondary/90"
-        >
-          {t("payNow")}
-        </Link>
-      )}
     </section>
   );
 }

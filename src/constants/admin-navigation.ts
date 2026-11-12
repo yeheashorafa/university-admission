@@ -3,7 +3,6 @@ import {
   Bell,
   ChartBar,
   Building2,
-  Boxes,
   FileCheck2,
   FileSearch,
   FileSpreadsheet,
@@ -39,12 +38,6 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     href: routes.adminReports,
     icon: BarChart3,
     allowedRoles: [userRoles.admin],
-  },
-  {
-    labelKey: "headReports",
-    href: routes.adminHeadReports,
-    icon: ChartBar,
-    allowedRoles: [userRoles.departmentHead],
   },
   {
     labelKey: "deanReports",
@@ -110,12 +103,6 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     labelKey: "masterData.faculties",
     href: routes.adminFaculties,
     icon: Building2,
-    allowedRoles: [userRoles.admin],
-  },
-  {
-    labelKey: "masterData.departments",
-    href: routes.adminDepartments,
-    icon: Boxes,
     allowedRoles: [userRoles.admin],
   },
   {

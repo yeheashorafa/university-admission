@@ -7,7 +7,7 @@ import { QuickServices } from "./components/quick-services";
 import { LandingFacultiesPreview } from "./components/landing-faculties-preview";
 import { LandingAdmissionWorkflow } from "./components/landing-admission-workflow";
 import { LandingAiVerificationPreview } from "./components/landing-ai-verification-preview";
-import { LandingPaymentSocialSection } from "./components/landing-payment-social-section";
+import { LandingSocialResearchSection } from "./components/landing-social-research-section";
 import { LandingFinalCta } from "./components/landing-final-cta";
 
 export function LandingPage() {
@@ -22,7 +22,7 @@ export function LandingPage() {
         <LandingFacultiesPreview />
         <LandingAdmissionWorkflow />
         <LandingAiVerificationPreview />
-        <LandingPaymentSocialSection />
+        <LandingSocialResearchSection />
         <LandingFinalCta />
       </main>
 

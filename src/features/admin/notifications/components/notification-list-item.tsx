@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import {
   Bell,
   CalendarClock,
-  CircleDollarSign,
   FileWarning,
   Send,
   Trash2,
@@ -45,11 +44,6 @@ const typeConfig: Record<
     labelKey: "notifications.types.status",
     icon: Bell,
     className: "bg-secondary/10 text-secondary",
-  },
-  payment: {
-    labelKey: "notifications.types.payment",
-    icon: CircleDollarSign,
-    className: "bg-accent/40 text-accent-foreground",
   },
   admission: {
     labelKey: "notifications.types.status",

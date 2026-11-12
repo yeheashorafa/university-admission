@@ -8,7 +8,6 @@ export type AdmissionCycle = {
   status: AdmissionCycleStatus;
   applicationsOpenAt: string;
   applicationsCloseAt: string;
-  paymentDeadline: string;
   capacity: number;
   applicationsCount: number;
   acceptedCount: number;

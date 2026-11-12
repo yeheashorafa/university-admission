@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import type {
@@ -10,7 +10,6 @@ import type {
 } from "../data/admin-programs.data";
 import {
   useAdminBranchesQuery,
-  useAdminDepartmentsQuery,
   useAdminFacultiesQuery,
 } from "@/hooks/queries";
 
@@ -59,7 +58,7 @@ function AdminProgramFormModalContent({
   const locale = useLocale();
   const { data: branchList = [] } = useAdminBranchesQuery();
   const { data: facultyList = [] } = useAdminFacultiesQuery();
-  const { data: departmentList = [] } = useAdminDepartmentsQuery();
+
 
   const branchOptions = branchList.map((branch) => ({
     value: String(branch.id),
@@ -81,9 +80,6 @@ function AdminProgramFormModalContent({
   const [facultyId, setFacultyId] = useState(
     program?.facultyId ? String(program.facultyId) : ""
   );
-  const [departmentId, setDepartmentId] = useState(
-    program?.departmentId ? String(program.departmentId) : ""
-  );
   const [duration, setDuration] = useState(program?.duration ?? "4 years");
   const [minimumRate, setMinimumRate] = useState(program?.minimumRate ?? 70);
   const [capacity, setCapacity] = useState(program?.capacity ?? 100);
@@ -93,50 +89,6 @@ function AdminProgramFormModalContent({
   const [branches, setBranches] = useState<string[]>(
     (program?.branches as unknown as string[]) ?? []
   );
-
-  const departmentOptions = departmentList
-    .filter(
-      (department) =>
-        !facultyId || String(department.faculty_id) === String(facultyId)
-    )
-    .map((department) => ({
-      value: String(department.id),
-      label:
-        locale === "ar"
-          ? department.name_ar || department.name_en || String(department.id)
-          : department.name_en || department.name_ar || String(department.id),
-    }));
-
-  useEffect(() => {
-    if (
-      mode === "edit" &&
-      program?.departmentId &&
-      !facultyId &&
-      departmentList.length > 0
-    ) {
-      const department = departmentList.find(
-        (item) => String(item.id) === String(program.departmentId)
-      );
-      if (department?.faculty_id) {
-        // One-time pre-fill of the cascading faculty select from the program's
-        // department once the reference data has loaded.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setFacultyId(String(department.faculty_id));
-      }
-    }
-  }, [mode, program, facultyId, departmentList]);
-
-  function handleFacultyChange(value: string) {
-    setFacultyId(value);
-    if (departmentId) {
-      const department = departmentList.find(
-        (item) => String(item.id) === String(departmentId)
-      );
-      if (department && String(department.faculty_id) !== String(value)) {
-        setDepartmentId("");
-      }
-    }
-  }
 
   function toggleBranch(branch: string) {
     setBranches((current) => {
@@ -169,7 +121,6 @@ function AdminProgramFormModalContent({
       applicationsCount: program?.applicationsCount ?? 0,
       acceptedCount: program?.acceptedCount ?? 0,
       branches: branches as unknown as AcademicBranch[],
-      departmentId,
       facultyId,
     };
 
@@ -216,27 +167,11 @@ function AdminProgramFormModalContent({
               <SelectField
                 required
                 value={facultyId}
-                onChange={handleFacultyChange}
+                onChange={setFacultyId}
                 options={facultyOptions}
                 placeholder={t("programs.form.selectFaculty")}
                 disabled={facultyList.length === 0}
                 emptyLabel={t("programs.form.selectFaculty")}
-              />
-            </FormField>
-
-            <FormField label={t("programs.form.department")}>
-              <SelectField
-                required
-                value={departmentId}
-                onChange={setDepartmentId}
-                options={departmentOptions}
-                placeholder={t("programs.form.selectDepartment")}
-                disabled={!facultyId || departmentList.length === 0}
-                emptyLabel={
-                  facultyId
-                    ? t("programs.form.noDepartments")
-                    : t("programs.form.selectFacultyFirst")
-                }
               />
             </FormField>
 

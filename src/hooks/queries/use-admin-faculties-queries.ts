@@ -2,18 +2,11 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  getAdminDepartments,
   getAdminFaculties,
   createAdminFaculty,
   updateAdminFaculty,
   deleteAdminFaculty,
-  createAdminDepartment,
-  updateAdminDepartment,
-  deleteAdminDepartment,
-  type AdminDepartment,
-  type AdminFaculty,
   type AdminFacultyPayload,
-  type AdminDepartmentPayload,
 } from "@/services/admin.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { isAdminRole } from "@/constants/roles";
@@ -33,17 +26,6 @@ export function useAdminFacultiesQuery() {
   return useQuery({
     queryKey: ["admin", "faculties"],
     queryFn: getAdminFaculties,
-    enabled: isEnabled,
-    retry: false,
-  });
-}
-
-export function useAdminDepartmentsQuery() {
-  const isEnabled = useAdminCatalogGuard();
-
-  return useQuery({
-    queryKey: ["admin", "departments"],
-    queryFn: getAdminDepartments,
     enabled: isEnabled,
     retry: false,
   });
@@ -87,46 +69,3 @@ export function useDeleteAdminFacultyMutation() {
     },
   });
 }
-
-export function useCreateAdminDepartmentMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: AdminDepartmentPayload) =>
-      createAdminDepartment(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "departments"] });
-    },
-  });
-}
-
-export function useUpdateAdminDepartmentMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      departmentId,
-      payload,
-    }: {
-      departmentId: string | number;
-      payload: Partial<AdminDepartmentPayload>;
-    }) => updateAdminDepartment(departmentId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "departments"] });
-    },
-  });
-}
-
-export function useDeleteAdminDepartmentMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (departmentId: string | number) =>
-      deleteAdminDepartment(departmentId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "departments"] });
-    },
-  });
-}
-
-export type { AdminDepartment, AdminFaculty };

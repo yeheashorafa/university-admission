@@ -14,10 +14,8 @@ export const ENDPOINTS = {
   public: {
     admissionCycles: "/public/admission-cycles",
     faculties: "/public/faculties",
-    facultyDepartments: (facultyId: string | number) =>
-      `/public/faculties/${facultyId}/departments`,
-    departmentPrograms: (departmentId: string | number) =>
-      `/public/departments/${departmentId}/programs`,
+    facultyPrograms: (facultyId: string | number) =>
+      `/public/faculties/${facultyId}/programs`,
     documentTypes: "/public/document-types",
     // Backend Gap: Check if backend provides GET /public/application-types
     applicationTypes: "/public/application-types",
@@ -95,19 +93,12 @@ export const ENDPOINTS = {
     readAllNotifications: "/department_head/notifications/read-all",
     deleteNotification: (id: string | number) =>
       `/department_head/notifications/${id}`,
-    reports: {
-      byStatus: "/department_head/reports/applications/by-status",
-      throughput: "/department_head/reports/applications/throughput",
-      timeToDecision: "/department_head/reports/applications/time-to-decision",
-      acceptanceRate: "/department_head/reports/applications/acceptance-rate",
-    },
   },
   admissionDean: {
     dashboard: "/admission_dean/dashboard",
     reports: {
       byStatus: "/admission_dean/reports/applications/by-status",
       byFaculty: "/admission_dean/reports/applications/by-faculty",
-      byDepartment: "/admission_dean/reports/applications/by-department",
       byProgram: "/admission_dean/reports/applications/by-program",
       timeInStatus: "/admission_dean/reports/applications/time-in-status",
       uploadVolume: "/admission_dean/reports/documents/upload-volume",
@@ -123,7 +114,6 @@ export const ENDPOINTS = {
     users: "/admin/users",
     userDetail: (id: string | number) => `/admin/users/${id}`,
     faculties: "/admin/faculties",
-    departments: "/admin/departments",
     programs: "/admin/programs",
     admissionCycles: "/admin/admission-cycles",
     documentTypes: "/admin/document-types",
@@ -132,7 +122,6 @@ export const ENDPOINTS = {
     reports: {
       byStatus: "/admin/reports/applications/by-status",
       byFaculty: "/admin/reports/applications/by-faculty",
-      byDepartment: "/admin/reports/applications/by-department",
       byProgram: "/admin/reports/applications/by-program",
       timeInStatus: "/admin/reports/applications/time-in-status",
       uploadVolume: "/admin/reports/documents/upload-volume",

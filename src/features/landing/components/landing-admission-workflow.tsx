@@ -1,12 +1,10 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import { useLocale } from "next-intl";
 import {
   FileText,
   Sparkles,
   UserCheck,
-  CreditCard,
   IdCard,
   ClipboardList,
   CheckCircle2,
@@ -42,22 +40,12 @@ export function LandingAdmissionWorkflow() {
       num: "03",
       title: isAr ? "المراجعة الإدارية والأكاديمية" : "Manual & Dept Head Review",
       desc: isAr
-        ? "تدقيق موظف القبول للمستندات غير الواضحة ثم اعتماد رئيس القسم الأكاديمي للطلب."
-        : "Admission employee verification for low-confidence scans and department head sign-off.",
+        ? "تدقيق موظف القبول للمستندات غير الواضحة ثم اعتماد رئيس الكلية الأكاديمي للطلب."
+        : "Admission employee verification for low-confidence scans and faculty head sign-off.",
       icon: UserCheck,
       tag: isAr ? "مراجعة بشرية" : "Human Review",
       color: "bg-[#0396E9]/10 text-[#0396E9] border-[#0396E9]/30",
     },
-    ...(paymentsEnabled ? [{
-      num: "04",
-      title: isAr ? "سداد رسوم القبول" : "Admission Fee Payment",
-      desc: isAr
-        ? "تسديد رسوم تثبيت القبول عبر الفيزا، الماستركارد، أو التحويل البنكي وحفظ الإيصال."
-        : "Online fee settlement via card or bank transfer to confirm seat reservation.",
-      icon: CreditCard,
-      tag: isAr ? "دفع آمن" : "Secure Payment",
-      color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    }] : []),
     {
       num: "05",
       title: isAr ? "إصدار الرقم الجامعي" : "University Student ID Issued",

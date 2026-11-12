@@ -33,10 +33,6 @@ export function AcademicSummaryCard() {
           label={t("graduationYear")}
           value={activeApp?.submittedAt ? activeApp.submittedAt.split("-")[0] : (isAr ? "غير متوفر" : "N/A")}
         />
-        <InfoRow
-          label={t("school")}
-          value={activeApp?.departmentName || (isAr ? "غير متوفر" : "N/A")}
-        />
       </div>
     </section>
   );

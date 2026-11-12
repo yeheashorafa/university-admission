@@ -267,7 +267,6 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
   const successStatuses: ApplicationStatus[] = [
     applicationStatuses.headApproved,
-    applicationStatuses.paymentCompleted,
     applicationStatuses.universityNumberIssued,
     applicationStatuses.completed,
   ];
@@ -277,7 +276,6 @@ function StatusBadge({ status }: StatusBadgeProps) {
     applicationStatuses.employeeReview,
     applicationStatuses.employeeApproved,
     applicationStatuses.headReview,
-    applicationStatuses.paymentPending,
     applicationStatuses.socialResearchRequired,
   ];
 

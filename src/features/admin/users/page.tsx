@@ -54,7 +54,7 @@ function DepartmentHeadUsersPendingView() {
                 {t("users")} - إدارة موظفي القسم
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                متابعة وتكليف موظفي القبول المعنيين بمراجعة طلبات القسم الأكاديمي
+                متابعة وتكليف موظفي القبول المعنيين بمراجعة طلبات الكلية
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@ function DepartmentHeadUsersPendingView() {
               واجهة موظفي القسم قيد التطوير في الخادم
             </h3>
             <p className="text-sm leading-6 text-muted-foreground">
-              تم الاحتفاظ بالصلاحية الوظيفية لرئيس القسم في بنية النظام والواجهة. نظراً لأن مسار <code>/api/v1/admin/users</code> مقصور حصرياً على مشرف النظام (Super Admin) ويرفض صلاحيات رئيس القسم (403 Forbidden)، تتطلب هذه الشاشة توفير نقطة نهاية مخصصة ومحددة النطاق من الخادم (مثل <code>/api/v1/department_head/users</code>).
+              تم الاحتفاظ بالصلاحية الوظيفية لرئيس الكلية في بنية النظام والواجهة. نظراً لأن مسار <code>/api/v1/admin/users</code> مقصور حصرياً على مشرف النظام (Super Admin) ويرفض صلاحيات رئيس الكلية (403 Forbidden)، تتطلب هذه الشاشة توفير نقطة نهاية مخصصة ومحددة النطاق من الخادم (مثل <code>/api/v1/department_head/users</code>).
             </p>
             <p className="text-xs text-muted-foreground">
               تم حجب أدوات التعديل والإضافة والحذف في هذه الواجهة حتى تفعيل نقطة النهاية المخصصة لضمان أمن وسلامة الصلاحيات وعدم تنفيذ أي استدعاءات غير مصرح بها.

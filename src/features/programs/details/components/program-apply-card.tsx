@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  Building2,
   GraduationCap,
   Info,
   Layers,
@@ -41,19 +40,7 @@ export function ProgramApplyCard({ program }: ProgramApplyCardProps) {
           />
         )}
 
-        {program.departmentName && (
-          <SummaryItem
-            icon={Building2}
-            label={t("department")}
-            value={program.departmentName}
-          />
-        )}
-
-        <SummaryItem
-          icon={Percent}
-          label={t("minimumRate")}
-          value={`${program.minimumAverage}%`}
-        />
+        {program.minimumAverage > 0 && <SummaryItem icon={Percent} label={t("minimumRate")} value={`${program.minimumAverage}%`} />}
 
         {safeBranches.length > 0 && (
           <SummaryItem

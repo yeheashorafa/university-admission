@@ -3,7 +3,6 @@ import type { NotificationDataSummary } from "@/services/admin-notifications.ser
 export type NotificationType =
   | "document"
   | "status"
-  | "payment"
   | "admission"
   | "general"
   | "secondary_school_record_import";
@@ -46,16 +45,6 @@ export const adminNotificationsMock: AdminNotification[] = [
     sentAt: "Yesterday, 02:45 PM",
   },
   {
-    id: "3",
-    title: "Payment Step Available",
-    message:
-      "Your documents have been verified. You can now proceed to the admission fee payment step.",
-    type: "payment",
-    audience: "Verified applicants",
-    status: "scheduled",
-    sentAt: "Tomorrow, 09:00 AM",
-  },
-  {
     id: "4",
     title: "Welcome to Admission Portal",
     message:
@@ -79,11 +68,5 @@ export const notificationTemplates = [
     title: "Application Approved",
     message:
       "Congratulations. Your application has been approved. Please follow the next steps in your dashboard.",
-  },
-  {
-    id: "payment-reminder",
-    title: "Payment Reminder",
-    message:
-      "Please complete the admission fee payment before the deadline to avoid delays.",
   },
 ];

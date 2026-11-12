@@ -10,8 +10,9 @@ import { ProgramInfoCards } from "./components/program-info-cards";
 import { ProgramContentSections } from "./components/program-content-sections";
 import { ProgramApplyCard } from "./components/program-apply-card";
 import { PortalFooter } from "@/components/layouts/portal-footer";
+import { usePublicFacultiesQuery } from "@/hooks/queries/use-public-catalog-queries";
 import { useProgramDetailsQuery } from "@/hooks/queries/use-programs-queries";
-import { mapProgramToViewModel } from "../types";
+import { mapFacultyToViewModel, mapProgramToViewModel } from "../types";
 
 type ProgramDetailsPageProps = {
   programId: string;
@@ -21,7 +22,11 @@ export function ProgramDetailsPage({ programId }: ProgramDetailsPageProps) {
   const locale = useLocale();
   const { data: rawProgram, isLoading, isError, error, refetch } = useProgramDetailsQuery(programId);
 
-  const program = rawProgram ? mapProgramToViewModel(rawProgram, locale) : null;
+  const { data: faculties } = usePublicFacultiesQuery();
+  const faculty = faculties?.find((item) => String(item.id) === String(rawProgram?.faculty_id));
+  const program = rawProgram
+    ? { ...mapProgramToViewModel(rawProgram, locale), facultyName: faculty ? mapFacultyToViewModel(faculty, locale).name : undefined }
+    : null;
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -68,7 +73,7 @@ export function ProgramDetailsPage({ programId }: ProgramDetailsPageProps) {
               </aside>
             </div>
           </div>
-        ) : isError || !program ? (
+        ) : isError || !program || !rawProgram ? (
           <div className="rounded-2xl border border-red-200 bg-red-50/50 p-8 text-center space-y-3 my-auto max-w-lg mx-auto">
             <AlertTriangle className="size-8 text-red-500 mx-auto" />
             <h3 className="text-base font-bold text-red-800">
@@ -87,12 +92,12 @@ export function ProgramDetailsPage({ programId }: ProgramDetailsPageProps) {
           </div>
         ) : (
           <>
-            <ProgramDetailsHero program={program} />
+            <ProgramDetailsHero program={program} nameAr={rawProgram.name_ar} nameEn={rawProgram.name_en} />
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
               <section className="flex flex-col gap-6 lg:col-span-8">
                 <ProgramInfoCards program={program} />
-                <ProgramContentSections program={program} />
+                <ProgramContentSections program={rawProgram} />
               </section>
 
               <aside className="lg:col-span-4">

@@ -101,7 +101,6 @@ export function NotificationsToolbar() {
             <option value="all">{t("allTypes")}</option>
             <option value="document">{t("documents")}</option>
             <option value="status">{t("statusUpdates")}</option>
-            <option value="payment">{t("payment")}</option>
             <option value="admission">{t("admission")}</option>
             <option value="general">{t("general")}</option>
           </select>

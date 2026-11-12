@@ -64,34 +64,17 @@ export type BackendApplicationRaw = {
     name_ar?: string;
     name_en?: string;
     name?: string;
-    department?: {
-      name_ar?: string;
-      name_en?: string;
-      name?: string;
-      faculty?: {
-        name_ar?: string;
-        name_en?: string;
-        name?: string;
-      };
-    };
+    faculty?: { name_ar?: string; name_en?: string; name?: string };
   };
   selected_program?: {
     id?: string | number;
     name_ar?: string;
     name_en?: string;
     name?: string;
-    department?: {
-      name_ar?: string;
-      name_en?: string;
-      name?: string;
-      faculty?: {
-        name_ar?: string;
-        name_en?: string;
-        name?: string;
-      };
-    };
+    faculty?: { name_ar?: string; name_en?: string; name?: string };
   };
   selectedProgram?: {
+    faculty?: { name_ar?: string; name_en?: string; name?: string };
     id?: string | number;
     name_ar?: string;
     name_en?: string;
@@ -123,7 +106,6 @@ export type StudentApplicationDetail = {
   programId?: string | number;
   programName?: string;
   facultyName?: string;
-  departmentName?: string;
   submittedAt?: string;
   createdAt?: string;
   rejectionReason?: string;
@@ -176,18 +158,11 @@ export function adaptBackendApplication(
       : prog.name_en || prog.name_ar || prog.name || ""
     : undefined;
 
-  const dept = (prog as { department?: { name_ar?: string; name_en?: string; name?: string; faculty?: { name_ar?: string; name_en?: string; name?: string } } })?.department;
-
-  const departmentName = dept
+  const faculty = prog?.faculty;
+  const facultyName = faculty
     ? locale === "ar"
-      ? dept.name_ar || dept.name_en || dept.name || ""
-      : dept.name_en || dept.name_ar || dept.name || ""
-    : undefined;
-
-  const facultyName = dept?.faculty
-    ? locale === "ar"
-      ? dept.faculty.name_ar || dept.faculty.name_en || dept.faculty.name || ""
-      : dept.faculty.name_en || dept.faculty.name_ar || dept.faculty.name || ""
+      ? faculty.name_ar || faculty.name_en || faculty.name
+      : faculty.name_en || faculty.name_ar || faculty.name
     : undefined;
 
   const preferencesMapped = (raw.preferences || []).map((pref, idx) => ({
@@ -230,7 +205,6 @@ export function adaptBackendApplication(
     programId: raw.program_id ?? raw.programId ?? prog?.id,
     programName,
     facultyName,
-    departmentName,
     submittedAt: raw.submitted_at ?? raw.submittedAt,
     createdAt: raw.created_at ?? raw.createdAt,
     rejectionReason: raw.decision_reason ?? raw.rejectionReason,

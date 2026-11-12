@@ -22,9 +22,6 @@ export type LegacyUIStatus =
   | "head_review"
   | "head_approved"
   | "head_rejected"
-  | "payment_pending"
-  | "payment_completed"
-  | "payment_failed"
   | "university_number_issued"
   | "social_research_required"
   | "social_research_submitted"
@@ -97,7 +94,7 @@ export const BACKEND_STATUS_MAP: Record<BackendApplicationStatus, StatusConfig> 
   forwarded_to_department_head: {
     backendStatus: "forwarded_to_department_head",
     labelAr: "محال للقسم الأكاديمي",
-    labelEn: "Forwarded to Department Head",
+    labelEn: "Forwarded to Faculty Head",
     variant: "info",
     badgeClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
     stepIndex: 2,
@@ -185,7 +182,6 @@ export function normalizeStatus(status?: string | null): BackendApplicationStatu
   }
   if (
     s === "completed" ||
-    s === "payment_completed" ||
     s === "university_number_issued" ||
     s === "head_approved" ||
     s === "final_accepted"

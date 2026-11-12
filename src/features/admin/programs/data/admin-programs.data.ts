@@ -13,6 +13,5 @@ export type AdminProgram = {
   applicationsCount: number;
   acceptedCount: number;
   branches: AcademicBranch[];
-  departmentId?: string | number;
   facultyId?: string | number;
 };

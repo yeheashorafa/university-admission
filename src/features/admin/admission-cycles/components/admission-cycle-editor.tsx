@@ -86,7 +86,6 @@ function AdmissionCycleEditorContent({
   const [applicationsCloseAt, setApplicationsCloseAt] = useState(
     cycle.applicationsCloseAt
   );
-  const [paymentDeadline, setPaymentDeadline] = useState(cycle.paymentDeadline);
   const [capacity, setCapacity] = useState(String(cycle.capacity));
   const [notes, setNotes] = useState(cycle.notes);
 
@@ -101,7 +100,6 @@ function AdmissionCycleEditorContent({
         semester,
         applicationsOpenAt,
         applicationsCloseAt,
-        paymentDeadline,
         capacity: Number(capacity),
         notes,
       },
@@ -226,12 +224,6 @@ function AdmissionCycleEditorContent({
             onChange={setApplicationsCloseAt}
           />
 
-          <CycleInput
-            label={t("admissionCycles.paymentDeadline")}
-            type="date"
-            value={paymentDeadline}
-            onChange={setPaymentDeadline}
-          />
         </div>
 
         <div>

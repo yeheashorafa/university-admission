@@ -109,7 +109,7 @@ export function ApplicationWorkflowActions({
     if (!note.trim() || note.trim().length < 5) {
       await Swal.fire({
         title: "تنبيه",
-        text: "يرجى كتابة سبب التحويل قبل إرسال الطلب لرئيس القسم (5 أحرف على الأقل)",
+        text: "يرجى كتابة سبب التحويل قبل إرسال الطلب لرئيس الكلية (5 أحرف على الأقل)",
         icon: "warning",
       });
       return;
@@ -117,7 +117,7 @@ export function ApplicationWorkflowActions({
 
     const res = await Swal.fire({
       title: "تأكيد التحويل",
-      text: "هل أنت متأكد من تحويل الطلب لرئيس القسم؟",
+      text: "هل أنت متأكد من تحويل الطلب لرئيس الكلية؟",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "تحويل",
@@ -129,7 +129,7 @@ export function ApplicationWorkflowActions({
     try {
       await forwardMutation.mutateAsync({ id: applicationId, note: note.trim() });
       setNote("");
-      await Swal.fire({ title: t("successTitle"), text: "تم تحويل الطلب لرئيس القسم بنجاح", icon: "success" });
+      await Swal.fire({ title: t("successTitle"), text: "تم تحويل الطلب لرئيس الكلية بنجاح", icon: "success" });
       onSuccessAction?.();
     } catch (err) {
       await Swal.fire({ title: "خطأ", text: getApiErrorMessage(err), icon: "error" });
@@ -272,14 +272,14 @@ export function ApplicationWorkflowActions({
 
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {showEmployeeActions
-          ? "راجع الطلب والمستندات. يمكنك قبول الطلب مباشرة إذا كان مكتملًا، أو تحويله لرئيس القسم مع ملاحظة إذا كان يحتاج مراجعة أكاديمية."
+          ? "راجع الطلب والمستندات. يمكنك قبول الطلب مباشرة إذا كان مكتملًا، أو تحويله لرئيس الكلية مع ملاحظة إذا كان يحتاج مراجعة أكاديمية."
           : t("headActionsDescription")}
       </p>
 
       <textarea
         value={note}
         onChange={(event) => setNote(event.target.value)}
-        placeholder={showEmployeeActions ? "سبب التحويل / ملاحظة للعميد أو رئيس القسم" : t("notePlaceholder")}
+        placeholder={showEmployeeActions ? "سبب التحويل / ملاحظة للعميد أو رئيس الكلية" : t("notePlaceholder")}
         disabled={isSubmitting}
         className="mt-5 min-h-[120px] w-full rounded-[18px] border border-input bg-background p-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50"
       />
@@ -302,7 +302,7 @@ export function ApplicationWorkflowActions({
               onClick={handleEmployeeForward}
               className="h-11 rounded-[16px] border border-secondary/40 bg-secondary/10 text-sm font-bold text-secondary transition hover:bg-secondary/15 disabled:opacity-50"
             >
-              {isSubmitting ? "جاري المعالجة..." : "تحويل لرئيس القسم"}
+              {isSubmitting ? "جاري المعالجة..." : "تحويل لرئيس الكلية"}
             </button>
 
             <button

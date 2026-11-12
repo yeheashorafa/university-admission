@@ -1,7 +1,6 @@
 export type StudentNotificationType =
   | "document"
   | "status"
-  | "payment"
   | "admission"
   | "general";
 
@@ -53,21 +52,10 @@ export const studentNotificationsMock: StudentNotification[] = [
     actionHref: "/documents",
   },
   {
-    id: "4",
-    title: "Payment Step Required",
-    message:
-      "Your application has been approved by the department head. Please complete the admission fee payment.",
-    type: "payment",
-    status: "read",
-    time: "Yesterday, 02:45 PM",
-    actionLabel: "Pay Now",
-    actionHref: "/payment",
-  },
-  {
     id: "5",
     title: "Social Research Form Required",
     message:
-      "Your payment was verified and university number issued. Please fill out the social research form.",
+      "Your university number has been issued. Please fill out the social research form.",
     type: "admission",
     status: "read",
     time: "Yesterday, 04:10 PM",

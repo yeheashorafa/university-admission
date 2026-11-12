@@ -52,30 +52,24 @@ export interface PublicFaculty {
   description_ar?: string;
   description_en?: string;
   is_active?: boolean;
-  departments?: PublicDepartment[];
   [key: string]: unknown;
 }
 
-export interface PublicDepartment {
+export interface CatalogBranch {
   id: string | number;
-  faculty_id?: string | number;
-  facultyId?: string | number;
-  name?: string;
   name_ar?: string;
   name_en?: string;
-  title?: string;
-  description?: string;
-  description_ar?: string;
-  description_en?: string;
-  is_active?: boolean;
-  programs?: PublicProgram[];
-  [key: string]: unknown;
+}
+
+export interface CatalogText {
+  id: string | number;
+  ar?: string | null;
+  en?: string | null;
 }
 
 export interface PublicProgram {
+  faculty_id?: string | number;
   id: string | number;
-  department_id?: string | number;
-  departmentId?: string | number;
   name?: string;
   name_ar?: string;
   name_en?: string;
@@ -87,9 +81,24 @@ export interface PublicProgram {
   degree?: string;
   duration_years?: number;
   durationYears?: number;
-  branches?: string[];
+  branches?: (string | CatalogBranch)[];
+  description_ar?: string | null;
+  description_en?: string | null;
+  why_study_ar?: string | null;
+  why_study_en?: string | null;
+  career_opportunities?: CatalogText[];
+  objectives?: CatalogText[];
+  graduate_outcomes?: CatalogText[];
+  courses?: { id: string | number; name_ar?: string; name_en?: string; credit_hours: number }[];
+  links?: { id: string | number; kind: string; label_ar?: string; label_en?: string; url: string; is_active: boolean }[];
+  fees?: { id: string | number; price_per_hour_dinar: string | number; credit_hours: number }[];
+  admission_thresholds?: {
+    id: string | number;
+    branch: CatalogBranch;
+    gender: "male" | "female";
+    min_average_percent: string | number;
+  }[];
   is_active?: boolean;
-  department?: PublicDepartment;
   [key: string]: unknown;
 }
 
@@ -122,52 +131,19 @@ export async function getPublicFaculties(): Promise<PublicFaculty[]> {
   return extractArray<PublicFaculty>(response.data);
 }
 
-export async function getFacultyDepartments(facultyId: string | number): Promise<PublicDepartment[]> {
-  const response = await apiClient.get(ENDPOINTS.public.facultyDepartments(facultyId));
-  return extractArray<PublicDepartment>(response.data);
-}
+export async function getFacultyPrograms(facultyId: string | number): Promise<PublicProgram[]> {
+  const programs: PublicProgram[] = [];
+  let page = 1;
+  let lastPage = 1;
 
-export async function getDepartmentPrograms(departmentId: string | number): Promise<PublicProgram[]> {
-  const response = await apiClient.get(ENDPOINTS.public.departmentPrograms(departmentId));
-  return extractArray<PublicProgram>(response.data);
-}
+  do {
+    const { data } = await apiClient.get(ENDPOINTS.public.facultyPrograms(facultyId), { params: { page, per_page: 50 } });
+    programs.push(...extractArray<PublicProgram>(data));
+    lastPage = data?.meta?.last_page ?? 1;
+    page++;
+  } while (page <= lastPage);
 
-export type FacultyProgramsResult = {
-  departments: PublicDepartment[];
-  programs: PublicProgram[];
-};
-
-export async function getFacultyDepartmentsAndPrograms(
-  facultyId: string | number
-): Promise<FacultyProgramsResult> {
-  const departments = await getFacultyDepartments(facultyId);
-  const safeDepartments = Array.isArray(departments) ? departments : [];
-
-  if (safeDepartments.length === 0) {
-    return { departments: [], programs: [] };
-  }
-
-  const programsPromises = safeDepartments.map(async (dept) => {
-    if (dept.programs && Array.isArray(dept.programs) && dept.programs.length > 0) {
-      return dept.programs.map((p) => ({ ...p, department: dept }));
-    }
-    try {
-      const progs = await getDepartmentPrograms(dept.id);
-      const safeProgs = Array.isArray(progs) ? progs : [];
-      return safeProgs.map((p) => ({ ...p, department: dept }));
-    } catch {
-      return [];
-    }
-  });
-
-  const programsPerDept = await Promise.all(programsPromises);
-  const safeProgramsPerDept = Array.isArray(programsPerDept) ? programsPerDept : [];
-  const flatPrograms = safeProgramsPerDept.flat().filter(Boolean);
-
-  return {
-    departments: safeDepartments,
-    programs: Array.isArray(flatPrograms) ? flatPrograms : [],
-  };
+  return programs;
 }
 
 export async function getDocumentTypes(): Promise<PublicDocumentType[]> {

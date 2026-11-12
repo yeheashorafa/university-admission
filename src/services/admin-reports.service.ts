@@ -43,15 +43,6 @@ export async function getAdminReportByFaculty(
   return extractArray(response.data);
 }
 
-export async function getAdminReportByDepartment(
-  range?: ReportDateRange
-): Promise<ReportLabelCount[]> {
-  const response = await apiClient.get<
-    ReportLabelCount[] | { data: ReportLabelCount[] }
-  >(ENDPOINTS.admin.reports.byDepartment, { params: buildParams(range) });
-  return extractArray(response.data);
-}
-
 export async function getAdminReportByProgram(
   range?: ReportDateRange
 ): Promise<ReportLabelCount[]> {

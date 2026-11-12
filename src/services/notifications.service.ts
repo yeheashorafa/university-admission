@@ -4,7 +4,6 @@ import { ENDPOINTS } from "@/lib/api/endpoints";
 export type NotificationType =
   | "document"
   | "status"
-  | "payment"
   | "admission"
   | "general";
 
@@ -27,8 +26,6 @@ export function getNotificationTitle(item: NotificationItem, isAr: boolean = tru
       return isAr ? "تنبيه مستندات" : "Document Alert";
     case "status":
       return isAr ? "تحديث حالة الطلب" : "Status Update";
-    case "payment":
-      return isAr ? "تنبيه مدفوعات" : "Payment Alert";
     case "admission":
       return isAr ? "إشعار قبول" : "Admission Alert";
     default:

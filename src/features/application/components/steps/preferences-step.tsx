@@ -43,8 +43,8 @@ export function PreferencesStep({
     useFacultyProgramsQuery(activeFacultyId);
 
   const availablePrograms: ProgramViewModel[] = useMemo(() => {
-    const safePrograms = Array.isArray(facultyProgramsData?.programs)
-      ? facultyProgramsData.programs
+    const safePrograms = Array.isArray(facultyProgramsData)
+      ? facultyProgramsData
       : [];
     return safePrograms.map((p) => mapProgramToViewModel(p, locale));
   }, [facultyProgramsData, locale]);

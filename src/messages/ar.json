@@ -22,7 +22,6 @@
     "status": "الحالة",
     "profile": "الملف الشخصي",
     "notifications": "الإشعارات",
-    "payment": "الدفع",
     "socialResearch": "البحث الاجتماعي",
     "settings": "الإعدادات",
     "reports": "التقارير",
@@ -249,7 +248,7 @@
     "emailPasswordRequired": "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
     "loggedInSuccessfully": "تم تسجيل الدخول بنجاح.",
     "registerTitle": "إنشاء حساب كطالب",
-    "studentRegisterNote": "هذه الصفحة مخصصة للطلبة الجدد فقط. يتم إنشاء حسابات الموظفين من خلال رئيس القسم.",
+    "studentRegisterNote": "هذه الصفحة مخصصة للطلبة الجدد فقط. يتم إنشاء حسابات الموظفين من خلال رئيس الكلية.",
     "registerDescription": "أدخل بياناتك لإنشاء حساب القبول الخاص بك.",
     "fullName": "الاسم الكامل",
     "phoneNumber": "رقم الجوال",
@@ -315,13 +314,13 @@
         },
         "tracking": {
           "title": "متابعة حالة الطلب",
-          "description": "متابعة مسار الطلب خطوة بخطوة من المراجعة وحتى الدفع وإصدار الرقم الجامعي."
+          "description": "تابع الطلب من المراجعة إلى إصدار الرقم الجامعي."
         }
       },
       "workflow": {
         "title": "مسار مراجعة منظم",
-        "description": "ينتقل الطلب من التحقق الذكي إلى مراجعة الموظف، ثم اعتماد رئيس القسم، ثم الدفع وإصدار الرقم الجامعي.",
-        "progress": "ذكاء اصطناعي ← موظف ← رئيس قسم ← دفع"
+        "description": "ينتقل الطلب من التحقق الذكي إلى مراجعة الموظف، ثم اعتماد رئيس الكلية وإصدار الرقم الجامعي.",
+        "progress": "التحقق الذكي ← الموظف ← رئيس الكلية"
       }
     },
     "journey": {
@@ -349,16 +348,12 @@
           "description": "تُحال الحالات التي تحتاج تأكيدًا إلى موظف القبول لمراجعتها يدويًا."
         },
         "departmentApproval": {
-          "title": "اعتماد رئيس القسم",
-          "description": "يراجع رئيس القسم قرار الموظف قبل الاعتماد النهائي."
-        },
-        "payment": {
-          "title": "الدفع الإلكتروني",
-          "description": "يكمل الطالب المقبول خطوة الدفع من خلال البوابة."
+          "title": "اعتماد رئيس الكلية",
+          "description": "يراجع رئيس الكلية قرار الموظف قبل الاعتماد النهائي."
         },
         "universityNumber": {
           "title": "إصدار الرقم الجامعي",
-          "description": "بعد نجاح الدفع يحصل الطالب على الرقم الجامعي ويستكمل استمارة البحث الاجتماعي."
+          "description": "بعد القبول يحصل الطالب على الرقم الجامعي ويستكمل استمارة البحث الاجتماعي."
         }
       }
     },
@@ -560,10 +555,24 @@
     }
   },
   "programsDetails": {
+    "whyStudy": "لماذا تدرس هذا البرنامج؟",
+    "arabicOnlyNotice": "بعض المحتوى متوفر بالعربية فقط.",
+    "branch": "الفرع",
+    "gender": "الجنس",
+    "male": "ذكر",
+    "female": "أنثى",
+    "indicativeFees": "رسوم تقريبية للتوضيح",
+    "ratePerCredit": "رسوم الساعة المعتمدة",
+    "dinarAmount": "{amount} دينار",
+    "creditHours": "الساعات المعتمدة",
+    "catalogLinks": "روابط البرنامج",
+    "sourceLink": "مصدر البرنامج",
+    "studyPlanLink": "الخطة الدراسية",
+    "objectives": "الأهداف",
+    "courses": "المقررات",
     "branches": "الفروع",
     "acceptedBranches": "الفروع المقبولة",
     "minimumAverage": "الحد الأدنى للمعدل",
-    "department": "القسم",
     "description": "الوصف",
     "status": "الحالة",
     "available": "متاح",
@@ -940,18 +949,14 @@
     "submittedApplication": "طلب مقدم",
     "uploadedDocuments": "مستندات مرفوعة",
     "pendingActions": "إجراءات معلقة",
-    "paymentStatus": "حالة الدفع",
     "completeApplication": "استكمال الطلب",
     "uploadDocuments": "رفع المستندات",
     "trackStatus": "متابعة الحالة",
     "viewNotifications": "عرض الإشعارات",
-    "continuePayment": "متابعة الدفع",
     "viewProfile": "عرض الملف الشخصي",
     "underReview": "قيد المراجعة",
     "pending": "قيد الانتظار",
     "completed": "مكتمل",
-    "paid": "مدفوع",
-    "unpaid": "غير مدفوع",
     "noNotifications": "لا توجد إشعارات جديدة",
     "viewAll": "عرض الكل",
     "lastUpdated": "آخر تحديث",
@@ -959,7 +964,6 @@
     "reviewApplication": "راجع طلبك وأكمل أي بيانات ناقصة.",
     "documentsHint": "ارفع المستندات المطلوبة للاستمرار في عملية القبول.",
     "statusHint": "تابع آخر التحديثات الخاصة بطلب القبول.",
-    "paymentHint": "أكمل خطوة الدفع عندما يصبح طلبك مؤهلًا لذلك.",
     "admissionJourney": "رحلة القبول",
     "notifications": "الإشعارات",
     "profileCompletion": "اكتمال الملف الشخصي",
@@ -1066,9 +1070,6 @@
     "progressDescription": "يوضح هذا المسار أين وصل طلبك وما هي الخطوات المتبقية.",
     "timelineTitle": "سجل الطلب",
     "timelineDescription": "يعرض هذا السجل جميع العمليات التي تمت على طلبك.",
-    "payNow": "الدفع الآن",
-    "paymentRequiredTitle": "الدفع مطلوب",
-    "paymentRequiredDescription": "تم اعتماد طلبك، يرجى إتمام عملية الدفع للانتقال إلى إصدار الرقم الجامعي.",
     "socialResearchRequiredTitle": "استكمال البحث الاجتماعي مطلوب",
     "socialResearchRequiredDescription": "تم إصدار الرقم الجامعي، يرجى استكمال نموذج البحث الاجتماعي لإكمال ملف القبول.",
     "completeSocialResearch": "استكمال البحث الاجتماعي",
@@ -1096,8 +1097,8 @@
         "description": "تم إرجاع الطلب لتعديل البيانات أو استكمال المستندات."
       },
       "forwarded_to_department_head": {
-        "title": "محال إلى رئيس القسم",
-        "description": "تم تحويل الطلب إلى رئيس القسم الأكاديمي للبت فيه."
+        "title": "محال إلى رئيس الكلية",
+        "description": "تم تحويل الطلب إلى رئيس الكلية الأكاديمي للبت فيه."
       },
       "returned_to_employee": {
         "title": "معاد لموظف القبول",
@@ -1124,16 +1125,12 @@
         "description": "يتم تحويل الطلب للموظف إذا احتاج إلى مراجعة يدوية."
       },
       "headReview": {
-        "title": "اعتماد رئيس القسم",
-        "description": "يقوم رئيس القسم بمراجعة القرار النهائي."
-      },
-      "payment": {
-        "title": "الدفع",
-        "description": "بعد الاعتماد يتم الانتقال إلى دفع رسوم القبول."
+        "title": "اعتماد رئيس الكلية",
+        "description": "يقوم رئيس الكلية بمراجعة القرار النهائي."
       },
       "universityNumber": {
         "title": "الرقم الجامعي",
-        "description": "يصدر النظام الرقم الجامعي بعد اكتمال الدفع."
+        "description": "يصدر النظام الرقم الجامعي بعد القبول."
       },
       "socialResearch": {
         "title": "البحث الاجتماعي",
@@ -1221,127 +1218,15 @@
     "officialAddress": "العنوان الرسمي",
     "missingBaseFieldsError": "يرجى تعبئة جميع بياناتك الشخصية الأساسية قبل الحفظ."
   },
-  "payment": {
-    "title": "الدفع",
-    "description": "راجع الفاتورة وأكمل دفع رسوم القبول.",
-    "invoice": "الفاتورة",
-    "amount": "المبلغ",
-    "paymentMethod": "طريقة الدفع",
-    "payNow": "ادفع الآن",
-    "successTitle": "تم الدفع بنجاح",
-    "successDescription": "تمت عملية الدفع بنجاح.",
-    "failedTitle": "فشلت عملية الدفع",
-    "failedDescription": "تعذر إكمال عملية الدفع. يرجى المحاولة مرة أخرى.",
-    "subtitle": "دفع رسوم القبول",
-    "completePayment": "إتمام الدفع",
-    "headerDescription": "ادفع رسوم طلب القبول لمتابعة إجراءات قبولك الجامعي.",
-    "applicationNumber": "الطلب رقم #{number}",
-    "invoiceNo": "رقم الفاتورة",
-    "issueDate": "تاريخ الإصدار",
-    "dueDate": "تاريخ الاستحقاق",
-    "status": "الحالة",
-    "pending": "قيد الانتظار",
-    "downloadInvoice": "تحميل الفاتورة",
-    "mockIssueDate": "18 أكتوبر 2026",
-    "mockDueDate": "25 أكتوبر 2026",
-    "paymentPending": "الدفع قيد الانتظار",
-    "paymentPendingDescription": "لم يتم إكمال دفع رسوم القبول بعد. يرجى اختيار طريقة الدفع المناسبة أدناه.",
-    "paymentCompleted": "تم الدفع بنجاح",
-    "paymentCompletedDescription": "تم استلام دفعتك بنجاح، ويمكن متابعة طلبك إلى مرحلة القبول النهائية.",
-    "paymentFailed": "فشل الدفع",
-    "paymentFailedDescription": "فشلت آخر محاولة دفع. يرجى المحاولة مرة أخرى أو استخدام طريقة دفع مختلفة.",
-    "paymentSummary": "ملخص الدفع",
-    "student": "الطالب",
-    "application": "الطلب",
-    "program": "البرنامج",
-    "faculty": "الكلية",
-    "total": "الإجمالي",
-    "transactionNumber": "رقم العملية",
-    "paidAt": "تاريخ الدفع",
-    "failureReason": "سبب الفشل",
-    "mockStudentName": "أحمد محمد حسن",
-    "mockProgram": "هندسة البرمجيات",
-    "mockFaculty": "كلية تكنولوجيا المعلومات",
-    "items": {
-      "admission-fee": {
-        "title": "رسوم طلب القبول",
-        "description": "رسوم مطلوبة لإكمال إجراءات القبول."
-      },
-      "service-fee": {
-        "title": "رسوم خدمة الدفع الإلكتروني",
-        "description": "رسوم معالجة لطرق الدفع الرقمية."
-      }
-    },
-    "paymentMethodDescription": "اختر الطريقة المناسبة لدفع رسوم طلب القبول.",
-    "simulateFailed": "محاكاة فشل الدفع",
-    "continuePayment": "متابعة الدفع",
-    "methods": {
-      "card": {
-        "title": "بطاقة ائتمان / خصم",
-        "description": "ادفع بأمان باستخدام Visa أو MasterCard."
-      },
-      "bank_transfer": {
-        "title": "تحويل بنكي",
-        "description": "حوّل الرسوم وارفع إيصال التحويل."
-      },
-      "cash_office": {
-        "title": "مكتب المالية في الجامعة",
-        "description": "ادفع مباشرة في مكتب المالية داخل الجامعة."
-      }
-    },
-    "cardDetails": "بيانات البطاقة",
-    "cardholderName": "اسم حامل البطاقة",
-    "cardNumber": "رقم البطاقة",
-    "expiryDate": "تاريخ الانتهاء",
-    "cvv": "رمز CVV",
-    "bankTransferDetails": "تفاصيل التحويل البنكي",
-    "bankAccount": "الحساب البنكي",
-    "bankAccountName": "الجامعة الإسلامية بغزة - حساب القبول",
-    "uploadTransferReceipt": "رفع إيصال التحويل",
-    "financeOfficePayment": "الدفع في مكتب المالية",
-    "financeOfficeDescription": "يرجى زيارة مكتب المالية في الجامعة خلال ساعات الدوام الرسمي وتزويدهم برقم الطلب لإتمام الدفع.",
-    "applicationNumberLabel": "رقم الطلب",
-    "paymentResult": {
-      "completed": "تم الدفع بنجاح",
-      "failed": "فشل الدفع",
-      "completedDescription": "تم إتمام عملية الدفع بنجاح",
-      "failedDescription": "لم نتمكن من إتمام عملية الدفع",
-      "completedLongDescription": "تم استلام دفعتك بنجاح. يمكن لطلبك الآن المتابعة إلى مرحلة القبول النهائية.",
-      "failedLongDescription": "لم تنجح محاولة الدفع. يرجى المحاولة مرة أخرى أو اختيار طريقة دفع أخرى.",
-      "nextStepsSuccess": "ماذا يحدث بعد ذلك؟",
-      "nextStepsFailed": "كيف تواصل؟",
-      "stepFinalReview": "المراجعة النهائية",
-      "stepAdmissionDecision": "قرار القبول",
-      "stepUniversityNumber": "الرقم الجامعي",
-      "stepTryPaymentAgain": "حاول الدفع مرة أخرى",
-      "stepCheckPaymentDetails": "تحقق من تفاصيل الدفع",
-      "stepContactAdmissions": "اتصل بمكتب القبول"
-    },
-    "successBadge": "Payment Completed",
-    "failedBadge": "Payment Failed",
-    "summaryTitle": "Transaction Summary",
-    "applicationNo": "Application No.",
-    "paymentReference": "Payment Reference",
-    "universityNumber": "University Number",
-    "notAvailable": "Not available",
-    "notIssuedYet": "Not issued yet",
-    "successNextTitle": "Next Step: Social Research",
-    "successNextDescription": "Please complete the social research form to finalize your admission file.",
-    "failedNextTitle": "Try Payment Again",
-    "failedNextDescription": "You can return to the payment page and try again.",
-    "completeSocialResearch": "Complete Social Research",
-    "tryPaymentAgain": "Try Payment Again"
-  },
   "notifications": {
     "subtitle": "مركز الطالب",
     "title": "الإشعارات",
-    "description": "ابقَ على اطلاع بأهم رسائل القبول، وطلبات المستندات، وتذكيرات الدفع، وتغييرات حالة الطلب.",
+    "description": "تابع رسائل القبول وطلبات المستندات وتغييرات حالة الطلب.",
     "recentNotifications": "آخر الإشعارات",
     "recentNotificationsDescription": "رسائل مهمة مرتبطة بطلب القبول الخاص بك.",
     "new": "جديد",
     "typeDocument": "مستند",
     "typeStatus": "حالة الطلب",
-    "typePayment": "دفع",
     "typeAdmission": "قبول",
     "typeGeneral": "عام",
     "searchNotifications": "البحث في الإشعارات",
@@ -1350,7 +1235,6 @@
     "allTypes": "كل الأنواع",
     "documents": "المستندات",
     "statusUpdates": "تحديثات الحالة",
-    "payment": "الدفع",
     "admission": "القبول",
     "general": "عام",
     "status": "الحالة",
@@ -1383,15 +1267,9 @@
         "time": "اليوم، 10:20 صباحًا",
         "actionLabel": "رفع المستند"
       },
-      "4": {
-        "title": "خطوة دفع الرسوم مطلوبة",
-        "message": "تمت الموافقة على طلبك من قبل رئيس القسم. يرجى سداد رسوم طلب القبول لتكملة الإجراءات.",
-        "time": "أمس، 02:45 مساءً",
-        "actionLabel": "سداد الآن"
-      },
       "5": {
         "title": "مطلوب تعبئة نموذج البحث الاجتماعي",
-        "message": "تم التحقق من السداد وإصدار الرقم الجامعي. يرجى استكمال بيانات نموذج البحث الاجتماعي.",
+        "message": "تم إصدار الرقم الجامعي. يرجى استكمال بيانات نموذج البحث الاجتماعي.",
         "time": "أمس، 04:10 مساءً",
         "actionLabel": "تعبئة النموذج"
       },
@@ -1452,7 +1330,6 @@
       "rejected": "المرفوضون",
       "programs": "البرامج",
       "faculties": "الكليات",
-      "departments": "الأقسام",
       "students": "الطلاب",
       "users": "المستخدمون"
     },
@@ -1543,13 +1420,12 @@
     "roles": {
       "student": "طالب",
       "admission_dean": "عميد القبول والتسجيل",
-      "department_head": "رئيس القسم",
+      "department_head": "رئيس الكلية",
       "admission_employee": "موظف قبول وتدقيق"
     },
     "sidebar": {
       "dashboard": "لوحة التحكم",
       "reports": "الإحصائيات والتقارير",
-      "headReports": "تقارير رئيس القسم",
       "deanReports": "تقارير العميد",
       "applications": "الطلبات",
       "manualReview": "المراجعة اليدوية",
@@ -1558,11 +1434,10 @@
       "users": "المستخدمون",
       "notifications": "الإشعارات",
       "employeeNotifications": "إشعارات الموظفين",
-      "headNotifications": "إشعارات رئيس القسم",
+      "headNotifications": "إشعارات رئيس الكلية",
       "settings": "الإعدادات",
       "masterData": {
         "faculties": "الكليات",
-        "departments": "الأقسام",
         "documentTypes": "أنواع المستندات",
         "applicationTypes": "أنواع الطلبات",
         "branches": "الفروع"
@@ -1570,7 +1445,7 @@
     },
     "profileAlert": {
       "title": "يرجى إكمال ملفك الشخصي",
-      "description": "تم إنشاء حساب الموظف الخاص بك من خلال رئيس القسم. يرجى إكمال ملفك الشخصي قبل البدء بمهام مراجعة المستندات.",
+      "description": "تم إنشاء حساب الموظف الخاص بك من خلال رئيس الكلية. يرجى إكمال ملفك الشخصي قبل البدء بمهام مراجعة المستندات.",
       "action": "إكمال الملف الشخصي"
     },
     "applications": {
@@ -1654,8 +1529,7 @@
       "title": "متابعة مسار الطلبات",
       "description": "تابع وراجع وأدر مسار تدقيق طلبات الطلاب المتقدمين عبر جميع مراحل القبول.",
       "totalApplications": "إجمالي الطلبات (في الصفحة الحالية)",
-      "pendingHeadReview": "بانتظار رئيس القسم",
-      "paymentPending": "بانتظار الدفع",
+      "pendingHeadReview": "بانتظار رئيس الكلية",
       "rejectedApplications": "الطلبات المرفوضة (الصفحة الحالية)",
       "cancelledApplications": "الطلبات الملغاة (الصفحة الحالية)",
       "pageScopedBadge": "في الصفحة الحالية",
@@ -1680,7 +1554,7 @@
       "currentStatus": "الحالة الحالية",
       "actionsTitle": "إجراءات المراجعة",
       "employeeActionsDescription": "قم بمراجعة المستندات يدويًا بعد فشل التحقق الآلي، ثم اختر القرار المناسب.",
-      "headActionsDescription": "راجع قرار الموظف وتأكد من سلامة المستندات قبل إرسال الطالب إلى الدفع.",
+      "headActionsDescription": "راجع قرار الموظف وتأكد من سلامة المستندات قبل تسجيل القرار.",
       "notePlaceholder": "اكتب ملاحظة توضح سبب القرار...",
       "confirmTitle": "تأكيد الإجراء",
       "confirmDescription": "هل أنت متأكد من تنفيذ هذا القرار على الطلب؟",
@@ -1691,15 +1565,15 @@
       "successDescription": "تم تحديث حالة الطلب بنجاح.",
       "employeeApprove": "قبول مبدئي من الموظف",
       "employeeReject": "رفض من الموظف",
-      "headApprove": "اعتماد رئيس القسم",
-      "headReject": "رفض من رئيس القسم",
+      "headApprove": "اعتماد رئيس الكلية",
+      "headReject": "رفض من رئيس الكلية",
       "requestMissingDocuments": "طلب استكمال نواقص",
       "statuses": {
         "draft": "مسودة",
         "submitted": "تم تقديم الطلب",
         "under_review": "قيد المراجعة",
         "returned_for_revision": "معاد للتعديل",
-        "forwarded_to_department_head": "محال إلى رئيس القسم",
+        "forwarded_to_department_head": "محال إلى رئيس الكلية",
         "returned_to_employee": "معاد لموظف القبول",
         "accepted": "مقبول",
         "rejected": "مرفوض",
@@ -1712,12 +1586,9 @@
         "employee_approved": "قبول مبدئي من الموظف",
         "employee_rejected": "مرفوض من الموظف",
         "missing_documents": "بحاجة إلى استكمال نواقص",
-        "head_review": "قيد مراجعة رئيس القسم",
-        "head_approved": "معتمد من رئيس القسم",
-        "head_rejected": "مرفوض من رئيس القسم",
-        "payment_pending": "بانتظار الدفع",
-        "payment_completed": "تم الدفع بنجاح",
-        "payment_failed": "فشل الدفع",
+        "head_review": "قيد مراجعة رئيس الكلية",
+        "head_approved": "معتمد من رئيس الكلية",
+        "head_rejected": "مرفوض من رئيس الكلية",
         "university_number_issued": "تم إصدار الرقم الجامعي",
         "social_research_required": "مطلوب استكمال البحث الاجتماعي",
         "social_research_submitted": "تم تقديم البحث الاجتماعي",
@@ -1727,8 +1598,7 @@
         "student": "الطالب",
         "ai": "الذكاء الاصطناعي",
         "admission_employee": "موظف القبول",
-        "department_head": "رئيس القسم",
-        "payment_system": "نظام الدفع",
+        "department_head": "رئيس الكلية",
         "system": "النظام"
       },
       "decisions": {
@@ -1736,8 +1606,6 @@
         "rejected": "مرفوض",
         "needs_review": "بحاجة إلى مراجعة",
         "missing_documents": "نواقص مطلوبة",
-        "payment_completed": "تم الدفع",
-        "payment_failed": "فشل الدفع",
         "issued": "تم الإصدار",
         "submitted": "تم التقديم"
       },
@@ -1750,7 +1618,7 @@
       "reForward": "إعادة تحويل الطلب",
       "reForwardSuccess": "تمت إعادة تحويل الطلب بنجاح.",
       "forwardTo": "التحويل إلى",
-      "forwardToDepartmentHead": "رئيس القسم",
+      "forwardToDepartmentHead": "رئيس الكلية",
       "note": "ملاحظة",
       "confirmReForward": "تأكيد إعادة التحويل",
       "processing": "جاري المعالجة...",
@@ -2020,9 +1888,9 @@
       "employeeBadge": "قائمة تدقيق الموظف",
       "employeeTitle": "طلبات فشل التحقق الآلي منها",
       "employeeDescription": "تعرض هذه الصفحة الطلبات التي لم يتمكن الذكاء الاصطناعي من اعتمادها تلقائيًا وتحتاج إلى مراجعة يدوية من موظف القبول.",
-      "headBadge": "اعتماد رئيس القسم",
-      "headTitle": "طلبات بانتظار اعتماد رئيس القسم",
-      "headDescription": "تعرض هذه الصفحة الطلبات التي راجعها الموظف وقام بالموافقة المبدئية عليها وتحتاج إلى اعتماد رئيس القسم.",
+      "headBadge": "اعتماد رئيس الكلية",
+      "headTitle": "طلبات بانتظار اعتماد رئيس الكلية",
+      "headDescription": "تعرض هذه الصفحة الطلبات التي راجعها الموظف وقام بالموافقة المبدئية عليها وتحتاج إلى اعتماد رئيس الكلية.",
       "pendingCases": "الحالات المعلقة",
       "queueTitle": "قائمة المراجعة",
       "queueDescription": "ابحث داخل الحالات المعلقة وافتح الطلب لمراجعة التفاصيل واتخاذ القرار المناسب.",
@@ -2262,11 +2130,7 @@
         "minimumRate": "معدل القبول الأدنى",
         "capacity": "السعة",
         "branches": "الفروع المؤهلة",
-        "selectFaculty": "اختر الكلية",
-        "department": "القسم",
-        "selectDepartment": "اختر القسم",
-        "selectFacultyFirst": "اختر الكلية أولاً",
-        "noDepartments": "لا توجد أقسام متاحة"
+        "selectFaculty": "اختر الكلية"
       }
     },
     "admissionCycles": {
@@ -2307,7 +2171,6 @@
       "totalCapacity": "إجمالي السعة",
       "applicationsOpenDate": "تاريخ فتح الطلبات",
       "applicationsCloseDate": "تاريخ إغلاق الطلبات",
-      "paymentDeadline": "آخر موعد للدفع",
       "internalNotes": "ملاحظات داخلية",
       "applications": "الطلبات",
       "accepted": "المقبولون",
@@ -2479,7 +2342,6 @@
       "types": {
         "document": "مستند",
         "status": "حالة الطلب",
-        "payment": "دفع",
         "general": "عام"
       },
       "statuses": {
@@ -2512,10 +2374,6 @@
         "application-approved": {
           "title": "تمت الموافقة على الطلب",
           "message": "تهانينا، تمت الموافقة على طلبك. يرجى متابعة الخطوات التالية من لوحة التحكم."
-        },
-        "payment-reminder": {
-          "title": "تذكير بالدفع",
-          "message": "يرجى إكمال دفع رسوم القبول قبل الموعد النهائي لتجنب أي تأخير."
         }
       },
       "rows": {
@@ -2530,12 +2388,6 @@
           "message": "طلب القبول الخاص بك قيد المراجعة حاليًا من قبل فريق القبول.",
           "audience": "جميع المتقدمين قيد المراجعة",
           "sentAt": "أمس، 02:45 مساءً"
-        },
-        "3": {
-          "title": "خطوة الدفع متاحة",
-          "message": "تم التحقق من مستنداتك. يمكنك الآن الانتقال إلى خطوة دفع رسوم القبول.",
-          "audience": "المتقدمون الذين تم التحقق من مستنداتهم",
-          "sentAt": "غدًا، 09:00 صباحًا"
         },
         "4": {
           "title": "مرحبًا بك في بوابة القبول",
@@ -2827,65 +2679,6 @@
         "inactive": "غير نشط"
       }
     },
-    "departments": {
-      "academicStructure": "الهيكل الأكاديمي",
-      "managementTitle": "إدارة الأقسام",
-      "managementDescription": "إنشاء وإدارة الأقسام وتفاصيلها وتوفرها.",
-      "export": "تصدير",
-      "add": "إضافة قسم",
-      "search": "بحث عن قسم",
-      "searchPlaceholder": "ابحث بالاسم...",
-      "reset": "إعادة تعيين",
-      "status": "الحالة",
-      "allStatuses": "كل الحالات",
-      "stats": {
-        "total": "إجمالي الأقسام",
-        "active": "الأقسام النشطة",
-        "inactive": "الأقسام غير النشطة"
-      },
-      "table": {
-        "faculty": "الكلية",
-        "nameEn": "الاسم (بالإنجليزية)",
-        "nameAr": "الاسم (بالعربية)",
-        "status": "الحالة",
-        "actions": "إجراءات"
-      },
-      "form": {
-        "faculty": "الكلية",
-        "nameEn": "الاسم (بالإنجليزية)",
-        "nameAr": "الاسم (بالعربية)",
-        "descriptionEn": "الوصف (بالإنجليزية)",
-        "descriptionAr": "الوصف (بالعربية)",
-        "isActive": "نشط"
-      },
-      "createTitle": "إنشاء قسم",
-      "updateTitle": "تحديث قسم",
-      "formDescription": "أدخل تفاصيل قسم.",
-      "deleteConfirmTitle": "حذف قسم؟",
-      "deleteConfirmDescription": "سيؤدي هذا الإجراء إلى حذف العنصر نهائياً.",
-      "delete": "حذف",
-      "cancel": "إلغاء",
-      "create": "إنشاء",
-      "save": "حفظ",
-      "edit": "تعديل قسم",
-      "enable": "تفعيل قسم",
-      "disable": "تعطيل قسم",
-      "createdSuccessfully": "تم إنشاء قسم بنجاح.",
-      "updatedSuccessfully": "تم تحديث قسم بنجاح.",
-      "deletedSuccessfully": "تم حذف قسم بنجاح.",
-      "statusUpdated": "تم تحديث حالة قسم.",
-      "paginationInfo": "عرض {from} إلى {to} من {total} الأقسام",
-      "previous": "السابق",
-      "next": "التالي",
-      "noResultsTitle": "لا توجد الأقسام",
-      "noResultsDescription": "جرّب تغيير كلمة البحث أو عوامل التصفية.",
-      "statuses": {
-        "active": "نشط",
-        "inactive": "غير نشط"
-      },
-      "formSelectFaculty": "اختر الكلية",
-      "formSelectFacultyFirst": "اختر الكلية أولاً"
-    },
     "documentTypes": {
       "academicStructure": "الهيكل الأكاديمي",
       "managementTitle": "إدارة أنواع المستندات",
@@ -2963,7 +2756,7 @@
         "code": "الرمز",
         "nameEn": "الاسم (بالإنجليزية)",
         "nameAr": "الاسم (بالعربية)",
-        "requiresApproval": "موافقة رئيس القسم",
+        "requiresApproval": "موافقة رئيس الكلية",
         "status": "الحالة",
         "actions": "إجراءات"
       },
@@ -2971,7 +2764,7 @@
         "code": "الرمز",
         "nameEn": "الاسم (بالإنجليزية)",
         "nameAr": "الاسم (بالعربية)",
-        "requiresDeptHeadApproval": "يتطلب موافقة رئيس القسم",
+        "requiresDeptHeadApproval": "يتطلب موافقة رئيس الكلية",
         "isActive": "نشط"
       },
       "createTitle": "إنشاء نوع طلب",
@@ -3034,10 +2827,6 @@
         "decision": {
           "title": "قرار القبول",
           "description": "ستصلك إشعار عند توفر قرار القبول الخاص بك."
-        },
-        "payment": {
-          "title": "خطوة الدفع",
-          "description": "في حال قبولك، سيُطلب منك إكمال دفع رسوم القبول لتأكيد الطلب."
         }
       },
       "note": "يمكنك متابعة حالة طلبك في أي وقت من صفحة الحالة، كما ستظهر التحديثات المهمة في صفحة الإشعارات."
@@ -3162,8 +2951,7 @@
       "title": "توزيع حالات الطلبات",
       "description": "نظرة عامة على الطلبات مجمعة حسب حالة القبول الحالية.",
       "aiFailed": "فشل مراجعة الذكاء الاصطناعي",
-      "headReview": "قيد مراجعة رئيس القسم",
-      "paymentPending": "في انتظار الدفع",
+      "headReview": "قيد مراجعة رئيس الكلية",
       "socialResearchRequired": "مطلوب بحث اجتماعي",
       "completed": "مكتمل",
       "rejected": "مرفوض"

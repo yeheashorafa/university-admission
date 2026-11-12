@@ -8,7 +8,6 @@ import { ProgramsGrid } from "./programs-grid";
 type ProgramsContentProps = {
   activeFaculty: FacultyViewModel | null;
   programs: ProgramViewModel[];
-  departments?: unknown[];
   search: string;
   locale: string;
   onSearchChange: (value: string) => void;
@@ -17,14 +16,12 @@ type ProgramsContentProps = {
 export function ProgramsContent({
   activeFaculty,
   programs,
-  departments,
   search,
   locale,
   onSearchChange,
 }: ProgramsContentProps) {
   const t = useTranslations("programsPage");
   const safePrograms = Array.isArray(programs) ? programs : [];
-  const safeDepartments = Array.isArray(departments) ? departments : [];
 
   return (
     <section className="space-y-6">
@@ -67,7 +64,7 @@ export function ProgramsContent({
 
         <ProgramsGrid programs={safePrograms} locale={locale} />
 
-        {safePrograms.length === 0 && safeDepartments.length === 0 && (
+        {safePrograms.length === 0 && (
           <div className="mt-6 rounded-[20px] border border-dashed border-border bg-muted/40 p-8 text-center">
             <p className="font-bold text-foreground">{t("emptyTitle")}</p>
 

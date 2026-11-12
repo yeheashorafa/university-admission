@@ -77,15 +77,9 @@ export function ProgramsPage() {
     refetch: refetchPrograms,
   } = useFacultyProgramsQuery(activeFaculty?.id);
 
-  const safeDepartments = Array.isArray(facultyProgramsData?.departments)
-    ? facultyProgramsData.departments
-    : [];
-
-
-
   const mappedPrograms: ProgramViewModel[] = useMemo(() => {
-    const safePrograms = Array.isArray(facultyProgramsData?.programs)
-      ? facultyProgramsData.programs
+    const safePrograms = Array.isArray(facultyProgramsData)
+      ? facultyProgramsData
       : [];
     return safePrograms.map((p) => mapProgramToViewModel(p, locale));
   }, [facultyProgramsData, locale]);
@@ -180,7 +174,6 @@ export function ProgramsPage() {
             <ProgramsContent
               activeFaculty={activeFaculty}
               programs={filteredPrograms}
-              departments={safeDepartments}
               search={programSearch}
               locale={locale}
               onSearchChange={setProgramSearch}

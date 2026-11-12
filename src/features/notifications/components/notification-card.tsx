@@ -3,7 +3,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import {
   Bell,
-  CircleDollarSign,
   FileWarning,
   GraduationCap,
   Info,
@@ -11,7 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type NotificationType = "document" | "status" | "payment" | "admission" | "general";
+export type NotificationType = "document" | "status" | "admission" | "general";
 
 type NotificationCardProps = {
   notification: {
@@ -41,11 +40,6 @@ const typeConfig: Record<
     labelKey: "typeStatus",
     icon: Bell,
     className: "bg-secondary/10 text-secondary",
-  },
-  payment: {
-    labelKey: "typePayment",
-    icon: CircleDollarSign,
-    className: "bg-accent/40 text-accent-foreground",
   },
   admission: {
     labelKey: "typeAdmission",

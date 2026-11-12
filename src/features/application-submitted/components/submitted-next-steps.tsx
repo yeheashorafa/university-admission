@@ -1,10 +1,9 @@
 "use client";
 
-import { paymentsEnabled } from "@/constants/features";
 import { useTranslations } from "next-intl";
 import { ArrowRight, ListChecks } from "lucide-react";
 
-const NEXT_STEP_IDS = ["documents", "verification", "decision", "payment"] as const;
+const NEXT_STEP_IDS = ["documents", "verification", "decision"] as const;
 
 export function SubmittedNextSteps() {
   const t = useTranslations("applicationSubmitted");
@@ -17,7 +16,7 @@ export function SubmittedNextSteps() {
       </h2>
 
       <div className="space-y-5">
-        {NEXT_STEP_IDS.filter((step) => paymentsEnabled || step !== "payment").map((id, index) => (
+        {NEXT_STEP_IDS.map((id, index) => (
           <div key={id} className="flex gap-4">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
               {index + 1}
