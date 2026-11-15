@@ -2,6 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { useState, useMemo } from "react";
+import { useStudentEligibilityQuery } from "@/hooks/queries/use-application-queries";
 import { ArrowUp, ArrowDown, Trash2, Plus, School, Loader2 } from "lucide-react";
 import {
   useFacultyProgramsQuery,
@@ -20,12 +21,14 @@ type PreferencesStepProps = {
   selectedIds: (string | number)[];
   onChange: (updatedIds: (string | number)[]) => void;
   desiredStudyLevel?: string;
+  admissionCycleId?: string | number;
 };
 
 export function PreferencesStep({
   selectedIds,
   onChange,
   desiredStudyLevel,
+  admissionCycleId,
 }: PreferencesStepProps) {
   const locale = useLocale();
   const [selectedFacultyId, setSelectedFacultyId] = useState<string>("");
@@ -41,6 +44,8 @@ export function PreferencesStep({
 
   const { data: facultyProgramsData, isLoading: isLoadingPrograms } =
     useFacultyProgramsQuery(activeFacultyId);
+
+  const { data: eligibility, isError: eligibilityError } = useStudentEligibilityQuery(admissionCycleId);
 
   const availablePrograms: ProgramViewModel[] = useMemo(() => {
     const safePrograms = Array.isArray(facultyProgramsData)
@@ -78,7 +83,9 @@ export function PreferencesStep({
   };
 
   const safeFacultiesList = Array.isArray(facultiesList) ? facultiesList : [];
-  const safeAvailablePrograms = Array.isArray(availablePrograms) ? availablePrograms : [];
+  const eligibleIds = new Set(eligibility?.eligible_program_ids.map(String));
+  const safeAvailablePrograms = availablePrograms.filter((program) => eligibleIds.has(program.id));
+  const missingAverage = eligibility?.excluded_programs.some((program) => program.reason === "missing_average");
 
   const desiredLevelLabel = useMemo(() => {
     if (!desiredStudyLevel) return null;
@@ -155,7 +162,19 @@ export function PreferencesStep({
                 {locale === "ar" ? "البرامج الأكاديمية المتاحة" : "Available Academic Programs"}
               </label>
 
-              {isLoadingPrograms ? (
+              {missingAverage && (
+                <p role="status" className="text-sm text-muted-foreground">
+                  {locale === "ar"
+                    ? "أضف إلى سجلك المعتمد معدل الثانوية حتى تظهر البرامج التي تشترط حدًا أدنى."
+                    : "A secondary-school average in your official record is required to show programs with a minimum."}
+                </p>
+              )}
+
+              {eligibilityError || !admissionCycleId ? (
+                <p role="status" className="text-sm text-muted-foreground">
+                  {locale === "ar" ? "تعذّر التحقق من أهلية البرامج لدورة القبول." : "Program eligibility could not be checked for this cycle."}
+                </p>
+              ) : isLoadingPrograms || !eligibility ? (
                 <div className="flex items-center justify-center p-6 space-y-2">
                   <Loader2 className="size-6 animate-spin text-primary" />
                 </div>
@@ -194,14 +213,6 @@ export function PreferencesStep({
                         </div>
 
                         <div className="flex items-center gap-3">
-                          {program.minimumAverage > 0 && (
-                            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded">
-                              {locale === "ar"
-                                ? `الحد الأدنى: ${program.minimumAverage}%`
-                                : `Min: ${program.minimumAverage}%`}
-                            </span>
-                          )}
-
                           <button
                             type="button"
                             disabled={!canAdd}
@@ -267,8 +278,13 @@ export function PreferencesStep({
                       </div>
                       <div className="min-w-0">
                         <h5 className="font-bold text-xs text-foreground truncate">
-                          {safeAvailablePrograms.find((p) => String(p.id) === String(id))?.name || `${locale === "ar" ? "برنامج رقم" : "Program ID"} #${id}`}
+                          {availablePrograms.find((p) => String(p.id) === String(id))?.name || `${locale === "ar" ? "برنامج رقم" : "Program ID"} #${id}`}
                         </h5>
+                        {eligibility?.excluded_programs.some((program) => String(program.program_id) === String(id)) && (
+                          <p className="text-xs text-destructive">
+                            {locale === "ar" ? "أزل هذا البرنامج لأنك لا تستوفي شرط المعدل." : "Remove this program because you do not meet its average requirement."}
+                          </p>
+                        )}
                       </div>
                     </div>
 

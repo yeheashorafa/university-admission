@@ -5,6 +5,9 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { NextIntlClientProvider } from "next-intl";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryKeys } from "../src/constants/query-keys";
+import { PreferencesStep } from "../src/features/application/components/steps/preferences-step";
 
 import {
   isSuperAdmin,
@@ -889,4 +892,34 @@ test("missing English content is labelled Arabic and empty catalog sections are 
   assert.match(arabic, /وصف البرنامج/);
   assert.match(arabic, /الطب السريري/);
   assert.doesNotMatch(arabic, /بعض المحتوى متوفر بالعربية فقط|Clinical medicine/);
+});
+
+test("preferences show only eligible programs and explain a missing secondary-school average", () => {
+  const queryClient = new QueryClient();
+  queryClient.setQueryData(queryKeys.publicCatalog.faculties, [{ id: 1, name_en: "Faculty" }]);
+  queryClient.setQueryData(queryKeys.publicCatalog.facultyPrograms("1"), [
+    { id: 1, name_en: "Eligible program" },
+    { id: 2, name_en: "Hidden program" },
+  ]);
+  queryClient.setQueryData(queryKeys.student.eligibility(7), {
+    eligible_program_ids: [1],
+    excluded_programs: [{ program_id: 2, reason: "missing_average", minimum_average: 80 }],
+  });
+
+  const html = renderWithProviders(
+    React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      React.createElement(PreferencesStep, {
+        admissionCycleId: 7,
+        selectedIds: [],
+        onChange: () => {},
+      }),
+    ),
+    { locale: "en" },
+  );
+
+  assert.match(html, /Eligible program/);
+  assert.doesNotMatch(html, /Hidden program/);
+  assert.match(html, /secondary-school average/);
 });

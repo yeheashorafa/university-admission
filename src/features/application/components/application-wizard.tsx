@@ -31,6 +31,7 @@ import {
   type StudentApplicationDetail,
 } from "@/services/application.service";
 import { attachDocumentToApplication } from "@/services/documents.service";
+import { useStudentApplicationDetailsQuery } from "@/hooks/queries/use-application-queries";
 import { usePublicAdmissionCyclesQuery, useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
 import {
   getSocialInformation,
@@ -87,6 +88,7 @@ export function ApplicationWizard() {
   const activeAppTypeId = CONFIRMED_BACKEND_DEFAULT_APPLICATION_TYPE_ID;
 
   const applicationId = searchParams.get("id");
+  const { data: existingApplication } = useStudentApplicationDetailsQuery(applicationId ?? undefined);
   const [targetId, setTargetId] = useState<string | null>(applicationId);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadedProfile, setLoadedProfile] = useState<StudentProfile | null>(null);
@@ -1012,6 +1014,7 @@ export function ApplicationWizard() {
         {currentStep === 7 && (
           <PreferencesStep
             selectedIds={state.preferences.preferences}
+            admissionCycleId={applicationId ? existingApplication?.admissionCycleId : activeCycleId}
             desiredStudyLevel={state.qualificationData.desired_study_level}
             onChange={(updatedIds) => updateSection("preferences", { preferences: updatedIds })}
           />

@@ -17,6 +17,16 @@ export type ApplicationPreference = {
 
 
 
+export type StudentEligibility = {
+  eligible_program_ids: number[];
+  excluded_programs: { program_id: number; reason: "missing_average" | "below_minimum"; minimum_average: number }[];
+};
+
+export async function getStudentEligibility(cycleId: string | number): Promise<StudentEligibility> {
+  const response = await apiClient.get(ENDPOINTS.student.eligibility, { params: { admission_cycle_id: cycleId } });
+  return extractResource<StudentEligibility>(response.data);
+}
+
 export type ApplicationPayload = {
   admission_cycle_id?: string | number;
   application_type_id?: string | number;

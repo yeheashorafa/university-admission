@@ -9,6 +9,7 @@ import {
   getStudentApplicationById,
   getStudentApplications,
   getStudentDashboard,
+  getStudentEligibility,
   saveApplicationDraft,
   submitApplication,
   type ApplicationPayload,
@@ -23,6 +24,17 @@ function useStudentQueryGuard(extraCondition: boolean = true) {
   const isUnverified = user ? isUserVerified(user) === false : false;
 
   return Boolean(isHydrated && token && role === "student" && !isUnverified && extraCondition);
+}
+
+export function useStudentEligibilityQuery(cycleId?: string | number) {
+  const enabled = useStudentQueryGuard(Boolean(cycleId));
+  return useQuery({
+    queryKey: queryKeys.student.eligibility(cycleId ?? ""),
+    queryFn: () => getStudentEligibility(cycleId ?? ""),
+    enabled,
+    retry: false,
+    gcTime: 0,
+  });
 }
 
 export function useStudentDashboardQuery() {

@@ -23,6 +23,7 @@ export const ENDPOINTS = {
   student: {
     dashboard: "/student/dashboard",
     applications: "/student/applications",
+    eligibility: "/student/eligibility",
     applicationDetail: (id: string | number) => `/student/applications/${id}`,
     updateApplication: (id: string | number) => `/student/applications/${id}`,
     updatePreferences: (id: string | number) =>

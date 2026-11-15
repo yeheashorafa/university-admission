@@ -43,6 +43,7 @@ export const queryKeys = {
 
   student: {
     dashboard: ["student", "dashboard"] as const,
+    eligibility: (cycleId: string | number) => ["student", "eligibility", String(cycleId)] as const,
     applications: ["student", "applications"] as const,
     applicationDetail: (id: string | number) => ["student", "applications", String(id)] as const,
     documentChecklist: (id: string | number) => ["student", "document-checklist", String(id)] as const,
