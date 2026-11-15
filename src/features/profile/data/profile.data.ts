@@ -8,7 +8,7 @@ export const studentProfileMock = {
     firstName: "Ahmed",
     fatherName: "Mohammad",
     familyName: "Hassan",
-    nationalId: "405938271",
+    nationalId: "—",
     birthDate: "2005-04-15",
     gender: "male",
     nationality: "Palestinian",

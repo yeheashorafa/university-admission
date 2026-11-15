@@ -46,7 +46,7 @@ export function LandingApplicationsPreview() {
       appNo: "APP-2026-1006",
       program: isAr ? "اللغة الإنجليزية وآدابها" : "English Literature",
       faculty: isAr ? "كلية الآداب" : "Faculty of Arts",
-      statusLabel: isAr ? "مكتمل - رقم جامعي: 202610012" : "Completed - ID: 202610012",
+      statusLabel: isAr ? "مكتمل - رقم جامعي: —" : "Completed - ID: —",
       statusBg: "bg-[#76BC21]/15 text-[#76BC21] border-[#76BC21]/30",
       progress: 100,
       nextAction: isAr
