@@ -6,10 +6,15 @@ import {
   createAdminProgram,
   deleteAdminProgram,
   getAdminPrograms,
+  getAllAdminPrograms,
+  getAdminProgramCatalogDetails,
+  updateAdminProgramCatalogDetails,
+  type AdminProgramDetailsPayload,
   updateAdminProgram,
   type AdminProgramPayload,
 } from "@/services/admin-programs.service";
 
+import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { useAuthStore } from "@/stores/auth.store";
 import { isAdminRole } from "@/constants/roles";
 
@@ -79,4 +84,55 @@ export function useDeleteAdminProgramMutation() {
       });
     },
   });
+}
+
+export function useAllAdminProgramsQuery(options?: { enabled?: boolean }) {
+  const { user, token, role, isHydrated } = useCurrentAuth();
+  const isEnabled = Boolean(
+    options?.enabled !== false &&
+      isHydrated &&
+      token &&
+      user &&
+      isAdminRole(role),
+  );
+  const query = useQuery({
+    queryKey: queryKeys.programs.list({ scope: "admin" }),
+    queryFn: getAllAdminPrograms,
+    enabled: isEnabled,
+    retry: false,
+  });
+
+  return { ...query, isEnabled, isAuthHydrated: isHydrated };
+}
+
+export function useUpdateAdminProgramCatalogDetailsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      programId,
+      payload,
+    }: {
+      programId: string | number;
+      payload: AdminProgramDetailsPayload;
+    }) => updateAdminProgramCatalogDetails(programId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.programs.all });
+      queryClient.invalidateQueries({ queryKey: ["admin", "programs"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "program-catalog-details"] });
+    },
+  });
+}
+
+export function useAdminProgramCatalogDetailsQuery(programId?: string) {
+  const { user, token, role, isHydrated } = useCurrentAuth();
+  const isEnabled = Boolean(programId && isHydrated && token && user && isAdminRole(role));
+  const query = useQuery({
+    queryKey: ["admin", "program-catalog-details", programId],
+    queryFn: () => getAdminProgramCatalogDetails(programId ?? ""),
+    enabled: isEnabled,
+    retry: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+  });
+  return { ...query, isEnabled, isAuthHydrated: isHydrated };
 }

@@ -54,7 +54,7 @@ export function AdminProgramsPage() {
   const deleteProgramMutation = useDeleteAdminProgramMutation();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [modalMode] = useState<"create" | "edit">("create");
   const [editingProgram, setEditingProgram] = useState<AdminProgram | null>(null);
 
   const search = searchParams.get("search") ?? "";
@@ -149,15 +149,11 @@ export function AdminProgramsPage() {
   }
 
   function handleOpenCreate() {
-    setModalMode("create");
-    setEditingProgram(null);
-    setModalOpen(true);
+    router.push(`${pathname}/create`);
   }
 
   function handleOpenEdit(program: AdminProgram) {
-    setModalMode("edit");
-    setEditingProgram(program);
-    setModalOpen(true);
+    router.push(`${pathname}/${encodeURIComponent(program.id)}/edit`);
   }
 
   async function handleSubmitProgram(program: AdminProgram) {
