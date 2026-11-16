@@ -42,6 +42,7 @@ export const queryKeys = {
   },
 
   student: {
+    aiConsent: (studentId?: string | number) => ["student", "ai-consent", studentId] as const,
     dashboard: ["student", "dashboard"] as const,
     eligibility: (cycleId: string | number) => ["student", "eligibility", String(cycleId)] as const,
     applications: ["student", "applications"] as const,

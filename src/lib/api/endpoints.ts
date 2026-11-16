@@ -21,6 +21,7 @@ export const ENDPOINTS = {
     applicationTypes: "/public/application-types",
   },
   student: {
+    aiConsent: "/student/ai-consent",
     dashboard: "/student/dashboard",
     applications: "/student/applications",
     eligibility: "/student/eligibility",
