@@ -108,6 +108,8 @@ export const ENDPOINTS = {
     },
   },
   admin: {
+    aiProviders: "/admin/ai-providers",
+    aiProvider: (id: number) => `/admin/ai-providers/${id}`,
     applications: "/admin/applications",
     applicationDetail: (id: string | number) => `/admin/applications/${id}`,
     assignReviewer: (id: string | number) =>

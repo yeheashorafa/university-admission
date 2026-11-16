@@ -51,6 +51,7 @@ export const queryKeys = {
   },
 
   admin: {
+    aiProviders: ["admin", "ai-providers"] as const,
     dashboardStats: ["admin", "dashboard-stats"] as const,
     deanDashboard: ["admin", "dean-dashboard"] as const,
     applications: (params?: unknown) =>
