@@ -8,6 +8,7 @@ import { useAdminAiProvidersQuery, useCreateAiProviderMutation, useUpdateAiProvi
 import type { AiProvider } from "@/services/admin-ai-providers.service";
 import { AiProviderForm } from "./form";
 import { AiProvidersTable } from "./table";
+import { AiProviderRowActions } from "./row-actions";
 
 export function AiProvidersPage() {
   const t = useTranslations("adminAiProviders");
@@ -55,7 +56,10 @@ export function AiProvidersPage() {
             <button type="button" disabled={query.isFetching} onClick={() => void query.refetch()} className="rounded-lg border border-border px-3 py-2">{t("retry")}</button>
           </div>
         )}
-        {query.data && <AiProvidersTable data={query.data} onEdit={startEdit} />}
+        {query.data && (
+          <AiProvidersTable data={query.data} onEdit={startEdit}
+            renderActions={(item, active) => <AiProviderRowActions provider={item} active={active} />} />
+        )}
       </div>
     </AdminLayout>
   );
