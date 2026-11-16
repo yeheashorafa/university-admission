@@ -8,6 +8,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { queryKeys } from "../src/constants/query-keys";
 import { PreferencesStep } from "../src/features/application/components/steps/preferences-step";
+import { DocumentsStep } from "../src/features/application/components/steps/documents-step";
+import { getStudentAiConsent, grantStudentAiConsent, withdrawStudentAiConsent, type StudentAiConsent } from "../src/services/ai-consent.service";
 
 import {
   isSuperAdmin,
@@ -922,4 +924,125 @@ test("preferences show only eligible programs and explain a missing secondary-sc
   assert.match(html, /Eligible program/);
   assert.doesNotMatch(html, /Hidden program/);
   assert.match(html, /secondary-school average/);
+});
+
+const consentQueryKey = queryKeys.student.aiConsent(42);
+
+const consentAuth: CurrentAuthState = {
+  isHydrated: true,
+  user: { id: 42, name: "Test Student", email: "student@example.test", role: "student" },
+  token: "test-token",
+  isAuthenticated: true,
+  role: "student",
+};
+
+const currentConsent: StudentAiConsent = {
+  granted: true,
+  granted_at: "2026-03-09T12:00:00.000Z",
+  withdrawn_at: null,
+  consent_version: "2",
+  required_version: "2",
+};
+
+function newConsentQueryClient() {
+  const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity, retry: false, retryOnMount: false } } });
+  client.setQueryData(queryKeys.publicCatalog.documentTypes, [{ id: 8, name: "birth_certificate", is_required: true }]);
+
+  return client;
+}
+
+function renderDocumentConsent(client: QueryClient, locale: "ar" | "en" = "en") {
+  return renderToStaticMarkup(
+    React.createElement(AuthProvider, { value: consentAuth },
+      React.createElement(QueryClientProvider, { client },
+        React.createElement(NextIntlClientProvider, { locale, timeZone: "UTC", messages: locale === "ar" ? arMessages : enMessages },
+          React.createElement(DocumentsStep, { documents: [], onChange: () => {} }),
+        ),
+      ),
+    ),
+  );
+}
+
+function assertUploadDisabled(html: string, disabled: boolean) {
+  const input = html.match(/<input(?=[^>]*type="file")[^>]*>/)?.[0];
+  assert.ok(input, "The upload input must remain visible to the test");
+  assert.equal(/\bdisabled=/.test(input), disabled);
+}
+
+test("missing or withdrawn AI consent disables upload and presents the agreement in both locales", () => {
+  const client = newConsentQueryClient();
+  client.setQueryData(consentQueryKey, { ...currentConsent, granted: false, consent_version: null, granted_at: null });
+
+  const english = renderDocumentConsent(client);
+  assertUploadDisabled(english, true);
+  assert.match(english, /I agree that the documents/);
+  assert.match(english, /You need current consent/);
+  assert.doesNotMatch(english, /Granted on/);
+
+  client.setQueryData(consentQueryKey, { ...currentConsent, granted: false, withdrawn_at: "2026-03-10T12:00:00.000Z" });
+  const arabic = renderDocumentConsent(client, "ar");
+  assertUploadDisabled(arabic, true);
+  assert.match(arabic, /أوافق على إرسال المستندات/);
+  assert.match(arabic, /تحتاج إلى الموافقة/);
+  assert.doesNotMatch(arabic, /تمت الموافقة في/);
+});
+
+test("current AI consent displays the date and withdrawal action and enables upload", () => {
+  const client = newConsentQueryClient();
+  client.setQueryData(consentQueryKey, currentConsent);
+  const html = renderDocumentConsent(client);
+  assertUploadDisabled(html, false);
+  assert.match(html, /Granted on Mar 9, 2026/);
+  assert.match(html, /Withdraw consent/);
+  assert.doesNotMatch(html, /You need current consent/);
+});
+
+test("outdated AI consent requests renewed agreement and keeps upload disabled", () => {
+  const client = newConsentQueryClient();
+  client.setQueryData(consentQueryKey, { ...currentConsent, consent_version: "1" });
+  const html = renderDocumentConsent(client);
+  assertUploadDisabled(html, true);
+  assert.match(html, /Please review it and agree again/);
+  assert.match(html, /I agree that the documents/);
+  assert.doesNotMatch(html, /Granted on/);
+});
+
+test("AI consent loading and error states disable upload and hide raw errors", async () => {
+  const client = newConsentQueryClient();
+  const loading = renderDocumentConsent(client);
+  assertUploadDisabled(loading, true);
+  assert.match(loading, /Checking your consent/);
+
+  await assert.rejects(client.fetchQuery({
+    queryKey: consentQueryKey,
+    queryFn: async () => { throw new Error("private-consent-error-fixture"); },
+  }));
+  const failed = renderDocumentConsent(client);
+  assertUploadDisabled(failed, true);
+  assert.match(failed, /Could not check your consent/);
+  assert.match(failed, />Retry</);
+  assert.doesNotMatch(failed, /private-consent-error-fixture/);
+});
+
+test("AI consent service reads the required version, sends it on agreement, and withdraws by DELETE", async () => {
+  const original = apiClient.defaults.adapter;
+  const requests: Array<[string | undefined, string | undefined, unknown]> = [];
+  apiClient.defaults.adapter = async (config) => {
+    requests.push([config.method, config.url, config.data]);
+    return { data: currentConsent, status: 200, statusText: "OK", headers: {}, config };
+  };
+
+  try {
+    const consent = await getStudentAiConsent();
+    assert.equal(consent.required_version, "2");
+    await grantStudentAiConsent(consent.required_version);
+    await withdrawStudentAiConsent();
+    assert.deepEqual(requests, [
+      ["get", "/student/ai-consent", undefined],
+      ["post", "/student/ai-consent", '{"consent_version":"2"}'],
+      ["delete", "/student/ai-consent", undefined],
+    ]);
+  } finally {
+    apiClient.defaults.adapter = original;
+  }
 });
