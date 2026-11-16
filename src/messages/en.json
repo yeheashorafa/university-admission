@@ -1,4 +1,22 @@
 {
+  "studentAiConsent": {
+    "title": "AI document verification consent",
+    "_textTodo": "TODO: The owner must approve the final wording before production.",
+    "text": "I agree that the documents I upload may be sent to an external AI provider solely to verify their validity. I can withdraw this consent at any time, after which my documents are reviewed manually.",
+    "agree": "I agree",
+    "grantedOn": "Granted on {date}",
+    "granted": "Consent granted",
+    "withdraw": "Withdraw consent",
+    "withdrawConfirmation": "Withdrawing consent does not delete your uploaded documents. They will be reviewed manually.",
+    "cancel": "Cancel",
+    "versionChanged": "The consent wording has changed. Please review it and agree again.",
+    "uploadDisabled": "You need current consent to upload files in this application.",
+    "loading": "Checking your consent…",
+    "loadError": "Could not check your consent. Please try again.",
+    "retry": "Retry",
+    "saving": "Updating your consent…",
+    "saveError": "Could not update your consent. Please try again."
+  },
   "common": {
     "account": "Account",
     "createStudentAccount": "Create Student Account",

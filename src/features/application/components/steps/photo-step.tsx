@@ -7,6 +7,8 @@ import { Camera, Upload, Check, AlertCircle } from "lucide-react";
 import { useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
 import { uploadDocument, attachDocumentToApplication } from "@/services/documents.service";
 import { toast } from "sonner";
+import { useStudentAiConsent } from "@/hooks/queries/use-ai-consent-queries";
+import { AiConsentCard, canUploadWithAiConsent } from "../ai-consent-card";
 
 type PhotoStepProps = {
   photoUrl: string | null;
@@ -16,6 +18,8 @@ type PhotoStepProps = {
 
 export function PhotoStep({ photoUrl, onChange, applicationId }: PhotoStepProps) {
   const locale = useLocale();
+  const consent = useStudentAiConsent();
+  const canUpload = canUploadWithAiConsent(consent);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -30,6 +34,8 @@ export function PhotoStep({ photoUrl, onChange, applicationId }: PhotoStepProps)
   );
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canUpload) return;
+
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -60,9 +66,8 @@ export function PhotoStep({ photoUrl, onChange, applicationId }: PhotoStepProps)
       toast.success(
         locale === "ar" ? "تم رفع الصورة الشخصية وتأكيدها بنجاح" : "Personal photo uploaded and attached successfully"
       );
-    } catch (err) {
-      const msg = (err as Error)?.message || (locale === "ar" ? "فشل رفع الصورة" : "Photo upload failed");
-      toast.error(msg);
+    } catch {
+      toast.error(locale === "ar" ? "تعذّر رفع الصورة" : "Photo upload failed");
     } finally {
       setIsUploading(false);
     }
@@ -96,6 +101,8 @@ export function PhotoStep({ photoUrl, onChange, applicationId }: PhotoStepProps)
           </span>
         </div>
       )}
+
+      <AiConsentCard consent={consent} />
 
       <div className="grid gap-8 md:grid-cols-12 md:items-start">
         {/* Instructions */}
@@ -134,6 +141,7 @@ export function PhotoStep({ photoUrl, onChange, applicationId }: PhotoStepProps)
           <input
             ref={fileInputRef}
             type="file"
+            disabled={!canUpload || isUploading}
             accept="image/jpeg,image/png"
             className="hidden"
             onChange={handleFileChange}
@@ -155,7 +163,7 @@ export function PhotoStep({ photoUrl, onChange, applicationId }: PhotoStepProps)
             {!photoUrl ? (
               <button
                 type="button"
-                disabled={isUploading}
+                disabled={!canUpload || isUploading}
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/95 transition disabled:opacity-50"
               >

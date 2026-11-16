@@ -6,6 +6,8 @@ import { Upload, Check, AlertCircle, FileText, Loader2 } from "lucide-react";
 import { useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
 import { uploadDocument, attachDocumentToApplication } from "@/services/documents.service";
 import { toast } from "sonner";
+import { useStudentAiConsent } from "@/hooks/queries/use-ai-consent-queries";
+import { AiConsentCard, canUploadWithAiConsent } from "../ai-consent-card";
 import type { ApplicationDocument } from "../../types/application-form.types";
 
 type DocumentsStepProps = {
@@ -16,6 +18,8 @@ type DocumentsStepProps = {
 
 export function DocumentsStep({ documents, onChange, applicationId }: DocumentsStepProps) {
   const locale = useLocale();
+  const consent = useStudentAiConsent();
+  const canUpload = canUploadWithAiConsent(consent);
   const [loadingDocId, setLoadingDocId] = useState<string | number | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -27,6 +31,8 @@ export function DocumentsStep({ documents, onChange, applicationId }: DocumentsS
     docTypeId: string | number,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    if (!canUpload) return;
+
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -64,9 +70,8 @@ export function DocumentsStep({ documents, onChange, applicationId }: DocumentsS
 
       onChange(nextDocs);
       toast.success(locale === "ar" ? "تم رفع المستند وتأكيده بنجاح" : "Document uploaded and attached successfully");
-    } catch (err) {
-      const msg = (err as Error)?.message || (locale === "ar" ? "فشل رفع أومواصفة المستند" : "Failed to upload or attach document");
-      toast.error(msg);
+    } catch {
+      toast.error(locale === "ar" ? "تعذّر رفع المستند أو إرفاقه" : "Failed to upload or attach the document");
     } finally {
       setLoadingDocId(null);
     }
@@ -132,6 +137,8 @@ export function DocumentsStep({ documents, onChange, applicationId }: DocumentsS
           {locale === "ar" ? "تعهد بالرفع اللاحق للجميع" : "Pledge All Unuploaded"}
         </button>
       </div>
+
+      <AiConsentCard consent={consent} />
 
       {isLoadingTypes ? (
         <div className="flex items-center justify-center p-8">
@@ -241,6 +248,7 @@ export function DocumentsStep({ documents, onChange, applicationId }: DocumentsS
                             fileInputRefs.current[String(dt.id)] = el;
                           }}
                           type="file"
+                          disabled={!canUpload || loadingDocId !== null}
                           accept=".pdf,.jpg,.jpeg,.png"
                           className="hidden"
                           onChange={(e) => handleFileSelect(dt.id, e)}
@@ -248,9 +256,9 @@ export function DocumentsStep({ documents, onChange, applicationId }: DocumentsS
 
                         <button
                           type="button"
-                          disabled={isUploading}
+                          disabled={!canUpload || loadingDocId !== null}
                           onClick={() => fileInputRefs.current[String(dt.id)]?.click()}
-                          className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-4 text-xs font-bold transition ${
+                          className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-4 text-xs font-bold transition disabled:opacity-50 ${
                             isUploaded
                               ? "bg-muted text-muted-foreground hover:bg-muted/80"
                               : "bg-primary text-primary-foreground hover:bg-primary/95"
