@@ -8,6 +8,14 @@ import { NextIntlClientProvider } from "next-intl";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { queryKeys } from "../src/constants/query-keys";
 import { PreferencesStep } from "../src/features/application/components/steps/preferences-step";
+import { AxiosError } from "axios";
+import type { AiProvider, AiProviderPayload } from "../src/services/admin-ai-providers.service";
+import { useAdminAiProvidersQuery, useCreateAiProviderMutation, useUpdateAiProviderMutation, useTestAiProviderMutation, useActivateAiProviderMutation, useDeleteAiProviderMutation } from "../src/hooks/queries/use-admin-ai-providers-queries";
+import { AiProvidersTable } from "../src/features/admin/ai-providers/table";
+import { AiProviderRowActions } from "../src/features/admin/ai-providers/row-actions";
+import { AiProviderForm, takeAiProviderKey } from "../src/features/admin/ai-providers/form";
+import { DocumentsStep } from "../src/features/application/components/steps/documents-step";
+import { getStudentAiConsent, grantStudentAiConsent, withdrawStudentAiConsent, type StudentAiConsent } from "../src/services/ai-consent.service";
 
 import {
   isSuperAdmin,
@@ -126,6 +134,7 @@ test("2. RoleGuard SSR authorization rendering and redirect routing logic", () =
       addEventListener: () => {},
       removeEventListener: () => {},
       localStorage: mockStorage,
+      location: { pathname: "/" },
     },
     writable: true,
     configurable: true,
@@ -922,4 +931,314 @@ test("preferences show only eligible programs and explain a missing secondary-sc
   assert.match(html, /Eligible program/);
   assert.doesNotMatch(html, /Hidden program/);
   assert.match(html, /secondary-school average/);
+});
+
+const consentQueryKey = queryKeys.student.aiConsent(42);
+
+const consentAuth: CurrentAuthState = {
+  isHydrated: true,
+  user: { id: 42, name: "Test Student", email: "student@example.test", role: "student" },
+  token: "test-token",
+  isAuthenticated: true,
+  role: "student",
+};
+
+const currentConsent: StudentAiConsent = {
+  granted: true,
+  granted_at: "2026-03-09T12:00:00.000Z",
+  withdrawn_at: null,
+  consent_version: "2",
+  required_version: "2",
+};
+
+function newConsentQueryClient() {
+  const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity, retry: false, retryOnMount: false } } });
+  client.setQueryData(queryKeys.publicCatalog.documentTypes, [{ id: 8, name: "birth_certificate", is_required: true }]);
+
+  return client;
+}
+
+function renderDocumentConsent(client: QueryClient, locale: "ar" | "en" = "en") {
+  return renderToStaticMarkup(
+    React.createElement(AuthProvider, { value: consentAuth },
+      React.createElement(QueryClientProvider, { client },
+        React.createElement(NextIntlClientProvider, { locale, timeZone: "UTC", messages: locale === "ar" ? arMessages : enMessages },
+          React.createElement(DocumentsStep, { documents: [], onChange: () => {} }),
+        ),
+      ),
+    ),
+  );
+}
+
+function assertUploadDisabled(html: string, disabled: boolean) {
+  const input = html.match(/<input(?=[^>]*type="file")[^>]*>/)?.[0];
+  assert.ok(input, "The upload input must remain visible to the test");
+  assert.equal(/\bdisabled=/.test(input), disabled);
+}
+
+test("missing or withdrawn AI consent disables upload and presents the agreement in both locales", () => {
+  const client = newConsentQueryClient();
+  client.setQueryData(consentQueryKey, { ...currentConsent, granted: false, consent_version: null, granted_at: null });
+
+  const english = renderDocumentConsent(client);
+  assertUploadDisabled(english, true);
+  assert.match(english, /I agree that the documents/);
+  assert.match(english, /You need current consent/);
+  assert.doesNotMatch(english, /Granted on/);
+
+  client.setQueryData(consentQueryKey, { ...currentConsent, granted: false, withdrawn_at: "2026-03-10T12:00:00.000Z" });
+  const arabic = renderDocumentConsent(client, "ar");
+  assertUploadDisabled(arabic, true);
+  assert.match(arabic, /أوافق على إرسال المستندات/);
+  assert.match(arabic, /تحتاج إلى الموافقة/);
+  assert.doesNotMatch(arabic, /تمت الموافقة في/);
+});
+
+test("current AI consent displays the date and withdrawal action and enables upload", () => {
+  const client = newConsentQueryClient();
+  client.setQueryData(consentQueryKey, currentConsent);
+  const html = renderDocumentConsent(client);
+  assertUploadDisabled(html, false);
+  assert.match(html, /Granted on Mar 9, 2026/);
+  assert.match(html, /Withdraw consent/);
+  assert.doesNotMatch(html, /You need current consent/);
+});
+
+test("outdated AI consent requests renewed agreement and keeps upload disabled", () => {
+  const client = newConsentQueryClient();
+  client.setQueryData(consentQueryKey, { ...currentConsent, consent_version: "1" });
+  const html = renderDocumentConsent(client);
+  assertUploadDisabled(html, true);
+  assert.match(html, /Please review it and agree again/);
+  assert.match(html, /I agree that the documents/);
+  assert.doesNotMatch(html, /Granted on/);
+});
+
+test("AI consent loading and error states disable upload and hide raw errors", async () => {
+  const client = newConsentQueryClient();
+  const loading = renderDocumentConsent(client);
+  assertUploadDisabled(loading, true);
+  assert.match(loading, /Checking your consent/);
+
+  await assert.rejects(client.fetchQuery({
+    queryKey: consentQueryKey,
+    queryFn: async () => { throw new Error("private-consent-error-fixture"); },
+  }));
+  const failed = renderDocumentConsent(client);
+  assertUploadDisabled(failed, true);
+  assert.match(failed, /Could not check your consent/);
+  assert.match(failed, />Retry</);
+  assert.doesNotMatch(failed, /private-consent-error-fixture/);
+});
+
+test("AI consent service reads the required version, sends it on agreement, and withdraws by DELETE", async () => {
+  const original = apiClient.defaults.adapter;
+  const requests: Array<[string | undefined, string | undefined, unknown]> = [];
+  apiClient.defaults.adapter = async (config) => {
+    requests.push([config.method, config.url, config.data]);
+    return { data: currentConsent, status: 200, statusText: "OK", headers: {}, config };
+  };
+
+  try {
+    const consent = await getStudentAiConsent();
+    assert.equal(consent.required_version, "2");
+    await grantStudentAiConsent(consent.required_version);
+    await withdrawStudentAiConsent();
+    assert.deepEqual(requests, [
+      ["get", "/student/ai-consent", undefined],
+      ["post", "/student/ai-consent", '{"consent_version":"2"}'],
+      ["delete", "/student/ai-consent", undefined],
+    ]);
+  } finally {
+    apiClient.defaults.adapter = original;
+  }
+});
+
+const adminProvider: AiProvider = {
+  id: 7, label: "Admissions provider", provider: "gemini", model: null,
+  timeout_seconds: 90, is_enabled: true, has_credentials: true,
+  config_revision: 2, tested_revision: 2, last_test_status: "success", last_test_code: "ok",
+  tested_at: "2026-04-05T13:20:00.000Z",
+};
+
+const adminProviderPayload: AiProviderPayload = {
+  label: "Admissions provider", provider: "gemini", model: null, timeout_seconds: 90, is_enabled: true,
+};
+
+const providerKeyFixture = "credential-fixture-for-admin-provider-tests";
+
+function renderAiProviderComponent(
+  element: React.ReactElement,
+  client = new QueryClient(),
+  locale: "en" | "ar" = "en",
+) {
+  return renderToStaticMarkup(
+    React.createElement(AuthProvider, {
+      value: {
+        isHydrated: true, isAuthenticated: true, token: "test-token", role: "admin",
+        user: { id: 1, name: "Test Admin", email: "admin@example.test", role: "admin" },
+      },
+    }, React.createElement(QueryClientProvider, { client },
+      React.createElement(NextIntlClientProvider, { locale, timeZone: "UTC", messages: locale === "ar" ? arMessages : enMessages },
+        element,
+      ),
+    )),
+  );
+}
+
+function useAiProviderTestHarness() {
+  return {
+    list: useAdminAiProvidersQuery(), create: useCreateAiProviderMutation(), update: useUpdateAiProviderMutation(),
+    probe: useTestAiProviderMutation(), activate: useActivateAiProviderMutation(), remove: useDeleteAiProviderMutation(),
+  };
+}
+
+function ProviderHookHarness({ render }: { render: (hooks: ReturnType<typeof useAiProviderTestHarness>) => null }) {
+  return render(useAiProviderTestHarness());
+}
+
+function mountProviderHooks(client: QueryClient) {
+  const capture: { hooks?: ReturnType<typeof useAiProviderTestHarness> } = {};
+  renderAiProviderComponent(React.createElement(ProviderHookHarness, {
+    render: (hooks) => {
+      capture.hooks = hooks;
+      return null;
+    },
+  }), client);
+  assert.ok(capture.hooks);
+  return capture.hooks;
+}
+
+test("admin AI provider hooks list, create, update, test, activate, and delete through the API", async () => {
+  const client = new QueryClient();
+  const hooks = mountProviderHooks(client);
+  const original = apiClient.defaults.adapter;
+  const calls: { method?: string; url?: string; body: unknown }[] = [];
+
+  apiClient.defaults.adapter = async (config) => {
+    calls.push({ method: config.method, url: config.url, body: config.data ? JSON.parse(config.data) : undefined });
+    const data = config.url?.endsWith("/test")
+      ? { status: "success", code: "ok", latency_ms: 8, tested_at: adminProvider.tested_at, config_revision: 2 }
+      : { success: true, message: null, data: config.method === "get"
+        ? { active_provider_id: 7, providers: [{ ...adminProvider, api_key: providerKeyFixture }] }
+        : { ...adminProvider, api_key: providerKeyFixture } };
+    return { data, status: 200, statusText: "OK", headers: {}, config };
+  };
+
+  try {
+    const list = await hooks.list.refetch();
+    assert.deepEqual(list.data, { active_provider_id: 7, providers: [adminProvider] });
+
+    async function assertInvalidates(operation: () => Promise<unknown>) {
+      client.setQueryData(queryKeys.admin.aiProviders, list.data);
+      const result = await operation();
+      assert.equal(client.getQueryState(queryKeys.admin.aiProviders)?.isInvalidated, true);
+      assert.doesNotMatch(JSON.stringify(result) ?? "", new RegExp(providerKeyFixture));
+      return result;
+    }
+
+    await assertInvalidates(() => hooks.create.save({ ...adminProviderPayload, api_key: providerKeyFixture }));
+    await assertInvalidates(() => hooks.update.save(7, { ...adminProviderPayload, api_key: "" }));
+    const probe = await assertInvalidates(() => hooks.probe.mutateAsync(7));
+    assert.deepEqual(probe, { status: "success", code: "ok", latency_ms: 8, tested_at: adminProvider.tested_at, config_revision: 2 });
+    await assertInvalidates(() => hooks.activate.mutateAsync(7));
+    await assertInvalidates(() => hooks.remove.mutateAsync(7));
+
+    assert.deepEqual(calls.map(({ method, url }) => [method, url]), [
+      ["get", "/admin/ai-providers"], ["post", "/admin/ai-providers"], ["patch", "/admin/ai-providers/7"],
+      ["post", "/admin/ai-providers/7/test"], ["post", "/admin/ai-providers/7/activate"], ["delete", "/admin/ai-providers/7"],
+    ]);
+    assert.deepEqual(calls[1].body, { ...adminProviderPayload, api_key: providerKeyFixture });
+    assert.deepEqual(calls[2].body, adminProviderPayload);
+    assert.doesNotMatch(JSON.stringify(client.getMutationCache().getAll().map((mutation) => mutation.state)), new RegExp(providerKeyFixture));
+  } finally {
+    apiClient.defaults.adapter = original;
+    client.clear();
+  }
+});
+
+test("admin AI provider hooks retain known API codes and field names but discard raw errors", async () => {
+  const client = new QueryClient();
+  const hooks = mountProviderHooks(client);
+  const original = apiClient.defaults.adapter;
+  const errors = [
+    [422, { label: [providerKeyFixture], api_key: [providerKeyFixture] }],
+    [409, { reason_code: "provider_revision_stale" }],
+    [429, null],
+    [422, { reason_code: "provider_disabled" }],
+    [409, { reason_code: "provider_active" }],
+  ] as const;
+  let index = 0;
+  apiClient.defaults.adapter = async (config) => {
+    const [status, fields] = errors[index++];
+    throw new AxiosError(providerKeyFixture, undefined, config, undefined, {
+      data: { message: providerKeyFixture, errors: fields }, status, statusText: "Error", headers: {}, config,
+    });
+  };
+
+  try {
+    await assert.rejects(hooks.create.save(adminProviderPayload), {
+      name: "AiProviderRequestError", message: "unexpected", fields: ["label", "api_key"],
+    });
+    await assert.rejects(hooks.probe.mutateAsync(7), { message: "provider_revision_stale" });
+    await assert.rejects(hooks.probe.mutateAsync(7), { message: "rate_limited" });
+    await assert.rejects(hooks.activate.mutateAsync(7), { message: "provider_disabled" });
+    await assert.rejects(hooks.remove.mutateAsync(7), { message: "provider_active" });
+    assert.doesNotMatch(JSON.stringify(client.getMutationCache().getAll().map((mutation) => mutation.state)), new RegExp(providerKeyFixture));
+  } finally {
+    apiClient.defaults.adapter = original;
+    client.clear();
+  }
+});
+
+test("the active provider's failed test is a prominent translated alert", () => {
+  const data = { active_provider_id: 7, providers: [{ ...adminProvider, last_test_status: "failed", last_test_code: "timeout" }] } as const;
+  const markup = renderAiProviderComponent(React.createElement(AiProvidersTable, { data: { ...data, providers: [...data.providers] }, onEdit: () => {} }));
+  assert.match(markup, /role="alert"[^>]*>The last connection test failed for the active provider/);
+  assert.match(markup, /The connection test timed out/);
+});
+
+test("the AI provider list shows the manual-review banner when none is active", () => {
+  const data = { active_provider_id: null, providers: [adminProvider] };
+  const page = React.createElement(AiProvidersTable, { data, onEdit: () => {} });
+  assert.match(renderAiProviderComponent(page), /No active provider — all documents go to manual review/);
+  assert.match(renderAiProviderComponent(page, new QueryClient(), "ar"), /ستُراجع جميع المستندات يدوياً/);
+});
+
+test("activation is disabled with a reason for an untested or stale AI provider", () => {
+  for (const [provider, reason] of [
+    [{ ...adminProvider, last_test_status: null, tested_revision: null }, /Run a successful connection test first/],
+    [{ ...adminProvider, tested_revision: 1 }, /The settings have changed/],
+  ] as const) {
+    const markup = renderAiProviderComponent(React.createElement(AiProviderRowActions, { provider, active: false }));
+    assert.match(markup, /<button[^>]*disabled=""[^>]*>Activate<\/button>/);
+    assert.match(markup, reason);
+  }
+  const eligible = renderAiProviderComponent(React.createElement(AiProviderRowActions, { provider: adminProvider, active: false }));
+  assert.doesNotMatch(eligible, /<button[^>]*disabled=""[^>]*>Activate<\/button>/);
+});
+
+test("deleting the active AI provider is disabled and explains how to proceed", () => {
+  const markup = renderAiProviderComponent(React.createElement(AiProviderRowActions, { provider: adminProvider, active: true }));
+  assert.match(markup, /title="Activate a different provider or disable this one before deleting it\."/);
+  assert.match(markup, /<button[^>]*disabled=""[^>]*>Delete<\/button>/);
+});
+
+test("editing an active provider warns about deactivation and never prefills or retains the key", () => {
+  const provider = { ...adminProvider, api_key: providerKeyFixture };
+  const form = React.createElement(AiProviderForm, {
+    provider, active: true, pending: false, labels: [], onSave: async () => undefined, onCancel: () => {},
+  });
+  const before = renderAiProviderComponent(form);
+  const keyInput = before.match(/<input[^>]*type="password"[^>]*>/)?.[0];
+  assert.ok(keyInput);
+  assert.doesNotMatch(keyInput, /\bvalue=/);
+  assert.match(before, /Saving changes will deactivate this provider/);
+  assert.match(before, /Key configured/);
+
+  const input = { value: providerKeyFixture };
+  assert.equal(takeAiProviderKey(input), providerKeyFixture);
+  assert.equal(input.value, "");
+  assert.equal(takeAiProviderKey(input), undefined);
+  assert.doesNotMatch(renderAiProviderComponent(form), new RegExp(providerKeyFixture));
 });

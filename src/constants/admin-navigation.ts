@@ -10,6 +10,7 @@ import {
   Settings,
   Users,
   LayoutDashboard,
+  ShieldCheck,
 } from "lucide-react";
 import { routes } from "@/constants/routes";
 import { userRoles, type UserRole } from "@/constants/roles";
@@ -92,6 +93,12 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     href: routes.adminHeadNotifications,
     icon: Bell,
     allowedRoles: [userRoles.departmentHead],
+  },
+  {
+    labelKey: "aiProviders",
+    href: routes.adminAiProviders,
+    icon: ShieldCheck,
+    allowedRoles: [userRoles.admin],
   },
   {
     labelKey: "settings",

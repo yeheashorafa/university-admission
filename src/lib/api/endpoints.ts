@@ -21,6 +21,7 @@ export const ENDPOINTS = {
     applicationTypes: "/public/application-types",
   },
   student: {
+    aiConsent: "/student/ai-consent",
     dashboard: "/student/dashboard",
     applications: "/student/applications",
     eligibility: "/student/eligibility",
@@ -107,6 +108,8 @@ export const ENDPOINTS = {
     },
   },
   admin: {
+    aiProviders: "/admin/ai-providers",
+    aiProvider: (id: number) => `/admin/ai-providers/${id}`,
     applications: "/admin/applications",
     applicationDetail: (id: string | number) => `/admin/applications/${id}`,
     assignReviewer: (id: string | number) =>

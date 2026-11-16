@@ -42,6 +42,7 @@ export const queryKeys = {
   },
 
   student: {
+    aiConsent: (studentId?: string | number) => ["student", "ai-consent", studentId] as const,
     dashboard: ["student", "dashboard"] as const,
     eligibility: (cycleId: string | number) => ["student", "eligibility", String(cycleId)] as const,
     applications: ["student", "applications"] as const,
@@ -50,6 +51,7 @@ export const queryKeys = {
   },
 
   admin: {
+    aiProviders: ["admin", "ai-providers"] as const,
     dashboardStats: ["admin", "dashboard-stats"] as const,
     deanDashboard: ["admin", "dean-dashboard"] as const,
     applications: (params?: unknown) =>
