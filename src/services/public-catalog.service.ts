@@ -115,10 +115,11 @@ export interface PublicDocumentType {
 
 export interface PublicApplicationType {
   id: string | number;
+  code: string;
   name: string;
-  code?: string;
-  description?: string;
-  [key: string]: unknown;
+  name_ar: string;
+  name_en: string;
+  description: string | null;
 }
 
 export async function getAdmissionCycles(): Promise<PublicAdmissionCycle[]> {
@@ -151,13 +152,11 @@ export async function getDocumentTypes(): Promise<PublicDocumentType[]> {
   return extractArray<PublicDocumentType>(response.data);
 }
 
-// Backend Gap Check: Attempt to fetch public application types, return empty or fallback if non-existent
 export async function getPublicApplicationTypes(): Promise<PublicApplicationType[]> {
   try {
     const response = await apiClient.get(ENDPOINTS.public.applicationTypes);
     return extractArray<PublicApplicationType>(response.data);
   } catch {
-    // PENDING_BACKEND_API: GET /public/application-types missing from public backend routes
     return [];
   }
 }
