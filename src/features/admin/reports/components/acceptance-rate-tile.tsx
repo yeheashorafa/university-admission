@@ -66,8 +66,8 @@ export function AcceptanceRateTile({
         {snapshot && generatedAt && Number.isFinite(generatedAt.getTime()) && (
           <p className="mt-1 text-sm text-muted-foreground">
             {t("snapshot", {
-              from: snapshot.period.from,
-              to: snapshot.period.to,
+              from: snapshot.periodStart,
+              to: snapshot.periodEnd,
               generatedAt: format.dateTime(generatedAt, { dateStyle: "medium", timeStyle: "short" }),
             })}
           </p>

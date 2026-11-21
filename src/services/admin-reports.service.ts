@@ -77,7 +77,8 @@ export type AcceptanceRateReport = {
   rows: ReportAcceptanceRate[];
   snapshot?: {
     generatedAt: string;
-    period: { from: string; to: string };
+    periodStart: string;
+    periodEnd: string;
   };
 };
 
@@ -87,7 +88,8 @@ type AcceptanceRateResponse = {
   data: ReportAcceptanceRate[];
   snapshot?: boolean;
   generated_at?: string;
-  period?: { from: string; to: string };
+  period_start?: string;
+  period_end?: string;
 };
 
 export async function getAcceptanceRateReport(
@@ -100,8 +102,15 @@ export async function getAcceptanceRateReport(
   );
   const rows = extractArray<ReportAcceptanceRate>(data);
   if (!Array.isArray(data) && data?.snapshot !== false && data?.generated_at &&
-      data.period?.from && data.period?.to) {
-    return { rows, snapshot: { generatedAt: data.generated_at, period: data.period } };
+      data.period_start && data.period_end) {
+    return {
+      rows,
+      snapshot: {
+        generatedAt: data.generated_at,
+        periodStart: data.period_start,
+        periodEnd: data.period_end,
+      },
+    };
   }
   return { rows };
 }
