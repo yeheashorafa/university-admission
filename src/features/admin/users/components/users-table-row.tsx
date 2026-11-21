@@ -5,7 +5,6 @@ import {
   Edit,
   KeyRound,
   Shield,
-  Trash2,
   UserCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +15,6 @@ type UsersTableRowProps = {
   user: AuthUser;
   onResetPassword: () => void;
   onEdit: () => void;
-  onDelete: () => void;
 };
 
 const roleConfig: Record<
@@ -52,7 +50,6 @@ export function UsersTableRow({
   user,
   onResetPassword,
   onEdit,
-  onDelete,
 }: UsersTableRowProps) {
   const t = useTranslations("admin");
 
@@ -113,15 +110,6 @@ export function UsersTableRow({
             className="rounded-lg p-2 text-secondary transition hover:bg-secondary/10"
           >
             <Edit className="size-5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={onDelete}
-            title={t("users.deleteUser")}
-            className="rounded-lg p-2 text-destructive transition hover:bg-destructive/10"
-          >
-            <Trash2 className="size-5" />
           </button>
         </div>
       </td>

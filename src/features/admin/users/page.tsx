@@ -17,7 +17,6 @@ import {
   useAdminUsersQuery,
   useCreateAdminUserMutation,
   useUpdateAdminUserMutation,
-  useDeleteAdminUserMutation,
 } from "@/hooks/queries/use-admin-users-queries";
 import { extractApiError } from "@/lib/api/api-error";
 import type { AuthUser, UserRole } from "@/services/auth.service";
@@ -104,7 +103,6 @@ function SuperAdminUsersContent() {
   } = useAdminUsersQuery({ search, role });
   const createMutation = useCreateAdminUserMutation();
   const updateMutation = useUpdateAdminUserMutation();
-  const deleteMutation = useDeleteAdminUserMutation();
   const queryClient = useQueryClient();
 
   async function handleResetPassword(user: AuthUser) {
@@ -257,36 +255,6 @@ function SuperAdminUsersContent() {
     }
   }
 
-  async function handleDeleteUser(userId: string | number) {
-    const result = await Swal.fire({
-      title: t("users.deleteConfirmTitle"),
-      text: t("users.deleteConfirmDescription"),
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: t("users.delete"),
-      cancelButtonText: t("users.cancel"),
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      await deleteMutation.mutateAsync(String(userId));
-      await Swal.fire({
-        title: t("users.successTitle"),
-        text: t("users.deletedSuccessfully"),
-        icon: "success",
-        confirmButtonText: t("users.ok"),
-      });
-    } catch (err) {
-      const apiErr = extractApiError(err);
-      await Swal.fire({
-        title: "خطأ",
-        text: apiErr.message,
-        icon: "error",
-      });
-    }
-  }
-
   return (
     <AdminLayout activePath={routes.adminUsers}>
       <div className="flex flex-col gap-8">
@@ -332,7 +300,6 @@ function SuperAdminUsersContent() {
             onPageChange={handlePageChange}
             onResetPassword={handleResetPassword}
             onEditUser={handleOpenEdit}
-            onDeleteUser={handleDeleteUser}
           />
         )}
       </div>

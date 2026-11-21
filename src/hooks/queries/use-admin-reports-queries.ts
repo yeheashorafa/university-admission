@@ -12,7 +12,7 @@ import {
   type ReportLabelCount,
   type ReportTimeInStatus,
   type ReportDateCount,
-  type ReportAcceptanceRate,
+  type AcceptanceRateReport,
 } from "@/services/admin-reports.service";
 import { useCurrentAuth } from "@/hooks/use-current-auth";
 import { isAdminRole } from "@/constants/roles";
@@ -23,7 +23,7 @@ export type AdminReportsData = {
   byProgram: ReportLabelCount[] | null;
   timeInStatus: ReportTimeInStatus[] | null;
   uploadVolume: ReportDateCount[] | null;
-  acceptanceRate: ReportAcceptanceRate[] | null;
+  acceptanceRate: AcceptanceRateReport | null;
 };
 
 export function useAdminReportsQuery(range?: ReportDateRange) {

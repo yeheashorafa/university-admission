@@ -150,12 +150,6 @@ export async function updateAdminAdmissionCycle(
   return extractResource<Record<string, unknown>>(response.data);
 }
 
-export async function deleteAdminAdmissionCycle(
-  cycleId: string | number
-): Promise<void> {
-  await apiClient.delete(`${ENDPOINTS.admin.admissionCycles}/${cycleId}`);
-}
-
 // ---------- Document Types CRUD ----------
 
 export type AdminDocumentTypePayload = {

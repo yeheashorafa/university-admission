@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import Swal from "sweetalert2";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
 import { AdmissionCyclesStats } from "./components/admission-cycles-stats";
@@ -17,7 +16,6 @@ import {
   useAdminAdmissionCyclesQuery,
   useCreateAdmissionCycleMutation,
   useUpdateAdmissionCycleMutation,
-  useDeleteAdmissionCycleMutation,
 } from "@/hooks/queries/use-admin-queries";
 import { getApiErrorMessage } from "@/lib/api/api-error";
 import type { AdminAdmissionCyclePayload } from "@/services/admin.service";
@@ -50,7 +48,6 @@ export function AdminAdmissionCyclesPage() {
   const { data: apiCycles } = useAdminAdmissionCyclesQuery();
   const createMutation = useCreateAdmissionCycleMutation();
   const updateMutation = useUpdateAdmissionCycleMutation();
-  const deleteMutation = useDeleteAdmissionCycleMutation();
 
   const [showCreate, setShowCreate] = useState(false);
 
@@ -110,24 +107,6 @@ export function AdminAdmissionCyclesPage() {
     }
   }
 
-  async function handleDeleteCycle(cycleId: string) {
-    const result = await Swal.fire({
-      title: "Delete admission cycle?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Delete",
-      cancelButtonText: "Cancel",
-    });
-    if (!result.isConfirmed) return;
-    try {
-      await deleteMutation.mutateAsync(cycleId);
-      toast.success("Admission cycle deleted.");
-    } catch (error) {
-      toast.error(getApiErrorMessage(error));
-    }
-  }
-
   return (
     <AdminLayout activePath={routes.adminAdmissionCycles}>
       <div className="flex flex-col gap-8">
@@ -153,7 +132,6 @@ export function AdminAdmissionCyclesPage() {
               onSelectCycle={setActiveCycleId}
               onUpdateCycle={handleUpdateCycle}
               onChangeStatus={handleChangeStatus}
-              onDeleteCycle={handleDeleteCycle}
             />
           </>
         )}

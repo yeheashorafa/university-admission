@@ -18,7 +18,6 @@ type AdmissionCyclesWorkspaceProps = {
     successMessage: string
   ) => void;
   onChangeStatus: (cycleId: string, status: AdmissionCycleStatus) => void;
-  onDeleteCycle: (cycleId: string) => void;
 };
 
 export function AdmissionCyclesWorkspace({
@@ -28,7 +27,6 @@ export function AdmissionCyclesWorkspace({
   onSelectCycle,
   onUpdateCycle,
   onChangeStatus,
-  onDeleteCycle,
 }: AdmissionCyclesWorkspaceProps) {
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
@@ -47,7 +45,6 @@ export function AdmissionCyclesWorkspace({
             key={activeCycle.id}
             onUpdateCycle={onUpdateCycle}
             onChangeStatus={onChangeStatus}
-            onDeleteCycle={onDeleteCycle}
           />
         ) : (
           <div className="rounded-xl border border-dashed border-border bg-card p-10 text-center text-muted-foreground">
