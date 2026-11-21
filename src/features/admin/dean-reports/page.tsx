@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLocale } from "next-intl";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { routes } from "@/constants/routes";
+import { AcceptanceRateTile } from "@/features/admin/reports/components/acceptance-rate-tile";
 import { ReportsFilterBar } from "@/features/admin/reports/components/reports-filter-bar";
 import { useDeanReportsQuery } from "@/hooks/queries/use-dean-reports-queries";
 import { ApplicationStatusReport } from "@/features/admin/reports/components/application-status-report";
@@ -92,6 +93,7 @@ export function DeanReportsPage() {
         </header>
 
         <ReportsFilterBar onApply={setRange} />
+        <AcceptanceRateTile audience="admissionDean" range={range} report={reports?.acceptanceRate} />
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 text-center bg-card rounded-[28px] border border-border shadow-sm">

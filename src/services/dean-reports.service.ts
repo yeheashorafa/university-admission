@@ -1,7 +1,7 @@
 import { apiClient, extractArray } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
+import { getAcceptanceRateReport } from "@/services/admin-reports.service";
 import type {
-  ReportAcceptanceRate,
   ReportDateCount,
   ReportDateRange,
   ReportLabelCount,
@@ -60,11 +60,6 @@ export async function getDeanReportUploadVolume(
   return extractArray(response.data);
 }
 
-export async function getDeanReportAcceptanceRate(
-  range?: ReportDateRange
-): Promise<ReportAcceptanceRate[]> {
-  const response = await apiClient.get<
-    ReportAcceptanceRate[] | { data: ReportAcceptanceRate[] }
-  >(ENDPOINTS.admissionDean.reports.acceptanceRate, { params: buildParams(range) });
-  return extractArray(response.data);
+export function getDeanReportAcceptanceRate(range?: ReportDateRange) {
+  return getAcceptanceRateReport("admissionDean", range);
 }

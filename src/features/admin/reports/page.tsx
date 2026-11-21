@@ -10,6 +10,7 @@ import {
   type WorkflowApplication,
 } from "@/features/admin/applications/data/applications-workflow.data";
 import { ReportsHeader } from "./components/reports-header";
+import { AcceptanceRateTile } from "@/features/admin/reports/components/acceptance-rate-tile";
 import { ReportsFilterBar } from "./components/reports-filter-bar";
 import { ReportsStats } from "./components/reports-stats";
 import { ApplicationStatusReport } from "./components/application-status-report";
@@ -45,6 +46,7 @@ export function AdminReportsPage() {
         <ReportsHeader />
         
         <ReportsFilterBar onApply={setRange} />
+        <AcceptanceRateTile audience="admin" range={range} report={reports?.acceptanceRate} />
         
         {reports ? (
           <>

@@ -13,7 +13,9 @@ export type ReportAcceptanceRate = {
   total: number;
   accepted: number;
   rejected: number;
-  rate: number;
+  rate: number | null;
+  numerator?: number;
+  denominator?: number;
 };
 
 export type ReportDateRange = { from?: string; to?: string };
@@ -70,11 +72,60 @@ export async function getAdminReportUploadVolume(
   return extractArray(response.data);
 }
 
-export async function getAdminReportAcceptanceRate(
+
+export type AcceptanceRateReport = {
+  rows: ReportAcceptanceRate[];
+  snapshot?: {
+    generatedAt: string;
+    period: { from: string; to: string };
+  };
+};
+
+type ReportAudience = "admin" | "admissionDean";
+
+type AcceptanceRateResponse = {
+  data: ReportAcceptanceRate[];
+  snapshot?: boolean;
+  generated_at?: string;
+  period?: { from: string; to: string };
+};
+
+export async function getAcceptanceRateReport(
+  audience: ReportAudience,
   range?: ReportDateRange
-): Promise<ReportAcceptanceRate[]> {
-  const response = await apiClient.get<
-    ReportAcceptanceRate[] | { data: ReportAcceptanceRate[] }
-  >(ENDPOINTS.admin.reports.acceptanceRate, { params: buildParams(range) });
-  return extractArray(response.data);
+): Promise<AcceptanceRateReport> {
+  const { data } = await apiClient.get<AcceptanceRateResponse | ReportAcceptanceRate[]>(
+    ENDPOINTS[audience].reports.acceptanceRate,
+    { params: buildParams(range) }
+  );
+  const rows = extractArray<ReportAcceptanceRate>(data);
+  if (!Array.isArray(data) && data?.snapshot !== false && data?.generated_at &&
+      data.period?.from && data.period?.to) {
+    return { rows, snapshot: { generatedAt: data.generated_at, period: data.period } };
+  }
+  return { rows };
+}
+
+export function getAdminReportAcceptanceRate(range?: ReportDateRange) {
+  return getAcceptanceRateReport("admin", range);
+}
+
+export async function exportAcceptanceRateReport(
+  audience: ReportAudience,
+  range?: ReportDateRange
+): Promise<{ blob: Blob; filename: string }> {
+  const response = await apiClient.get<Blob>(ENDPOINTS[audience].reports.acceptanceRate, {
+    params: { ...buildParams(range), format: "xlsx" },
+    responseType: "blob",
+    headers: { Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+  });
+  const disposition = response.headers["content-disposition"];
+  const filename = typeof disposition === "string"
+    ? /filename="?([\w.-]+\.xlsx)"?(?:;|$)/i.exec(disposition)?.[1]
+    : undefined;
+  const period = [range?.from, range?.to].filter(Boolean).join("-");
+  return {
+    blob: response.data,
+    filename: filename ?? (period ? `acceptance-rate-${period}.xlsx` : "acceptance-rate.xlsx"),
+  };
 }

@@ -1434,6 +1434,14 @@
       "error": "Failed to load dean dashboard."
     },
     "reports": {
+      "acceptanceTile": {
+        "title": "Acceptance rate",
+        "unavailable": "Unavailable",
+        "export": "Download Excel",
+        "exporting": "Downloading…",
+        "exportFailed": "Could not download the acceptance rate report.",
+        "snapshot": "Snapshot for {from} to {to}, generated {generatedAt}"
+      },
       "analyticsCenter": "Analytics Center",
       "adminReports": "Admin Reports",
       "description": "Monitor admission performance, application trends, faculty capacity, AI alerts, and export reports for administrative review.",

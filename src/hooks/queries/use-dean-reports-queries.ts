@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-  getDeanReportAcceptanceRate,
+  getDeanAcceptanceRateReport,
   getDeanReportByFaculty,
   getDeanReportByProgram,
   getDeanReportByStatus,
@@ -11,7 +11,7 @@ import {
 } from "@/services/dean-reports.service";
 import type { ReportDateRange } from "@/services/admin-reports.service";
 import type {
-  ReportAcceptanceRate,
+  AcceptanceRateReport,
   ReportDateCount,
   ReportLabelCount,
   ReportTimeInStatus,
@@ -25,7 +25,7 @@ export type DeanReportsData = {
   byProgram: ReportLabelCount[] | null;
   timeInStatus: ReportTimeInStatus[] | null;
   uploadVolume: ReportDateCount[] | null;
-  acceptanceRate: ReportAcceptanceRate[] | null;
+  acceptanceRate: AcceptanceRateReport | null;
 };
 
 export function useDeanReportsQuery(range?: ReportDateRange) {
@@ -42,7 +42,7 @@ export function useDeanReportsQuery(range?: ReportDateRange) {
         getDeanReportByProgram(range),
         getDeanReportTimeInStatus(range),
         getDeanReportUploadVolume(range),
-        getDeanReportAcceptanceRate(range),
+        getDeanAcceptanceRateReport(range),
       ]);
 
       const safeValue = <T>(res: PromiseSettledResult<T>, fallback: T): T => {
