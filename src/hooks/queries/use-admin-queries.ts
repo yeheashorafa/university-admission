@@ -7,7 +7,6 @@ import {
   getAdminAdmissionCycles,
   createAdminAdmissionCycle,
   updateAdminAdmissionCycle,
-  deleteAdminAdmissionCycle,
   type AdminAdmissionCyclePayload,
   type AdminApplicationStatus,
 } from "@/services/admin.service";
@@ -325,16 +324,6 @@ export function useUpdateAdmissionCycleMutation() {
       id: string | number;
       payload: Partial<AdminAdmissionCyclePayload>;
     }) => updateAdminAdmissionCycle(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "admissionCycles"] });
-    },
-  });
-}
-
-export function useDeleteAdmissionCycleMutation() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string | number) => deleteAdminAdmissionCycle(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "admissionCycles"] });
     },

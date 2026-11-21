@@ -15,7 +15,6 @@ type UsersTableProps = {
   onPageChange: (page: number) => void;
   onResetPassword: (user: AuthUser) => void;
   onEditUser: (user: AuthUser) => void;
-  onDeleteUser: (userId: string | number) => Promise<void>;
 };
 
 export function UsersTable({
@@ -28,7 +27,6 @@ export function UsersTable({
   onPageChange,
   onResetPassword,
   onEditUser,
-  onDeleteUser,
 }: UsersTableProps) {
   const t = useTranslations("admin");
 
@@ -76,7 +74,6 @@ export function UsersTable({
                   user={user}
                   onResetPassword={() => onResetPassword(user)}
                   onEdit={() => onEditUser(user)}
-                  onDelete={() => onDeleteUser(user.id)}
                 />
               ))}
             </tbody>

@@ -7,7 +7,6 @@ import {
   CalendarClock,
   Lock,
   Save,
-  Trash2,
   Unlock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,7 +23,6 @@ type AdmissionCycleEditorProps = {
     successMessage: string
   ) => void;
   onChangeStatus: (cycleId: string, status: AdmissionCycleStatus) => void;
-  onDeleteCycle: (cycleId: string) => void;
 };
 
 const statusConfig: Record<
@@ -56,7 +54,6 @@ export function AdmissionCycleEditor({
   cycle,
   onUpdateCycle,
   onChangeStatus,
-  onDeleteCycle,
 }: AdmissionCycleEditorProps) {
   return (
     <AdmissionCycleEditorContent
@@ -64,7 +61,6 @@ export function AdmissionCycleEditor({
       cycle={cycle}
       onUpdateCycle={onUpdateCycle}
       onChangeStatus={onChangeStatus}
-      onDeleteCycle={onDeleteCycle}
     />
   );
 }
@@ -73,7 +69,6 @@ function AdmissionCycleEditorContent({
   cycle,
   onUpdateCycle,
   onChangeStatus,
-  onDeleteCycle,
 }: AdmissionCycleEditorProps) {
   const t = useTranslations("admin");
 
@@ -153,13 +148,6 @@ function AdmissionCycleEditorContent({
               icon={Archive}
               label={t("admissionCycles.archive")}
               onClick={() => onChangeStatus(cycle.id, "archived")}
-            />
-
-            <CycleActionButton
-              icon={Trash2}
-              label={t("admissionCycles.delete")}
-              onClick={() => onDeleteCycle(cycle.id)}
-              className="text-destructive hover:bg-destructive/10"
             />
           </div>
         </div>
