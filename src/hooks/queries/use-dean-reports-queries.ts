@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-  getDeanAcceptanceRateReport,
+  getDeanReportAcceptanceRate,
   getDeanReportByFaculty,
   getDeanReportByProgram,
   getDeanReportByStatus,
@@ -42,7 +42,7 @@ export function useDeanReportsQuery(range?: ReportDateRange) {
         getDeanReportByProgram(range),
         getDeanReportTimeInStatus(range),
         getDeanReportUploadVolume(range),
-        getDeanAcceptanceRateReport(range),
+        getDeanReportAcceptanceRate(range),
       ]);
 
       const safeValue = <T>(res: PromiseSettledResult<T>, fallback: T): T => {

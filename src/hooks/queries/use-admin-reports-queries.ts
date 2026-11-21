@@ -7,7 +7,7 @@ import {
   getAdminReportByProgram,
   getAdminReportTimeInStatus,
   getAdminReportUploadVolume,
-  getAdminAcceptanceRateReport,
+  getAdminReportAcceptanceRate,
   type ReportDateRange,
   type ReportLabelCount,
   type ReportTimeInStatus,
@@ -40,7 +40,7 @@ export function useAdminReportsQuery(range?: ReportDateRange) {
         getAdminReportByProgram(range),
         getAdminReportTimeInStatus(range),
         getAdminReportUploadVolume(range),
-        getAdminAcceptanceRateReport(range),
+        getAdminReportAcceptanceRate(range),
       ]);
 
       const safeValue = <T>(res: PromiseSettledResult<T>, fallback: T): T => {
