@@ -50,7 +50,7 @@ function DepartmentHeadUsersPendingView() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-primary sm:text-3xl">
-                {t("users")} - إدارة موظفي القسم
+                {t("users.managementTitle")} - إدارة موظفي القسم
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 متابعة وتكليف موظفي القبول المعنيين بمراجعة طلبات الكلية

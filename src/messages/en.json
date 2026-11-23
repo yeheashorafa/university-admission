@@ -1414,7 +1414,8 @@
       "missing": "Missing Documents",
       "ai-alerts": "AI Alerts",
       "accepted": "Accepted",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
     },
     "deanKpi": {
       "total": "Total Applications",
@@ -1539,6 +1540,7 @@
       "notifications": "Notifications",
       "employeeNotifications": "Employee Notifications",
       "headNotifications": "Head Notifications",
+      "aiProviders": "AI providers",
       "settings": "Settings",
       "masterData": {
         "faculties": "Faculties",
