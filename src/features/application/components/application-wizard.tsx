@@ -32,7 +32,11 @@ import {
 } from "@/services/application.service";
 import { attachDocumentToApplication } from "@/services/documents.service";
 import { useStudentApplicationDetailsQuery } from "@/hooks/queries/use-application-queries";
-import { usePublicAdmissionCyclesQuery, useDocumentTypesQuery } from "@/hooks/queries/use-public-catalog-queries";
+import {
+  usePublicAdmissionCyclesQuery,
+  useDocumentTypesQuery,
+  usePublicApplicationTypesQuery,
+} from "@/hooks/queries/use-public-catalog-queries";
 import {
   getSocialInformation,
   updateSocialInformation,
@@ -60,9 +64,6 @@ import { DocumentsStep } from "./steps/documents-step";
 import { ReviewStep } from "./steps/review-step";
 import { FinalConfirmationStep } from "./steps/final-confirmation-step";
 
-// CONFIRMED_BACKEND_DEFAULT: application_type_id=1 is the backend default for normal student admission.
-const CONFIRMED_BACKEND_DEFAULT_APPLICATION_TYPE_ID = 1;
-
 export function ApplicationWizard() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -85,7 +86,17 @@ export function ApplicationWizard() {
   const activeCycleId = activeCycle?.id;
   const noOpenCycle = !isLoadingCycles && activeCycles.length === 0;
 
-  const activeAppTypeId = CONFIRMED_BACKEND_DEFAULT_APPLICATION_TYPE_ID;
+  const applicationTypesQuery = usePublicApplicationTypesQuery();
+  const activeAppTypeId = applicationTypesQuery.data?.find((type) => type.code === "new_admission")?.id;
+  const applicationTypeError = applicationTypesQuery.isError
+    ? locale === "ar"
+      ? "تعذر تحميل أنواع الطلبات. تحقق من اتصالك وحاول مرة أخرى."
+      : "Could not load application types. Check your connection and try again."
+    : !applicationTypesQuery.isPending && !activeAppTypeId
+      ? locale === "ar"
+        ? "نوع طلب القبول الجديد غير متاح حاليًا."
+        : "The new admission application type is currently unavailable."
+      : null;
 
   const applicationId = searchParams.get("id");
   const { data: existingApplication } = useStudentApplicationDetailsQuery(applicationId ?? undefined);
@@ -537,7 +548,13 @@ export function ApplicationWizard() {
     return true;
   };
 
+  const totalSteps = applicationSteps.length;
+  const requiresApplicationType = (currentStep === 7 && !targetId) || currentStep === totalSteps;
+  const applicationTypeBlocked = requiresApplicationType &&
+    (applicationTypesQuery.isPending || Boolean(applicationTypeError));
+
   const handleNext = async () => {
+    if (applicationTypeBlocked) return;
     if (!validateStep(currentStep)) return;
 
     try {
@@ -591,25 +608,8 @@ export function ApplicationWizard() {
 
         let activeId = targetId;
         if (!activeId) {
-          if (!activeCycleId) {
-            toast.error(
-              locale === "ar"
-                ? "لا توجد دورة قبول مفتوحة حالياً. تعذر إنشاء طلب الالتحاق."
-                : "No active admission cycle available. Cannot create application."
-            );
-            return;
-          }
+          if (!activeAppTypeId) return;
           const firstProgramId = state.preferences.preferences[0];
-          // Creation payload remains backend compatible: { application_type_id, admission_cycle_id, program_id }
-          if (!activeAppTypeId) {
-            toast.error(
-              locale === "ar"
-                ? "تعذر تحديد نوع الطلب من النظام"
-                : "Failed to determine application type from system"
-            );
-            return;
-          }
-          // CONFIRMED_BACKEND_DEFAULT: application_type_id=1 is the backend default for normal student admission.
           const draft = await createStudentApplication({
             program_id: firstProgramId,
             application_type_id: activeAppTypeId,
@@ -655,8 +655,7 @@ export function ApplicationWizard() {
       return;
     }
 
-    const totalStepsCount = applicationSteps.length;
-    if (currentStep < totalStepsCount) {
+    if (currentStep < totalSteps) {
       setCurrentStep((c) => c + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
@@ -676,15 +675,9 @@ export function ApplicationWizard() {
           }
           const firstProgramId = state.preferences.preferences[0];
           if (!activeAppTypeId) {
-            toast.error(
-              locale === "ar"
-                ? "تعذر تحديد نوع الطلب من النظام"
-                : "Failed to determine application type from system"
-            );
             setIsSubmitting(false);
             return;
           }
-          // CONFIRMED_BACKEND_DEFAULT: application_type_id=1 is the backend default for normal student admission.
           const draft = await createStudentApplication({
             program_id: firstProgramId,
             application_type_id: activeAppTypeId,
@@ -853,8 +846,6 @@ export function ApplicationWizard() {
     }
   };
 
-  const totalSteps = applicationSteps.length;
-
   if (userIsUnverified) {
     return (
       <div className="mx-auto max-w-xl py-12 px-4">
@@ -894,6 +885,28 @@ export function ApplicationWizard() {
               : "Notice: There is currently no open admission cycle available."}
           </span>
         </div>
+      )}
+
+      {applicationTypeError && (
+        <div role="alert" className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800 shadow-sm">
+          <AlertCircle className="size-5 shrink-0 text-red-600" />
+          <span>{applicationTypeError}</span>
+          {applicationTypesQuery.isError && (
+            <button
+              type="button"
+              disabled={applicationTypesQuery.isFetching}
+              onClick={() => void applicationTypesQuery.refetch()}
+              className="shrink-0 underline disabled:opacity-50"
+            >
+              {locale === "ar" ? "إعادة المحاولة" : "Retry"}
+            </button>
+          )}
+        </div>
+      )}
+      {requiresApplicationType && applicationTypesQuery.isPending && (
+        <p role="status" className="text-sm text-muted-foreground">
+          {locale === "ar" ? "جارٍ تحميل أنواع الطلبات…" : "Loading application types…"}
+        </p>
       )}
 
       {/* Top Stepper Indicator */}
@@ -1062,7 +1075,7 @@ export function ApplicationWizard() {
         <button
           type="button"
           onClick={handleNext}
-          disabled={isSubmitting || (currentStep === totalSteps && loadedProfile !== null && !hasTawjihiRecord)}
+          disabled={isSubmitting || applicationTypeBlocked || (currentStep === totalSteps && loadedProfile !== null && !hasTawjihiRecord)}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-8 text-sm font-extrabold text-primary-foreground shadow-md hover:bg-primary/95 transition hover:shadow-lg active:scale-95 disabled:opacity-50 w-full sm:w-auto"
         >
           {isSubmitting ? (
