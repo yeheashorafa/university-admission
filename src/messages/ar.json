@@ -1414,7 +1414,8 @@
       "missing": "مستندات ناقصة",
       "ai-alerts": "تنبيهات الذكاء الاصطناعي",
       "accepted": "المقبولون",
-      "rejected": "المرفوضون"
+      "rejected": "المرفوضون",
+      "cancelled": "الطلبات الملغاة"
     },
     "deanKpi": {
       "total": "إجمالي الطلبات",
@@ -1539,6 +1540,7 @@
       "notifications": "الإشعارات",
       "employeeNotifications": "إشعارات الموظفين",
       "headNotifications": "إشعارات رئيس الكلية",
+      "aiProviders": "مزوّدو الذكاء الاصطناعي",
       "settings": "الإعدادات",
       "masterData": {
         "faculties": "الكليات",
