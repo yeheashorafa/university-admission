@@ -153,10 +153,16 @@ export async function getDocumentTypes(): Promise<PublicDocumentType[]> {
 }
 
 export async function getPublicApplicationTypes(): Promise<PublicApplicationType[]> {
-  try {
-    const response = await apiClient.get(ENDPOINTS.public.applicationTypes);
-    return extractArray<PublicApplicationType>(response.data);
-  } catch {
-    return [];
-  }
+  const types: PublicApplicationType[] = [];
+  let page = 1;
+  let lastPage = 1;
+
+  do {
+    const { data } = await apiClient.get(ENDPOINTS.public.applicationTypes, { params: { page } });
+    types.push(...extractArray<PublicApplicationType>(data));
+    lastPage = data?.data?.meta?.last_page ?? data?.meta?.last_page ?? 1;
+    page++;
+  } while (page <= lastPage);
+
+  return types;
 }

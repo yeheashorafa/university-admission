@@ -5,6 +5,7 @@ import { queryKeys } from "@/constants/query-keys";
 import {
   getAdmissionCycles,
   getDocumentTypes,
+  getPublicApplicationTypes,
   getPublicFaculties,
   getFacultyPrograms,
 } from "@/services/public-catalog.service";
@@ -47,8 +48,9 @@ export function useDocumentTypesQuery() {
 export function usePublicApplicationTypesQuery() {
   return useQuery({
     queryKey: queryKeys.publicCatalog.applicationTypes,
-    queryFn: async () => [],
-    enabled: false,
+    queryFn: getPublicApplicationTypes,
+    staleTime: CATALOG_STALE_TIME,
+    gcTime: CATALOG_GC_TIME,
   });
 }
 
